@@ -1,0 +1,14 @@
+= Mature Modular Meta-framework (mmm)
+
+image:https://raw.github.com/m-m-m/mmm/master/src/site/resources/images/logo.png[logo]
+
+*Welcome to the wonderful world of http://m-m-m.sourceforge.net/index.html[mmm]*
+
+== mmm-marshal
+
+image:https://travis-ci.org/m-m-m/marshal.svg?branch=master["build-status",link="https://travis-ci.org/m-m-m/marshal"]
+
+The `mmm-marshal` is a simple library to marshal (serialize) and unmarshal (deserialize) data from/to structured formats such as JSON or XML.
+
+* https://m-m-m.github.io/maven/apidocs/net/sf/mmm/marshal/api/package-summary.html#package.description[Marshal API]
+* https://m-m-m.github.io/maven/apidocs/[and much more... ]
