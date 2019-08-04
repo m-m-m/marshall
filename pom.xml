@@ -8,11 +8,11 @@
     <version>2.7.1</version>
     <relativePath>../parent/pom.xml</relativePath>
   </parent>
-  <artifactId>mmm-marshal</artifactId>
+  <artifactId>mmm-marshall</artifactId>
   <version>${revision}${changelist}</version>
   <packaging>pom</packaging>
   <name>${project.artifactId}</name>
-  <description>Simple adapter for marshaling and unmarshaling data to structured formats such as JSON or XML.</description>
+  <description>Simple adapter for marshalling and unmarshalling data to structured formats such as JSON or XML.</description>
 
   <properties>
     <revision>dev</revision>
@@ -46,17 +46,17 @@
     <dependencies>
       <dependency>
         <groupId>${project.groupId}</groupId>
-        <artifactId>mmm-marshal-api</artifactId>
+        <artifactId>mmm-marshall-api</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
         <groupId>${project.groupId}</groupId>
-        <artifactId>mmm-marshal-impl-jsonp</artifactId>
+        <artifactId>mmm-marshall-impl-jsonp</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
         <groupId>${project.groupId}</groupId>
-        <artifactId>mmm-marshal-impl-stax</artifactId>
+        <artifactId>mmm-marshall-impl-stax</artifactId>
         <version>${project.version}</version>
       </dependency>
     </dependencies>

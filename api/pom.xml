@@ -4,11 +4,11 @@
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>net.sf.m-m-m</groupId>
-    <artifactId>mmm-marshal</artifactId>
+    <artifactId>mmm-marshall</artifactId>
     <version>${revision}${changelist}</version>
   </parent>
-  <artifactId>mmm-marshal-api</artifactId>
+  <artifactId>mmm-marshall-api</artifactId>
   <packaging>jar</packaging>
   <name>${project.artifactId}</name>
-  <description>API for marshaling and unmarshaling data.</description>
+  <description>API for marshalling and unmarshalling data.</description>
 </project>

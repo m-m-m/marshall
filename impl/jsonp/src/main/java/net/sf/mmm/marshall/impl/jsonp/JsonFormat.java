@@ -1,4 +1,4 @@
-package net.sf.mmm.marshal.impl.jsonp;
+package net.sf.mmm.marshall.impl.jsonp;
 
 import java.io.Reader;
 import java.io.Writer;
@@ -10,9 +10,9 @@ import javax.json.stream.JsonGeneratorFactory;
 import javax.json.stream.JsonParser;
 import javax.json.stream.JsonParserFactory;
 
-import net.sf.mmm.marshal.api.StructuredFormat;
-import net.sf.mmm.marshal.api.StructuredReader;
-import net.sf.mmm.marshal.api.StructuredWriter;
+import net.sf.mmm.marshall.api.StructuredFormat;
+import net.sf.mmm.marshall.api.StructuredReader;
+import net.sf.mmm.marshall.api.StructuredWriter;
 
 /**
  * Implementation of {@link StructuredFormat} for JSON (JavaScript Object Notation).

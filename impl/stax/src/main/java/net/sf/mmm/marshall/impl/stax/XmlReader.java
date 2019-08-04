@@ -1,28 +1,23 @@
-package net.sf.mmm.marshal.impl.stax;
-
-import java.math.BigDecimal;
-import java.math.BigInteger;
-import java.time.Month;
+package net.sf.mmm.marshall.impl.stax;
 
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
-import net.sf.mmm.marshal.api.StructuredReader;
+import net.sf.mmm.marshall.api.StructuredReader;
+import net.sf.mmm.marshall.base.AbstractStructuredReader;
 
 /**
  * Implementation of {@link StructuredReader} for XML using {@link XMLStreamReader}.
  *
  * @since 1.0.0
  */
-public class XmlReader implements StructuredReader {
+public class XmlReader extends AbstractStructuredReader {
 
   private final XMLStreamReader xml;
 
   private int event;
-
-  private String name;
 
   private boolean done;
 
@@ -102,44 +97,12 @@ public class XmlReader implements StructuredReader {
     return false;
   }
 
-  @SuppressWarnings({ "unchecked", "rawtypes" })
   @Override
-  public <V> V readValue(Class<V> type) {
+  public String readValueAsString() {
 
     String value = this.xml.getAttributeValue(null, XmlWriter.ART_VALUE);
     next();
-    if (value == null) {
-      return null;
-    }
-    Object result = null;
-    if (String.class.equals(type)) {
-      result = value;
-    } else if (Boolean.class.equals(type)) {
-      result = Boolean.valueOf(value);
-    } else if (Integer.class.equals(type)) {
-      result = Integer.valueOf(value);
-    } else if (Long.class.equals(type)) {
-      result = Long.valueOf(value);
-    } else if (Short.class.equals(type)) {
-      result = Short.valueOf(value);
-    } else if (Byte.class.equals(type)) {
-      result = Byte.valueOf(value);
-    } else if (Double.class.equals(type)) {
-      result = Double.valueOf(value);
-    } else if (Float.class.equals(type)) {
-      result = Float.valueOf(value);
-    } else if (BigInteger.class.equals(type)) {
-      result = new BigInteger(value);
-    } else if (BigDecimal.class.equals(type)) {
-      result = new BigDecimal(value);
-    } else if (Month.class.equals(type)) {
-      result = Month.of(Integer.parseInt(value));
-    } else if (Enum.class.isAssignableFrom(type)) {
-      result = Enum.valueOf((Class) type, value);
-    } else {
-      throw new IllegalStateException("Unknown value type " + type);
-    }
-    return type.cast(result);
+    return value;
   }
 
   @Override

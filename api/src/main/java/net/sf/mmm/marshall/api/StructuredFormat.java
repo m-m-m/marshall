@@ -1,4 +1,4 @@
-package net.sf.mmm.marshal.api;
+package net.sf.mmm.marshall.api;
 
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -47,10 +47,10 @@ public interface StructuredFormat {
   }
 
   /**
-   * @param object the {@link MarshalableObject} to serialize.
+   * @param object the {@link MarshallableObject} to serialize.
    * @return the serialized data as {@link String}.
    */
-  default String write(MarshalableObject object) {
+  default String write(MarshallableObject object) {
 
     if (object == null) {
       return null;

@@ -1,3 +1,6 @@
-module net.sf.mmm.marshal.api {
-  exports net.sf.mmm.marshal.api;
+module net.sf.mmm.marshall.api {
+  exports net.sf.mmm.marshall.api;
+
+  exports net.sf.mmm.marshall.base;
+
 }

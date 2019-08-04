@@ -1,4 +1,4 @@
-package net.sf.mmm.marshal.impl.stax;
+package net.sf.mmm.marshall.impl.stax;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -6,13 +6,14 @@ import java.math.BigInteger;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
-import net.sf.mmm.marshal.api.StructuredWriter;
+import net.sf.mmm.marshall.api.StructuredWriter;
+import net.sf.mmm.marshall.base.AbstractStructuredWriter;
 
 /**
  * Implementation of {@link StructuredWriter} for XML using {@link XMLStreamWriter}.
  *
  */
-public class XmlWriter implements StructuredWriter {
+public class XmlWriter extends AbstractStructuredWriter {
 
   static final String TAG_ROOT = "json";
 
@@ -30,7 +31,7 @@ public class XmlWriter implements StructuredWriter {
 
   private XMLStreamWriter xml;
 
-  private String name;
+  private boolean writeNullValues;
 
   /**
    * The constructor.
@@ -110,16 +111,6 @@ public class XmlWriter implements StructuredWriter {
   }
 
   @Override
-  public void writeName(String newName) {
-
-    if (this.name != null) {
-      throw new IllegalStateException("Cannot write name " + newName + " while previous name " + this.name
-          + " has not been processed - forgot to call writeStartObject()!");
-    }
-    this.name = newName;
-  }
-
-  @Override
   public void writeValueAsNull() {
 
     writeValueAsString(null);
@@ -128,8 +119,7 @@ public class XmlWriter implements StructuredWriter {
   @Override
   public void writeValueAsString(String value) {
 
-    if (value == null) {
-      // TODO make configurable if null values are omitted...
+    if ((value == null) && !this.writeNullValues) {
       return;
     }
     try {
@@ -138,7 +128,9 @@ public class XmlWriter implements StructuredWriter {
         tag = TAG_ITEM;
       }
       this.xml.writeEmptyElement(tag);
-      this.xml.writeAttribute(ART_VALUE, value);
+      if (value != null) {
+        this.xml.writeAttribute(ART_VALUE, value);
+      }
       this.name = null;
     } catch (XMLStreamException e) {
       throw new IllegalStateException(e);
@@ -155,16 +147,6 @@ public class XmlWriter implements StructuredWriter {
   }
 
   @Override
-  public void writeValueAsBoolean(boolean value) {
-
-    if (value) {
-      writeValueAsString("true");
-    } else {
-      writeValueAsString("false");
-    }
-  }
-
-  @Override
   public void writeValueAsBigDecimal(BigDecimal value) {
 
     write(value);
@@ -174,30 +156,6 @@ public class XmlWriter implements StructuredWriter {
   public void writeValueAsBigInteger(BigInteger value) {
 
     write(value);
-  }
-
-  @Override
-  public void writeValueAsLong(long value) {
-
-    writeValueAsString(Long.toString(value));
-  }
-
-  @Override
-  public void writeValueAsInteger(int value) {
-
-    writeValueAsString(Integer.toString(value));
-  }
-
-  @Override
-  public void writeValueAsDouble(double value) {
-
-    writeValueAsString(Double.toString(value));
-  }
-
-  @Override
-  public void writeValueAsFloat(float value) {
-
-    writeValueAsString(Float.toString(value));
   }
 
 }

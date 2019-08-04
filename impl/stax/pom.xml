@@ -4,13 +4,13 @@
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>net.sf.m-m-m</groupId>
-    <artifactId>mmm-marshal-impl</artifactId>
+    <artifactId>mmm-marshall-impl</artifactId>
     <version>${revision}${changelist}</version>
   </parent>
-  <artifactId>mmm-marshal-impl-stax</artifactId>
+  <artifactId>mmm-marshal-impll-stax</artifactId>
   <packaging>jar</packaging>
   <name>${project.artifactId}</name>
-  <description>Implementations of mmm-marshal-api for XML using StAX.</description>
+  <description>Implementations of mmm-marshall-api for XML using StAX.</description>
   
   <dependencies>
   </dependencies>

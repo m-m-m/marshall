@@ -4,13 +4,13 @@
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>net.sf.m-m-m</groupId>
-    <artifactId>mmm-marshal-impl</artifactId>
+    <artifactId>mmm-marshall-impl</artifactId>
     <version>${revision}${changelist}</version>
   </parent>
-  <artifactId>mmm-marshal-impl-jsonp</artifactId>
+  <artifactId>mmm-marshall-impl-jsonp</artifactId>
   <packaging>jar</packaging>
   <name>${project.artifactId}</name>
-  <description>Implementations of mmm-marshal-api for JSON using JSON-P.</description>
+  <description>Implementations of mmm-marshall-api for JSON using JSON-P.</description>
   
   <dependencies>
     <!-- https://github.com/eclipse-ee4j/jsonp/issues/159 -->

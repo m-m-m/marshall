@@ -5,10 +5,10 @@ import java.io.StringReader;
 import java.io.StringWriter;
 import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.time.Month;
 
-import net.sf.mmm.marshal.api.StructuredReader;
-import net.sf.mmm.marshal.api.StructuredWriter;
+import net.sf.mmm.marshall.api.StructuredReader;
+import net.sf.mmm.marshall.api.StructuredWriter;
+import net.sf.mmm.marshall.impl.stax.XmlFormat;
 
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -30,7 +30,6 @@ public class XmlFormatTest extends Assertions {
       + "<i v=\"42.42\"/>" //
       + "<i v=\"0.12345678901234567890123456789\"/>" //
       + "<i v=\"1234567890123456789012345678901234567890\"/>" //
-      + "<i v=\"4\"/>"//
       + "</a:list>" //
       + "</o:json>";
 
@@ -52,12 +51,11 @@ public class XmlFormatTest extends Assertions {
     writer.writeValueAsByte((byte) -1);
     writer.writeValueAsShort((short) -1);
     writer.writeValueAsInteger(-1);
-    writer.writeValueAsLong(-42);
+    writer.writeValueAsLong(Long.valueOf(-42));
     writer.writeValueAsFloat(4.2F);
     writer.writeValueAsDouble(42.42);
     writer.writeValueAsBigDecimal(new BigDecimal("0.12345678901234567890123456789"));
     writer.writeValueAsBigInteger(new BigInteger("1234567890123456789012345678901234567890"));
-    writer.writeValue(Month.APRIL);
     writer.writeEnd();
     writer.writeEnd();
     writer.close();
@@ -89,7 +87,6 @@ public class XmlFormatTest extends Assertions {
     assertThat(jsonReader.readValue(BigDecimal.class)).isEqualTo(new BigDecimal("0.12345678901234567890123456789"));
     assertThat(jsonReader.readValue(BigInteger.class))
         .isEqualTo(new BigInteger("1234567890123456789012345678901234567890"));
-    assertThat(jsonReader.readValue(Month.class)).isSameAs(Month.APRIL);
     assertThat(jsonReader.readEnd()).isTrue();
     assertThat(jsonReader.isDone()).isFalse();
     assertThat(jsonReader.readEnd()).isTrue();

@@ -1,8 +1,8 @@
-module net.sf.mmm.marshal.impl.stax {
+module net.sf.mmm.marshall.impl.stax {
 
-  requires transitive net.sf.mmm.marshal.api;
+  requires transitive net.sf.mmm.marshall.api;
 
   requires transitive java.xml;
 
-  exports net.sf.mmm.marshal.impl.stax;
+  exports net.sf.mmm.marshall.impl.stax;
 }

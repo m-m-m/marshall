@@ -1,4 +1,4 @@
-package net.sf.mmm.marshal.impl.stax;
+package net.sf.mmm.marshall.impl.stax;
 
 import java.io.Reader;
 import java.io.Writer;
@@ -9,9 +9,9 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamWriter;
 
-import net.sf.mmm.marshal.api.StructuredFormat;
-import net.sf.mmm.marshal.api.StructuredReader;
-import net.sf.mmm.marshal.api.StructuredWriter;
+import net.sf.mmm.marshall.api.StructuredFormat;
+import net.sf.mmm.marshall.api.StructuredReader;
+import net.sf.mmm.marshall.api.StructuredWriter;
 
 /**
  * Implementation of {@link StructuredFormat} for XML using StAX.
