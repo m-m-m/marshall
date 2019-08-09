@@ -7,7 +7,7 @@
     <artifactId>mmm-marshall-impl</artifactId>
     <version>${revision}${changelist}</version>
   </parent>
-  <artifactId>mmm-marshall-impl-jsonp</artifactId>
+  <artifactId>mmm-marshall-jsonp</artifactId>
   <packaging>jar</packaging>
   <name>${project.artifactId}</name>
   <description>Implementations of mmm-marshall-api for JSON using JSON-P.</description>

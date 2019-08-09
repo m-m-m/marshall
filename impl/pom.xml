@@ -4,13 +4,13 @@
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>net.sf.m-m-m</groupId>
-    <artifactId>mmm-marshall</artifactId>
+    <artifactId>mmm-marshall-parent</artifactId>
     <version>${revision}${changelist}</version>
   </parent>
   <artifactId>mmm-marshall-impl</artifactId>
   <packaging>pom</packaging>
   <name>${project.artifactId}</name>
-  <description>Implementations of mmm-marshal-api.</description>
+  <description>Implementations of mmm-marshal.</description>
 
   <modules>
     <module>jsonp</module>
@@ -20,7 +20,7 @@
   <dependencies>
     <dependency>
       <groupId>${project.groupId}</groupId>
-      <artifactId>mmm-marshall-api</artifactId>
+      <artifactId>mmm-marshall</artifactId>
     </dependency>
   </dependencies>
 </project>
