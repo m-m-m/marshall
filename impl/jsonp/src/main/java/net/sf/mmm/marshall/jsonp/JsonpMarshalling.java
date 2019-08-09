@@ -1,3 +1,5 @@
+/* Copyright (c) The m-m-m Team, Licensed under the Apache License, Version 2.0
+ * http://www.apache.org/licenses/LICENSE-2.0 */
 package net.sf.mmm.marshall.jsonp;
 
 import java.util.Map;
@@ -9,8 +11,9 @@ import net.sf.mmm.marshall.StructuredFormat;
 import net.sf.mmm.marshall.jsonp.impl.JsonFormat;
 
 /**
- * @author hohwille
+ * Provides {@link StructuredFormat} for JSON based on JSON-P.
  *
+ * @since 1.0.0
  */
 public final class JsonpMarshalling {
 

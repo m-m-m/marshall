@@ -1,3 +1,5 @@
+/* Copyright (c) The m-m-m Team, Licensed under the Apache License, Version 2.0
+ * http://www.apache.org/licenses/LICENSE-2.0 */
 package net.sf.mmm.marshall.jsonp.impl;
 
 import java.io.Reader;
@@ -29,6 +31,7 @@ public class JsonFormat implements StructuredFormat {
 
   /**
    * The constructor.
+   * 
    * @param readerFactory the {@link JsonParserFactory}.
    * @param writerFactory the {@link JsonGeneratorFactory}.
    */
