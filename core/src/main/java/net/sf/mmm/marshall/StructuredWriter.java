@@ -103,6 +103,8 @@ public interface StructuredWriter extends AutoCloseable {
       } else {
         writeValueAsString(value.toString());
       }
+    } else if (value instanceof MarshallableObject) {
+      ((MarshallableObject) value).write(this);
     } else {
       writeValueAsString(value.toString());
     }
