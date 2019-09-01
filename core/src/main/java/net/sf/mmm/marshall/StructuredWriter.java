@@ -49,7 +49,7 @@ public interface StructuredWriter extends AutoCloseable {
   void writeName(String name);
 
   /**
-   * Writes the value of the current property or {@link #writeStartArray() array} element.<br>
+   * Writes a value for the current property or {@link #writeStartArray() array} element.<br>
    * <b>ATTENTION:</b><br>
    * This generic method only exists as convenience method for the {@code writeValueAs*} methods. It therefore only
    * supports standard Java value types as described in {@link net.sf.mmm.marshall}. For other types it falls back to
@@ -66,25 +66,7 @@ public interface StructuredWriter extends AutoCloseable {
     } else if (value instanceof Boolean) {
       writeValueAsBoolean((Boolean) value);
     } else if (value instanceof Number) {
-      if (value instanceof Long) {
-        writeValueAsLong((Long) value);
-      } else if (value instanceof Integer) {
-        writeValueAsInteger((Integer) value);
-      } else if (value instanceof BigDecimal) {
-        writeValueAsBigDecimal((BigDecimal) value);
-      } else if (value instanceof BigInteger) {
-        writeValueAsBigInteger((BigInteger) value);
-      } else if (value instanceof Short) {
-        writeValueAsShort((Short) value);
-      } else if (value instanceof Byte) {
-        writeValueAsByte((Byte) value);
-      } else if (value instanceof Float) {
-        writeValueAsFloat((Float) value);
-      } else if (value instanceof Double) {
-        writeValueAsDouble((Double) value);
-      } else {
-        writeValueAsDouble(Double.valueOf(((Number) value).doubleValue()));
-      }
+      writeValueAsNumber((Number) value);
     } else if (value instanceof Temporal) {
       if (value instanceof Instant) {
         writeValueAsInstant(((Instant) value));
@@ -107,6 +89,36 @@ public interface StructuredWriter extends AutoCloseable {
       ((MarshallableObject) value).write(this);
     } else {
       writeValueAsString(value.toString());
+    }
+  }
+
+  /**
+   * Writes a {@link Number} value for the current property or {@link #writeStartArray() array} element.<br>
+   *
+   * @param value the value to write. May be {@code null}.
+   */
+  default void writeValueAsNumber(Number value) {
+
+    if (value == null) {
+      writeValueAsNull();
+    } else if (value instanceof Long) {
+      writeValueAsLong((Long) value);
+    } else if (value instanceof Integer) {
+      writeValueAsInteger((Integer) value);
+    } else if (value instanceof BigDecimal) {
+      writeValueAsBigDecimal((BigDecimal) value);
+    } else if (value instanceof BigInteger) {
+      writeValueAsBigInteger((BigInteger) value);
+    } else if (value instanceof Short) {
+      writeValueAsShort((Short) value);
+    } else if (value instanceof Byte) {
+      writeValueAsByte((Byte) value);
+    } else if (value instanceof Float) {
+      writeValueAsFloat((Float) value);
+    } else if (value instanceof Double) {
+      writeValueAsDouble((Double) value);
+    } else {
+      writeValueAsDouble(Double.valueOf(value.doubleValue()));
     }
   }
 
@@ -218,16 +230,7 @@ public interface StructuredWriter extends AutoCloseable {
    * @param value the value to write.
    * @see #writeValue(Object)
    */
-  default void writeValueAsBoolean(Boolean value) {
-
-    if (value == null) {
-      writeValueAsNull();
-    } else if (value.booleanValue()) {
-      writeValueAsString("true");
-    } else {
-      writeValueAsString("false");
-    }
-  }
+  void writeValueAsBoolean(Boolean value);
 
   /**
    * @param value the value to write.
@@ -235,11 +238,7 @@ public interface StructuredWriter extends AutoCloseable {
    */
   default void writeValueAsBigDecimal(BigDecimal value) {
 
-    if (value == null) {
-      writeValueAsNull();
-    } else {
-      writeValueAsString(value.toString());
-    }
+    writeValueAsNumber(value);
   }
 
   /**
@@ -248,11 +247,7 @@ public interface StructuredWriter extends AutoCloseable {
    */
   default void writeValueAsBigInteger(BigInteger value) {
 
-    if (value == null) {
-      writeValueAsNull();
-    } else {
-      writeValueAsString(value.toString());
-    }
+    writeValueAsNumber(value);
   }
 
   /**
@@ -261,11 +256,7 @@ public interface StructuredWriter extends AutoCloseable {
    */
   default void writeValueAsLong(Long value) {
 
-    if (value == null) {
-      writeValueAsNull();
-    } else {
-      writeValueAsString(value.toString());
-    }
+    writeValueAsNumber(value);
   }
 
   /**
@@ -274,11 +265,7 @@ public interface StructuredWriter extends AutoCloseable {
    */
   default void writeValueAsInteger(Integer value) {
 
-    if (value == null) {
-      writeValueAsNull();
-    } else {
-      writeValueAsString(value.toString());
-    }
+    writeValueAsNumber(value);
   }
 
   /**
@@ -287,11 +274,7 @@ public interface StructuredWriter extends AutoCloseable {
    */
   default void writeValueAsShort(Short value) {
 
-    if (value == null) {
-      writeValueAsNull();
-    } else {
-      writeValueAsString(value.toString());
-    }
+    writeValueAsNumber(value);
   }
 
   /**
@@ -300,11 +283,7 @@ public interface StructuredWriter extends AutoCloseable {
    */
   default void writeValueAsByte(Byte value) {
 
-    if (value == null) {
-      writeValueAsNull();
-    } else {
-      writeValueAsString(value.toString());
-    }
+    writeValueAsNumber(value);
   }
 
   /**
@@ -313,11 +292,7 @@ public interface StructuredWriter extends AutoCloseable {
    */
   default void writeValueAsDouble(Double value) {
 
-    if (value == null) {
-      writeValueAsNull();
-    } else {
-      writeValueAsString(value.toString());
-    }
+    writeValueAsNumber(value);
   }
 
   /**
@@ -326,11 +301,10 @@ public interface StructuredWriter extends AutoCloseable {
    */
   default void writeValueAsFloat(Float value) {
 
-    if (value == null) {
-      writeValueAsNull();
-    } else {
-      writeValueAsString(value.toString());
-    }
+    writeValueAsNumber(value);
   }
+
+  @Override
+  void close();
 
 }

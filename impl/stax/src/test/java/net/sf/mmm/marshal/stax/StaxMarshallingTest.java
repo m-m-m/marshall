@@ -7,8 +7,13 @@ import java.io.StringReader;
 import java.io.StringWriter;
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import net.sf.mmm.marshall.StructuredReader;
+import net.sf.mmm.marshall.StructuredReader.State;
 import net.sf.mmm.marshall.StructuredWriter;
 import net.sf.mmm.marshall.stax.StaxMarshalling;
 import net.sf.mmm.marshall.stax.impl.XmlFormat;
@@ -21,28 +26,49 @@ import org.junit.jupiter.api.Test;
  */
 public class StaxMarshallingTest extends Assertions {
 
+  private static final Byte VALUE_1 = Byte.valueOf((byte) -1);
+
+  private static final Short VALUE_2 = Short.valueOf((short) -1);
+
+  private static final Integer VALUE_3 = Integer.valueOf(-1);
+
+  private static final Long VALUE_4 = Long.valueOf(-42);
+
+  private static final Float VALUE_5 = Float.valueOf(4.2F);
+
+  private static final Double VALUE_6 = Double.valueOf(42.42);
+
+  private static final BigDecimal VALUE_7 = new BigDecimal("0.12345678901234567890123456789");
+
+  private static final BigInteger VALUE_8 = new BigInteger("1234567890123456789012345678901234567890");
+
   private static final String XML_EXPECTED = "<?xml version=\"1.0\" ?>" //
       + "<o:json xmlns:a=\"array\" xmlns:o=\"object\">" //
-      + "<foo v=\"bar\"/>" //
+      + "<foo s=\"bar\"/>" //
       + "<a:list>" //
-      + "<i v=\"-1\"/>" //
-      + "<i v=\"-1\"/>" //
-      + "<i v=\"-1\"/>" //
-      + "<i v=\"-42\"/>" //
-      + "<i v=\"4.2\"/>" //
-      + "<i v=\"42.42\"/>" //
-      + "<i v=\"0.12345678901234567890123456789\"/>" //
-      + "<i v=\"1234567890123456789012345678901234567890\"/>" //
+      + "<i n=\"-1\"/>" //
+      + "<i n=\"-1\"/>" //
+      + "<i n=\"-1\"/>" //
+      + "<i n=\"-42\"/>" //
+      + "<i n=\"4.2\"/>" //
+      + "<i n=\"42.42\"/>" //
+      + "<i n=\"0.12345678901234567890123456789\"/>" //
+      + "<i n=\"1234567890123456789012345678901234567890\"/>" //
+      + "<a:i>" //
+      + "<o:i>" //
+      + "<key s=\"value\"/>" //
+      + "</o:i>" //
+      + "</a:i>" //
       + "</a:list>" //
+      + "<a:empty>" //
+      + "</a:empty>" //
       + "</o:json>";
 
   /**
    * Test {@link XmlFormat#writer(java.io.Writer) writing as XML}.
-   *
-   * @throws Exception on error.
    */
   @Test
-  public void testWrite() throws Exception {
+  public void testWrite() {
 
     StringWriter stringWriter = new StringWriter();
     StructuredWriter writer = StaxMarshalling.of().writer(stringWriter);
@@ -51,14 +77,23 @@ public class StaxMarshallingTest extends Assertions {
     writer.writeValue("bar");
     writer.writeName("list");
     writer.writeStartArray();
-    writer.writeValueAsByte((byte) -1);
-    writer.writeValueAsShort((short) -1);
-    writer.writeValueAsInteger(-1);
-    writer.writeValueAsLong(Long.valueOf(-42));
-    writer.writeValueAsFloat(4.2F);
-    writer.writeValueAsDouble(42.42);
-    writer.writeValueAsBigDecimal(new BigDecimal("0.12345678901234567890123456789"));
-    writer.writeValueAsBigInteger(new BigInteger("1234567890123456789012345678901234567890"));
+    writer.writeValueAsByte(VALUE_1);
+    writer.writeValueAsShort(VALUE_2);
+    writer.writeValueAsInteger(VALUE_3);
+    writer.writeValueAsLong(VALUE_4);
+    writer.writeValueAsFloat(VALUE_5);
+    writer.writeValueAsDouble(VALUE_6);
+    writer.writeValueAsBigDecimal(VALUE_7);
+    writer.writeValueAsBigInteger(VALUE_8);
+    writer.writeStartArray();
+    writer.writeStartObject();
+    writer.writeName("key");
+    writer.writeValueAsString("value");
+    writer.writeEnd();
+    writer.writeEnd();
+    writer.writeEnd();
+    writer.writeName("empty");
+    writer.writeStartArray();
     writer.writeEnd();
     writer.writeEnd();
     writer.close();
@@ -67,33 +102,154 @@ public class StaxMarshallingTest extends Assertions {
 
   /**
    * Test {@link XmlFormat#reader(java.io.Reader) reading from XML}.
-   *
-   * @throws Exception on error.
    */
   @Test
-  public void testRead() throws Exception {
+  public void testRead() {
 
     Reader stringReader = new StringReader(XML_EXPECTED);
-    StructuredReader jsonReader = StaxMarshalling.of().reader(stringReader);
-    assertThat(jsonReader.isDone()).isFalse();
-    assertThat(jsonReader.readStartObject()).isTrue();
-    assertThat(jsonReader.readName()).isEqualTo("foo");
-    assertThat(jsonReader.readValue(String.class)).isEqualTo("bar");
-    assertThat(jsonReader.readName()).isEqualTo("list");
-    assertThat(jsonReader.readStartArray()).isTrue();
-    assertThat(jsonReader.readValue(Byte.class)).isEqualTo(Byte.valueOf((byte) -1));
-    assertThat(jsonReader.readValue(Short.class)).isEqualTo(Short.valueOf((short) -1));
-    assertThat(jsonReader.readValue(Integer.class)).isEqualTo(-1);
-    assertThat(jsonReader.readValue(Long.class)).isEqualTo(-42L);
-    assertThat(jsonReader.readValue(Float.class)).isEqualTo(4.2F);
-    assertThat(jsonReader.readValue(Double.class)).isEqualTo(42.42);
-    assertThat(jsonReader.readValue(BigDecimal.class)).isEqualTo(new BigDecimal("0.12345678901234567890123456789"));
-    assertThat(jsonReader.readValue(BigInteger.class))
-        .isEqualTo(new BigInteger("1234567890123456789012345678901234567890"));
-    assertThat(jsonReader.readEnd()).isTrue();
-    assertThat(jsonReader.isDone()).isFalse();
-    assertThat(jsonReader.readEnd()).isTrue();
-    assertThat(jsonReader.isDone()).isTrue();
+    StructuredReader reader = StaxMarshalling.of().reader(stringReader);
+    assertThat(reader.isDone()).isFalse();
+    assertThat(reader.getState()).isSameAs(State.START_OBJECT);
+    assertThat(reader.readStartObject()).isTrue();
+    assertThat(reader.getState()).isSameAs(State.NAME);
+    assertThat(reader.readName()).isEqualTo("foo");
+    assertThat(reader.getState()).isSameAs(State.VALUE);
+    assertThat(reader.readValue(String.class)).isEqualTo("bar");
+    assertThat(reader.getState()).isSameAs(State.NAME);
+    assertThat(reader.readName()).isEqualTo("list");
+    assertThat(reader.getState()).isSameAs(State.START_ARRAY);
+    assertThat(reader.readStartArray()).isTrue();
+    assertThat(reader.getState()).isSameAs(State.VALUE);
+    assertThat(reader.readValue(Byte.class)).isEqualTo(Byte.valueOf(VALUE_1));
+    assertThat(reader.getState()).isSameAs(State.VALUE);
+    assertThat(reader.readValue(Short.class)).isEqualTo(Short.valueOf(VALUE_2));
+    assertThat(reader.getState()).isSameAs(State.VALUE);
+    assertThat(reader.readValue(Integer.class)).isEqualTo(VALUE_3);
+    assertThat(reader.getState()).isSameAs(State.VALUE);
+    assertThat(reader.readValue(Long.class)).isEqualTo(VALUE_4);
+    assertThat(reader.getState()).isSameAs(State.VALUE);
+    assertThat(reader.readValue(Float.class)).isEqualTo(VALUE_5);
+    assertThat(reader.getState()).isSameAs(State.VALUE);
+    assertThat(reader.readValue(Double.class)).isEqualTo(VALUE_6);
+    assertThat(reader.getState()).isSameAs(State.VALUE);
+    assertThat(reader.readValue(BigDecimal.class)).isEqualTo(VALUE_7);
+    assertThat(reader.getState()).isSameAs(State.VALUE);
+    assertThat(reader.readValue(BigInteger.class)).isEqualTo(VALUE_8);
+    assertThat(reader.getState()).isSameAs(State.START_ARRAY);
+    assertThat(reader.readStartArray()).isTrue();
+    assertThat(reader.getState()).isSameAs(State.START_OBJECT);
+    assertThat(reader.readStartObject()).isTrue();
+    assertThat(reader.getState()).isSameAs(State.NAME);
+    assertThat(reader.readName()).isEqualTo("key");
+    assertThat(reader.getState()).isSameAs(State.VALUE);
+    assertThat(reader.readValue(String.class)).isEqualTo("value");
+    assertThat(reader.getState()).isSameAs(State.END_OBJECT);
+    assertThat(reader.readEnd()).isTrue();
+    assertThat(reader.getState()).isSameAs(State.END_ARRAY);
+    assertThat(reader.readEnd()).isTrue();
+    assertThat(reader.getState()).isSameAs(State.END_ARRAY);
+    assertThat(reader.readEnd()).isTrue();
+    assertThat(reader.getState()).isSameAs(State.NAME);
+    assertThat(reader.readName()).isEqualTo("empty");
+    assertThat(reader.getState()).isSameAs(State.START_ARRAY);
+    assertThat(reader.readStartArray()).isTrue();
+    assertThat(reader.getState()).isSameAs(State.END_ARRAY);
+    assertThat(reader.readEnd()).isTrue();
+    assertThat(reader.getState()).isSameAs(State.END_OBJECT);
+    assertThat(reader.isDone()).isFalse();
+    assertThat(reader.readEnd()).isTrue();
+    assertThat(reader.getState()).isSameAs(State.DONE);
+    assertThat(reader.isDone()).isTrue();
+  }
+
+  /**
+   * Test of {@link StructuredReader#skipValue()}.
+   */
+  @Test
+  public void testSkip() {
+
+    Reader stringReader = new StringReader(XML_EXPECTED);
+    StructuredReader reader = StaxMarshalling.of().reader(stringReader);
+    assertThat(reader.getState()).isSameAs(State.START_OBJECT);
+    assertThat(reader.readStartObject()).isTrue();
+    assertThat(reader.getState()).isSameAs(State.NAME);
+    assertThat(reader.readName()).isEqualTo("foo");
+    assertThat(reader.getState()).isSameAs(State.VALUE);
+    reader.skipValue();
+    assertThat(reader.getState()).isSameAs(State.NAME);
+    assertThat(reader.readName()).isEqualTo("list");
+    assertThat(reader.getState()).isSameAs(State.START_ARRAY);
+    reader.skipValue();
+    assertThat(reader.getState()).isSameAs(State.NAME);
+    assertThat(reader.readName()).isEqualTo("empty");
+    assertThat(reader.getState()).isSameAs(State.START_ARRAY);
+    reader.skipValue();
+    assertThat(reader.getState()).isSameAs(State.END_OBJECT);
+    assertThat(reader.isDone()).isFalse();
+    assertThat(reader.readEnd()).isTrue();
+    assertThat(reader.getState()).isSameAs(State.DONE);
+    assertThat(reader.isDone()).isTrue();
+  }
+
+  /**
+   * Test of {@link StructuredReader#readValue(boolean)}.
+   */
+  @SuppressWarnings("unchecked")
+  @Test
+  public void testReadValue() {
+
+    Reader stringReader = new StringReader(XML_EXPECTED);
+    StructuredReader reader = StaxMarshalling.of().reader(stringReader);
+    assertThat(reader.getState()).isSameAs(State.START_OBJECT);
+    Object value = reader.readValue(true);
+    assertThat(reader.getState()).isSameAs(State.DONE);
+    assertThat(reader.isDone()).isTrue();
+    assertThat(value).isInstanceOf(Map.class);
+    Map<String, Object> map = (Map<String, Object>) value;
+    assertThat(map.get("foo")).isEqualTo("bar");
+    List<Object> value9 = new ArrayList<>();
+    Map<String, Object> object = new HashMap<>();
+    object.put("key", "value");
+    value9.add(object);
+    assertThat((List<Object>) map.get("list")).containsExactlyInAnyOrder(VALUE_1.intValue(), VALUE_2.intValue(),
+        VALUE_3.intValue(), VALUE_4.intValue(), new BigDecimal(VALUE_5.toString()), BigDecimal.valueOf(VALUE_6),
+        VALUE_7, VALUE_8, value9);
+    assertThat((List<Object>) map.get("empty")).isEmpty();
+  }
+
+  /**
+   * Test {@link XmlFormat#reader(java.io.Reader) reading} a top-level array from XML.
+   */
+  @Test
+  public void testReadRootArray() {
+
+    String xml = "<?xml version=\"1.0\" ?>" //
+        + "<a:json xmlns:a=\"array\" xmlns:o=\"object\">" //
+        + "<i n=\"-1\"/>" //
+        + "<i n=\"-1\"/>" //
+        + "<i n=\"-1\"/>" //
+        + "<i n=\"-42\"/>" //
+        + "<i n=\"4.2\"/>" //
+        + "<i n=\"42.42\"/>" //
+        + "<i n=\"0.12345678901234567890123456789\"/>" //
+        + "<i n=\"1234567890123456789012345678901234567890\"/>" //
+        + "</a:json>";
+
+    Reader stringReader = new StringReader(xml);
+    StructuredReader reader = StaxMarshalling.of().reader(stringReader);
+    assertThat(reader.isDone()).isFalse();
+    assertThat(reader.readStartArray()).isTrue();
+    assertThat(reader.readValue(Byte.class)).isEqualTo(Byte.valueOf(VALUE_1));
+    assertThat(reader.readValue(Short.class)).isEqualTo(Short.valueOf(VALUE_2));
+    assertThat(reader.readValue(Integer.class)).isEqualTo(VALUE_3);
+    assertThat(reader.readValue(Long.class)).isEqualTo(-42L);
+    assertThat(reader.readValue(Float.class)).isEqualTo(4.2F);
+    assertThat(reader.readValue(Double.class)).isEqualTo(42.42);
+    assertThat(reader.readValue(BigDecimal.class)).isEqualTo(VALUE_7);
+    assertThat(reader.readValue(BigInteger.class)).isEqualTo(VALUE_8);
+    assertThat(reader.readEnd()).isTrue();
+    assertThat(reader.readEnd()).isTrue();
+    assertThat(reader.isDone()).isTrue();
   }
 
 }

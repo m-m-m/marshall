@@ -11,6 +11,8 @@ import java.time.LocalTime;
 import java.time.OffsetDateTime;
 import java.time.OffsetTime;
 import java.time.ZonedDateTime;
+import java.util.Collection;
+import java.util.Map;
 import java.util.Objects;
 
 /**
@@ -18,7 +20,7 @@ import java.util.Objects;
  *
  * @since 1.0.0
  */
-public interface StructuredReader {
+public interface StructuredReader extends AutoCloseable {
 
   /**
    * @return the name of the current property or element.
@@ -38,6 +40,45 @@ public interface StructuredReader {
   boolean readStartArray();
 
   /**
+   * Generic method to read and unmarshall a value supporting only the build in types {@link Boolean}, {@link String},
+   * and {@link Number}.<br>
+   *
+   * @return the unmarsahlled value. May be {@code null}.
+   */
+  default Object readValue() {
+
+    return readValue(false);
+  }
+
+  /**
+   * Generic method to read and unmarshall a value supporting the build in types {@link Boolean}, {@link String}, and
+   * {@link Number}. In case {@code recursive} is {@code true} also {@link java.util.List} for {@link #readStartArray()
+   * arrays} and {@link java.util.Map} for {@link #readStartObject() objects} are supported.<br>
+   *
+   * @param recursive - {@code true} for recursive reading of {@link #readStartArray() arrays} as {@link java.util.List}
+   *        and {@link #readStartObject() objects} as {@link java.util.Map}, {@code false} otherwise.
+   * @return the unmarsahlled value. May be {@code null}.
+   */
+  Object readValue(boolean recursive);
+
+  /**
+   * This method may be called immediately after {@link #readStartObject()} in case {@code true} was returned to read
+   * the object into the given {@link Map}.
+   *
+   * @param map the {@link Map} where to add the properties. Unlike {@link #readValue(boolean)} this allows you to
+   *        choose the {@link Map} implementation.
+   */
+  void readObject(Map<String, Object> map);
+
+  /**
+   * This method may be called immediately after {@link #readStartArray()} in case {@code true} was returned to read the
+   * array into the given {@link Collection}.
+   *
+   * @param array the {@link Collection} where to add the {@link #readValue(boolean) values}.
+   */
+  void readArray(Collection<Object> array);
+
+  /**
    * Generic method to read and unmarshall a value.<br>
    * <b>ATTENTION:</b><br>
    * This generic method only exists as convenience method for the {@code readValueAs*} methods. It therefore only
@@ -46,7 +87,7 @@ public interface StructuredReader {
    *
    * @param <V> type of the value to read.
    * @param type {@link Class} reflecting the value to read.
-   * @return the unmarsahlled value.
+   * @return the unmarsahlled value. May be {@code null}.
    */
   default <V> V readValue(Class<V> type) {
 
@@ -86,6 +127,8 @@ public interface StructuredReader {
       value = readValueAsOffsetDateTime();
     } else if (OffsetTime.class.equals(type)) {
       value = readValueAsOffsetTime();
+    } else if (Object.class.equals(type)) {
+      value = readValue();
     } else {
       throw new IllegalArgumentException("Unsupported value type " + type);
     }
@@ -195,6 +238,16 @@ public interface StructuredReader {
   OffsetTime readValueAsOffsetTime();
 
   /**
+   * Skips the current value. Should be called after {@link #readName()}.
+   * <ul>
+   * <li>If currently at {@link #readStartObject() start of object}, skip that entire object.</li>
+   * <li>If currently at {@link #readStartArray() start of array}, skip the entire array.</li>
+   * <li>If currently at a {@link #readValue(Class) single value}, skip that value.</li>
+   * </ul>
+   */
+  void skipValue();
+
+  /**
    * @return {@code true} if the end of an {@link #readStartArray() array} or {@link #readStartObject() object} has been
    *         reached.
    */
@@ -204,5 +257,111 @@ public interface StructuredReader {
    * @return {@code true} if all data has been read and the end of the stream has been reached, {@code false} otherwise.
    */
   boolean isDone();
+
+  /**
+   * @return the current state of this reader.
+   */
+  State getState();
+
+  /**
+   * Proceeds to the next {@link State} skipping the current information.
+   *
+   * @return the new {@link State}.
+   */
+  State next();
+
+  @Override
+  void close();
+
+  /**
+   * Enum with the possible states of a {@link StructuredReader}.
+   *
+   * @see StructuredReader#getState()
+   */
+  public enum State {
+
+    /**
+     * Start of an array.
+     *
+     * @see StructuredReader#readStartArray()
+     */
+    START_ARRAY,
+
+    /**
+     * Start of an object.
+     *
+     * @see StructuredReader#readStartObject()
+     */
+    START_OBJECT,
+
+    /**
+     * A regular value.
+     *
+     * @see StructuredReader#readValue()
+     */
+    VALUE,
+
+    /**
+     * Name of a property.
+     *
+     * @see StructuredReader#readName()
+     */
+    NAME,
+
+    /**
+     * End of an array.
+     *
+     * @see StructuredReader#readEnd()
+     * @see StructuredReader#readStartArray()
+     */
+    END_ARRAY,
+
+    /**
+     * End of an object.
+     *
+     * @see StructuredReader#readEnd()
+     * @see StructuredReader#readStartObject()
+     */
+    END_OBJECT,
+
+    /**
+     * End of data.
+     *
+     * @see StructuredReader#isDone()
+     */
+    DONE;
+
+    /**
+     * @return {@code true} if a start {@link State} such as {@link #START_ARRAY} or {@link #START_OBJECT},
+     *         {@code false} otherwise.
+     */
+    public boolean isStart() {
+
+      switch (this) {
+        case START_ARRAY:
+        case START_OBJECT:
+          return true;
+        default:
+          return false;
+      }
+    }
+
+    /**
+     * @return {@code true} if an end {@link State} such as {@link #END_ARRAY} or {@link #END_OBJECT}, {@code false}
+     *         otherwise.
+     */
+    public boolean isEnd() {
+
+      switch (this) {
+        case END_ARRAY:
+        case END_OBJECT:
+        case DONE:
+          return true;
+        default:
+          return false;
+      }
+    }
+
+  }
 
 }

@@ -3,6 +3,11 @@
 package net.sf.mmm.marshall.jsonp.impl;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import javax.json.stream.JsonParser;
 import javax.json.stream.JsonParser.Event;
@@ -19,7 +24,7 @@ import net.sf.mmm.marshall.StructuredReader;
  */
 public class JsonReader extends AbstractStructuredReader {
 
-  private final JsonParser json;
+  private JsonParser json;
 
   private Event event;
 
@@ -32,7 +37,7 @@ public class JsonReader extends AbstractStructuredReader {
 
     super();
     this.json = json;
-    this.event = json.next();
+    next();
   }
 
   private void expect(Event expected) {
@@ -42,14 +47,40 @@ public class JsonReader extends AbstractStructuredReader {
     }
   }
 
-  private void next() {
+  @Override
+  public State next() {
 
-    assert (this.event != null);
     if (this.json.hasNext()) {
       this.event = this.json.next();
+      this.state = convertEvent(this.event);
     } else {
       this.event = null;
+      this.state = State.DONE;
     }
+    return this.state;
+  }
+
+  private State convertEvent(Event e) {
+
+    switch (e) {
+      case KEY_NAME:
+        return State.NAME;
+      case START_ARRAY:
+        return State.START_ARRAY;
+      case START_OBJECT:
+        return State.START_OBJECT;
+      case END_ARRAY:
+        return State.END_ARRAY;
+      case END_OBJECT:
+        return State.END_OBJECT;
+      case VALUE_NULL:
+      case VALUE_FALSE:
+      case VALUE_TRUE:
+      case VALUE_NUMBER:
+      case VALUE_STRING:
+        return State.VALUE;
+    }
+    return null;
   }
 
   @Override
@@ -79,6 +110,70 @@ public class JsonReader extends AbstractStructuredReader {
       return true;
     }
     return false;
+  }
+
+  @Override
+  public Object readValue(boolean recursive) {
+
+    if (this.event == Event.VALUE_NULL) {
+      next();
+      return null;
+    } else if (this.event == Event.VALUE_TRUE) {
+      next();
+      return Boolean.TRUE;
+    } else if (this.event == Event.VALUE_FALSE) {
+      next();
+      return Boolean.FALSE;
+    } else if (this.event == Event.VALUE_NUMBER) {
+      BigDecimal value = this.json.getBigDecimal();
+      next();
+      return value;
+    } else if (this.event == Event.VALUE_STRING) {
+      String value = this.json.getString();
+      next();
+      return value;
+    } else if (recursive) {
+      if (this.event == Event.START_ARRAY) {
+        next();
+        List<Object> array = new ArrayList<>();
+        readArray(array);
+        return array;
+      } else if (this.event == Event.START_OBJECT) {
+        next();
+        Map<String, Object> map = new HashMap<>();
+        readObject(map);
+        return map;
+      } else {
+        throw invalidJson();
+      }
+    } else {
+      throw invalidJson();
+    }
+  }
+
+  @Override
+  public void readObject(Map<String, Object> map) {
+
+    while (this.event != Event.END_OBJECT) {
+      String key = readName();
+      Object value = readValue(true);
+      map.put(key, value);
+    }
+  }
+
+  @Override
+  public void readArray(Collection<Object> array) {
+
+    while (this.event != Event.END_ARRAY) {
+      Object value = readValue(true);
+      array.add(value);
+    }
+    next();
+  }
+
+  private RuntimeException invalidJson() {
+
+    throw new IllegalStateException("Invalid JSON!");
   }
 
   @Override
@@ -114,7 +209,9 @@ public class JsonReader extends AbstractStructuredReader {
       next();
       return null;
     }
-    expect(Event.VALUE_NUMBER);
+    if ((this.event == Event.VALUE_TRUE) || (this.event == Event.VALUE_FALSE)) {
+      throw new IllegalStateException("Expecting number but found boolean.");
+    }
     String string = this.json.getString();
     next();
     return string;
@@ -140,8 +237,7 @@ public class JsonReader extends AbstractStructuredReader {
       next();
       return null;
     }
-    expect(Event.VALUE_NUMBER);
-    Long value = Long.valueOf(this.json.getLong());
+    Long value = Long.valueOf(this.json.getString());
     next();
     return value;
   }
@@ -153,7 +249,7 @@ public class JsonReader extends AbstractStructuredReader {
       next();
       return null;
     }
-    BigDecimal value = this.json.getBigDecimal();
+    BigDecimal value = new BigDecimal(this.json.getString());
     next();
     return value;
   }
@@ -169,9 +265,53 @@ public class JsonReader extends AbstractStructuredReader {
   }
 
   @Override
+  public void skipValue() {
+
+    skipValue(this.event);
+    next();
+  }
+
+  private void skipValue(Event e) {
+
+    switch (e) {
+      case VALUE_FALSE:
+      case VALUE_NULL:
+      case VALUE_NUMBER:
+      case VALUE_STRING:
+      case VALUE_TRUE:
+        break;
+      case START_ARRAY:
+        this.event = this.json.next();
+        while (this.event != Event.END_ARRAY) {
+          skipValue();
+        }
+        break;
+      case START_OBJECT:
+        this.event = this.json.next();
+        while (this.event != Event.END_OBJECT) {
+          expect(Event.KEY_NAME);
+          next();
+          skipValue();
+        }
+        break;
+      default:
+        throw new IllegalStateException("Unhandled event: " + e);
+    }
+  }
+
+  @Override
   public boolean isDone() {
 
     return (this.event == null);
+  }
+
+  @Override
+  public void close() {
+
+    if (this.json != null) {
+      this.json.close();
+      this.json = null;
+    }
   }
 
 }

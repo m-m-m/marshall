@@ -25,6 +25,11 @@ public abstract class AbstractStructuredReader implements StructuredReader {
   protected String name;
 
   /**
+   * @see #getState()
+   */
+  protected State state;
+
+  /**
    * @see #readValueAsString()
    * @return the value as {@link String} but assuring it as number.
    */
@@ -33,28 +38,20 @@ public abstract class AbstractStructuredReader implements StructuredReader {
     return readValueAsString();
   }
 
-  private RuntimeException handleValueParseError(String value, Class<?> typeClass, Throwable e) {
+  /**
+   * @param value the value that was read.
+   * @param typeClass the expected type.
+   * @param e a potential error that occurred or {@code null} if no cause.
+   * @return nothing. Will always throw {@link IllegalStateException}. However to signal the compiler that the program
+   *         flow will exit with the call of this function you may prefix it with "{@code throw}".
+   */
+  protected RuntimeException handleValueParseError(String value, Class<?> typeClass, Throwable e) {
 
     String message = "Failed to parse value '" + value + "' as " + typeClass.getSimpleName();
     if (this.name != null) {
       message = message + " for property " + this.name;
     }
-    return new IllegalStateException(message, e);
-  }
-
-  @Override
-  public Boolean readValueAsBoolean() {
-
-    String value = readValueAsString();
-    if (value == null) {
-      return null;
-    } else if ("true".equalsIgnoreCase(value)) {
-      return Boolean.TRUE;
-    } else if ("false".equalsIgnoreCase(value)) {
-      return Boolean.FALSE;
-    } else {
-      throw handleValueParseError(value, Boolean.class, null);
-    }
+    throw new IllegalStateException(message, e);
   }
 
   @Override
@@ -144,7 +141,7 @@ public abstract class AbstractStructuredReader implements StructuredReader {
   @Override
   public BigInteger readValueAsBigInteger() {
 
-    String value = readValueAsString();
+    String value = readValueAsNumberString();
     if (value == null) {
       return null;
     }
@@ -158,7 +155,7 @@ public abstract class AbstractStructuredReader implements StructuredReader {
   @Override
   public BigDecimal readValueAsBigDecimal() {
 
-    String value = readValueAsString();
+    String value = readValueAsNumberString();
     if (value == null) {
       return null;
     }
@@ -265,6 +262,18 @@ public abstract class AbstractStructuredReader implements StructuredReader {
     } catch (RuntimeException e) {
       throw handleValueParseError(value, OffsetDateTime.class, e);
     }
+  }
+
+  @Override
+  public State getState() {
+
+    return this.state;
+  }
+
+  @Override
+  public boolean isDone() {
+
+    return (this.state == State.DONE);
   }
 
 }

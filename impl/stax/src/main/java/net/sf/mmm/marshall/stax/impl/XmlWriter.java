@@ -2,9 +2,6 @@
  * http://www.apache.org/licenses/LICENSE-2.0 */
 package net.sf.mmm.marshall.stax.impl;
 
-import java.math.BigDecimal;
-import java.math.BigInteger;
-
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
@@ -29,7 +26,11 @@ public class XmlWriter extends AbstractStructuredWriter {
 
   static final String TAG_ITEM = "i";
 
-  static final String ART_VALUE = "v";
+  static final String ART_STRING_VALUE = "s";
+
+  static final String ART_BOOLEAN_VALUE = "b";
+
+  static final String ART_NUMBER_VALUE = "n";
 
   private XMLStreamWriter xml;
 
@@ -55,12 +56,16 @@ public class XmlWriter extends AbstractStructuredWriter {
   }
 
   @Override
-  public void close() throws Exception {
+  public void close() {
 
-    if (this.xml != null) {
-      this.xml.writeEndDocument();
-      this.xml.close();
-      this.xml = null;
+    try {
+      if (this.xml != null) {
+        this.xml.writeEndDocument();
+        this.xml.close();
+        this.xml = null;
+      }
+    } catch (XMLStreamException e) {
+      throw new IllegalStateException(e);
     }
   }
 
@@ -97,7 +102,8 @@ public class XmlWriter extends AbstractStructuredWriter {
   private String requireName() {
 
     if (this.name == null) {
-      throw new IllegalStateException("writeName has to be called after writeEnd before new start can be written");
+      return TAG_ITEM;
+      // throw new IllegalStateException("writeName has to be called after writeEnd before new start can be written");
     }
     return this.name;
   }
@@ -115,11 +121,36 @@ public class XmlWriter extends AbstractStructuredWriter {
   @Override
   public void writeValueAsNull() {
 
-    writeValueAsString(null);
+    writeValue(null, null);
   }
 
   @Override
   public void writeValueAsString(String value) {
+
+    writeValue(value, ART_STRING_VALUE);
+  }
+
+  @Override
+  public void writeValueAsBoolean(Boolean value) {
+
+    if (value == null) {
+      writeValueAsNull();
+    } else {
+      writeValue(value.toString(), ART_BOOLEAN_VALUE);
+    }
+  }
+
+  @Override
+  public void writeValueAsNumber(Number value) {
+
+    if (value == null) {
+      writeValueAsNull();
+    } else {
+      writeValue(value.toString(), ART_NUMBER_VALUE);
+    }
+  }
+
+  private void writeValue(String value, String attribute) {
 
     if ((value == null) && !this.writeNullValues) {
       return;
@@ -131,33 +162,12 @@ public class XmlWriter extends AbstractStructuredWriter {
       }
       this.xml.writeEmptyElement(tag);
       if (value != null) {
-        this.xml.writeAttribute(ART_VALUE, value);
+        this.xml.writeAttribute(attribute, value);
       }
       this.name = null;
     } catch (XMLStreamException e) {
       throw new IllegalStateException(e);
     }
-  }
-
-  private void write(Object value) {
-
-    if (value == null) {
-      writeValueAsString(null);
-    } else {
-      writeValueAsString(value.toString());
-    }
-  }
-
-  @Override
-  public void writeValueAsBigDecimal(BigDecimal value) {
-
-    write(value);
-  }
-
-  @Override
-  public void writeValueAsBigInteger(BigInteger value) {
-
-    write(value);
   }
 
 }

@@ -19,6 +19,10 @@ import net.sf.mmm.marshall.StructuredWriter;
  */
 public class JsonWriter extends AbstractStructuredWriter {
 
+  private static final long JS_NUMBER_MAX = (2L << 52) - 1;
+
+  private static final long JS_NUMBER_MIN = -JS_NUMBER_MAX;
+
   private final JsonGenerator json;
 
   /**
@@ -104,11 +108,8 @@ public class JsonWriter extends AbstractStructuredWriter {
 
     if (value == null) {
       writeValueAsNull();
-    } else if (this.name == null) {
-      this.json.write(value);
     } else {
-      this.json.write(this.name, value);
-      this.name = null;
+      writeValueAsString(value.toString());
     }
   }
 
@@ -117,11 +118,8 @@ public class JsonWriter extends AbstractStructuredWriter {
 
     if (value == null) {
       writeValueAsNull();
-    } else if (this.name == null) {
-      this.json.write(value);
     } else {
-      this.json.write(this.name, value);
-      this.name = null;
+      writeValueAsString(value.toString());
     }
   }
 
@@ -131,11 +129,16 @@ public class JsonWriter extends AbstractStructuredWriter {
     if (value == null) {
       writeValueAsNull();
     } else {
-      if (this.name == null) {
-        this.json.write(value.longValue());
+      long l = value.longValue();
+      if ((l >= JS_NUMBER_MIN) && (l <= JS_NUMBER_MAX)) {
+        if (this.name == null) {
+          this.json.write(l);
+        } else {
+          this.json.write(this.name, l);
+          this.name = null;
+        }
       } else {
-        this.json.write(this.name, value.longValue());
-        this.name = null;
+        writeValueAsString(value.toString());
       }
     }
   }
@@ -145,13 +148,11 @@ public class JsonWriter extends AbstractStructuredWriter {
 
     if (value == null) {
       writeValueAsNull();
+    } else if (this.name == null) {
+      this.json.write(value.intValue());
     } else {
-      if (this.name == null) {
-        this.json.write(value.intValue());
-      } else {
-        this.json.write(this.name, value.intValue());
-        this.name = null;
-      }
+      this.json.write(this.name, value.intValue());
+      this.name = null;
     }
   }
 
@@ -160,13 +161,11 @@ public class JsonWriter extends AbstractStructuredWriter {
 
     if (value == null) {
       writeValueAsNull();
+    } else if (this.name == null) {
+      this.json.write(value.doubleValue());
     } else {
-      if (this.name == null) {
-        this.json.write(value.doubleValue());
-      } else {
-        this.json.write(this.name, value.doubleValue());
-        this.name = null;
-      }
+      this.json.write(this.name, value.doubleValue());
+      this.name = null;
     }
   }
 
@@ -181,13 +180,11 @@ public class JsonWriter extends AbstractStructuredWriter {
 
     if (value == null) {
       writeValueAsNull();
+    } else if (this.name == null) {
+      this.json.write(value.intValue());
     } else {
-      if (this.name == null) {
-        this.json.write(value.intValue());
-      } else {
-        this.json.write(this.name, value.intValue());
-        this.name = null;
-      }
+      this.json.write(this.name, value.intValue());
+      this.name = null;
     }
   }
 
@@ -196,13 +193,11 @@ public class JsonWriter extends AbstractStructuredWriter {
 
     if (value == null) {
       writeValueAsNull();
+    } else if (this.name == null) {
+      this.json.write(value.intValue());
     } else {
-      if (this.name == null) {
-        this.json.write(value.intValue());
-      } else {
-        this.json.write(this.name, value.intValue());
-        this.name = null;
-      }
+      this.json.write(this.name, value.intValue());
+      this.name = null;
     }
   }
 
