@@ -3,11 +3,6 @@
 package net.sf.mmm.marshall.jsonp.impl;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 import javax.json.stream.JsonParser;
 import javax.json.stream.JsonParser.Event;
@@ -93,27 +88,7 @@ public class JsonReader extends AbstractStructuredReader {
   }
 
   @Override
-  public boolean readStartObject() {
-
-    if (this.event == Event.START_OBJECT) {
-      next();
-      return true;
-    }
-    return false;
-  }
-
-  @Override
-  public boolean readStartArray() {
-
-    if (this.event == Event.START_ARRAY) {
-      next();
-      return true;
-    }
-    return false;
-  }
-
-  @Override
-  public Object readValue(boolean recursive) {
+  public Object readValue() {
 
     if (this.event == Event.VALUE_NULL) {
       next();
@@ -132,48 +107,10 @@ public class JsonReader extends AbstractStructuredReader {
       String value = this.json.getString();
       next();
       return value;
-    } else if (recursive) {
-      if (this.event == Event.START_ARRAY) {
-        next();
-        List<Object> array = new ArrayList<>();
-        readArray(array);
-        return array;
-      } else if (this.event == Event.START_OBJECT) {
-        next();
-        Map<String, Object> map = new HashMap<>();
-        readObject(map);
-        return map;
-      } else {
-        throw invalidJson();
-      }
     } else {
-      throw invalidJson();
+      expect(State.VALUE);
+      throw new IllegalStateException();
     }
-  }
-
-  @Override
-  public void readObject(Map<String, Object> map) {
-
-    while (this.event != Event.END_OBJECT) {
-      String key = readName();
-      Object value = readValue(true);
-      map.put(key, value);
-    }
-  }
-
-  @Override
-  public void readArray(Collection<Object> array) {
-
-    while (this.event != Event.END_ARRAY) {
-      Object value = readValue(true);
-      array.add(value);
-    }
-    next();
-  }
-
-  private RuntimeException invalidJson() {
-
-    throw new IllegalStateException("Invalid JSON!");
   }
 
   @Override
@@ -252,57 +189,6 @@ public class JsonReader extends AbstractStructuredReader {
     BigDecimal value = new BigDecimal(this.json.getString());
     next();
     return value;
-  }
-
-  @Override
-  public boolean readEnd() {
-
-    if ((this.event == Event.END_ARRAY) || (this.event == Event.END_OBJECT)) {
-      next();
-      return true;
-    }
-    return false;
-  }
-
-  @Override
-  public void skipValue() {
-
-    skipValue(this.event);
-    next();
-  }
-
-  private void skipValue(Event e) {
-
-    switch (e) {
-      case VALUE_FALSE:
-      case VALUE_NULL:
-      case VALUE_NUMBER:
-      case VALUE_STRING:
-      case VALUE_TRUE:
-        break;
-      case START_ARRAY:
-        this.event = this.json.next();
-        while (this.event != Event.END_ARRAY) {
-          skipValue();
-        }
-        break;
-      case START_OBJECT:
-        this.event = this.json.next();
-        while (this.event != Event.END_OBJECT) {
-          expect(Event.KEY_NAME);
-          next();
-          skipValue();
-        }
-        break;
-      default:
-        throw new IllegalStateException("Unhandled event: " + e);
-    }
-  }
-
-  @Override
-  public boolean isDone() {
-
-    return (this.event == null);
   }
 
   @Override

@@ -11,6 +11,10 @@ import java.time.LocalTime;
 import java.time.OffsetDateTime;
 import java.time.OffsetTime;
 import java.time.ZonedDateTime;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Abstract base implementation of {@link StructuredReader}.
@@ -29,6 +33,55 @@ public abstract class AbstractStructuredReader implements StructuredReader {
    */
   protected State state;
 
+  private boolean done;
+
+  @Override
+  public State getState() {
+
+    return this.state;
+  }
+
+  @Override
+  public boolean readStartObject() {
+
+    if (this.state == State.START_OBJECT) {
+      next();
+      return true;
+    }
+    return false;
+  }
+
+  @Override
+  public boolean readStartArray() {
+
+    if (this.state == State.START_ARRAY) {
+      next();
+      return true;
+    }
+    return false;
+  }
+
+  @Override
+  public boolean readEnd() {
+
+    if (this.state == State.DONE) {
+      boolean result = !this.done;
+      this.done = true;
+      return result;
+    }
+    if ((this.state == State.END_ARRAY) || (this.state == State.END_OBJECT)) {
+      next();
+      return true;
+    }
+    return false;
+  }
+
+  @Override
+  public boolean isDone() {
+
+    return (this.state == State.DONE);
+  }
+
   /**
    * @see #readValueAsString()
    * @return the value as {@link String} but assuring it as number.
@@ -36,6 +89,47 @@ public abstract class AbstractStructuredReader implements StructuredReader {
   protected String readValueAsNumberString() {
 
     return readValueAsString();
+  }
+
+  /**
+   * Verifies that the {@link #getState() current state} is the same as the given states.
+   *
+   * @param expected first accepted state.
+   */
+  protected void expect(State expected) {
+
+    if (this.state != expected) {
+      throw new IllegalStateException("Expecting event " + expected + " but found " + this.state + ".");
+    }
+  }
+
+  /**
+   * Verifies that the {@link #getState() current state} is one of the given states.
+   *
+   * @param expected first accepted state.
+   * @param expected2 second accepted state.
+   */
+  protected void expect(State expected, State expected2) {
+
+    if ((this.state != expected) && (this.state != expected2)) {
+      throw new IllegalStateException(
+          "Expecting event " + expected + " or " + expected2 + " but found " + this.state + ".");
+    }
+  }
+
+  /**
+   * Verifies that the {@link #getState() current state} is one of the given states.
+   *
+   * @param expected first accepted state.
+   * @param expected2 second accepted state.
+   * @param expected3 third accepted state.
+   */
+  protected void expect(State expected, State expected2, State expected3) {
+
+    if ((this.state != expected) && (this.state != expected2) && (this.state != expected3)) {
+      throw new IllegalStateException(
+          "Expecting event " + expected + ", " + expected2 + ",  or " + expected3 + " but found " + this.state + ".");
+    }
   }
 
   /**
@@ -265,15 +359,81 @@ public abstract class AbstractStructuredReader implements StructuredReader {
   }
 
   @Override
-  public State getState() {
+  public Object readValue(boolean recursive) {
 
-    return this.state;
+    Object value;
+    if ((this.state == State.VALUE) || !recursive) {
+      return readValue();
+    } else {
+      if (this.state == State.START_ARRAY) {
+        Collection<Object> array = new ArrayList<>();
+        readArray(array);
+        value = array;
+      } else if (this.state == State.START_OBJECT) {
+        Map<String, Object> map = new HashMap<>();
+        readObject(map);
+        value = map;
+      } else {
+        expect(State.VALUE, State.START_ARRAY, State.START_OBJECT);
+        throw new IllegalStateException();
+      }
+    }
+    return value;
   }
 
   @Override
-  public boolean isDone() {
+  public void readObject(Map<String, Object> map) {
 
-    return (this.state == State.DONE);
+    expect(State.START_OBJECT);
+    next();
+    while (this.state != State.END_OBJECT) {
+      String key = readName();
+      Object value = readValue(true);
+      map.put(key, value);
+    }
+    next();
+  }
+
+  @Override
+  public void readArray(Collection<Object> array) {
+
+    expect(State.START_ARRAY);
+    next();
+    while (this.state != State.END_ARRAY) {
+      Object value = readValue(true);
+      array.add(value);
+    }
+    next();
+  }
+
+  @Override
+  public void skipValue() {
+
+    expect(State.VALUE, State.START_ARRAY, State.START_OBJECT);
+    if (this.state == State.VALUE) {
+      next();
+    } else {
+      int count = 1;
+      next();
+      while (count > 0) {
+        switch (this.state) {
+          case START_ARRAY:
+          case START_OBJECT:
+            count++;
+            break;
+          case END_ARRAY:
+          case END_OBJECT:
+            count--;
+            break;
+          case VALUE:
+          case NAME:
+            break;
+          case DONE:
+            throw new IllegalStateException();
+        }
+        next();
+      }
+    }
   }
 
 }

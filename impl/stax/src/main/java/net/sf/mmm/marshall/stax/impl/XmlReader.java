@@ -4,10 +4,6 @@ package net.sf.mmm.marshall.stax.impl;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
 
 import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamException;
@@ -25,11 +21,7 @@ public class XmlReader extends AbstractStructuredReader {
 
   private XMLStreamReader xml;
 
-  private State previousState;
-
   private long arrayStack;
-
-  private boolean done;
 
   /**
    * The constructor.
@@ -52,29 +44,6 @@ public class XmlReader extends AbstractStructuredReader {
     }
   }
 
-  private void expect(State expected) {
-
-    if (this.state != expected) {
-      throw new IllegalStateException("Expecting event " + expected + " but found " + this.state + ".");
-    }
-  }
-
-  private void expect(State expected, State expected2) {
-
-    if ((this.state != expected) && (this.state != expected2)) {
-      throw new IllegalStateException(
-          "Expecting event " + expected + " or " + expected2 + " but found " + this.state + ".");
-    }
-  }
-
-  private void expect(State expected, State expected2, State expected3) {
-
-    if ((this.state != expected) && (this.state != expected2) && (this.state != expected3)) {
-      throw new IllegalStateException(
-          "Expecting event " + expected + ", " + expected2 + ",  or " + expected3 + " but found " + this.state + ".");
-    }
-  }
-
   @Override
   public State next() {
 
@@ -84,7 +53,6 @@ public class XmlReader extends AbstractStructuredReader {
       this.state = nextValue();
     } else {
       try {
-        this.previousState = this.state;
         if (this.xml.hasNext()) {
           State e = null;
           while (e == null) {
@@ -93,7 +61,6 @@ public class XmlReader extends AbstractStructuredReader {
           this.state = e;
         } else {
           this.state = State.DONE;
-          this.done = true;
         }
       } catch (XMLStreamException e) {
         throw new IllegalStateException(e);
@@ -167,27 +134,7 @@ public class XmlReader extends AbstractStructuredReader {
   }
 
   @Override
-  public boolean readStartObject() {
-
-    if (this.state == State.START_OBJECT) {
-      next();
-      return true;
-    }
-    return false;
-  }
-
-  @Override
-  public boolean readStartArray() {
-
-    if (this.state == State.START_ARRAY) {
-      next();
-      return true;
-    }
-    return false;
-  }
-
-  @Override
-  public Object readValue(boolean recursive) {
+  public Object readValue() {
 
     Object value;
     if (this.state == State.VALUE) {
@@ -209,53 +156,11 @@ public class XmlReader extends AbstractStructuredReader {
         }
       }
       endValue();
-    } else if (recursive) {
-      if (this.state == State.START_ARRAY) {
-        next();
-        Collection<Object> array = new ArrayList<>();
-        readArray(array);
-        value = array;
-      } else if (this.state == State.START_OBJECT) {
-        next();
-        Map<String, Object> map = new HashMap<>();
-        readObject(map);
-        value = map;
-      } else {
-        expect(State.VALUE, State.START_ARRAY, State.START_OBJECT);
-        throw invalidXml();
-      }
     } else {
       expect(State.VALUE);
       throw invalidXml();
     }
     return value;
-  }
-
-  @Override
-  public void readObject(Map<String, Object> map) {
-
-    if (this.previousState != State.START_OBJECT) {
-      invalidXml();
-    }
-    while (this.state != State.END_OBJECT) {
-      String key = readName();
-      Object value = readValue(true);
-      map.put(key, value);
-    }
-    next();
-  }
-
-  @Override
-  public void readArray(Collection<Object> array) {
-
-    if (this.previousState != State.START_ARRAY) {
-      invalidXml();
-    }
-    while (this.state != State.END_ARRAY) {
-      Object value = readValue(true);
-      array.add(value);
-    }
-    next();
   }
 
   @Override
@@ -322,51 +227,6 @@ public class XmlReader extends AbstractStructuredReader {
     }
     endValue();
     return value;
-  }
-
-  @Override
-  public boolean readEnd() {
-
-    if (this.state == State.DONE) {
-      boolean result = !this.done;
-      this.done = true;
-      return result;
-    }
-    if ((this.state == State.END_ARRAY) || (this.state == State.END_OBJECT)) {
-      next();
-      return true;
-    }
-    return false;
-  }
-
-  @Override
-  public void skipValue() {
-
-    expect(State.VALUE, State.START_ARRAY, State.START_OBJECT);
-    if (this.state == State.VALUE) {
-      next();
-    } else {
-      int count = 1;
-      next();
-      while (count > 0) {
-        switch (this.state) {
-          case START_ARRAY:
-          case START_OBJECT:
-            count++;
-            break;
-          case END_ARRAY:
-          case END_OBJECT:
-            count--;
-            break;
-          case VALUE:
-          case NAME:
-            break;
-          case DONE:
-            invalidXml();
-        }
-        next();
-      }
-    }
   }
 
   private RuntimeException invalidXml() {

@@ -45,10 +45,7 @@ public interface StructuredReader extends AutoCloseable {
    *
    * @return the unmarsahlled value. May be {@code null}.
    */
-  default Object readValue() {
-
-    return readValue(false);
-  }
+  Object readValue();
 
   /**
    * Generic method to read and unmarshall a value supporting the build in types {@link Boolean}, {@link String}, and
@@ -62,8 +59,9 @@ public interface StructuredReader extends AutoCloseable {
   Object readValue(boolean recursive);
 
   /**
-   * This method may be called immediately after {@link #readStartObject()} in case {@code true} was returned to read
-   * the object into the given {@link Map}.
+   * This method may be called if the {@link #getState() current state} is {@link State#START_OBJECT} to read the object
+   * into the given {@link Map}. After the call of this method the {@link #getState() state} will point to the
+   * {@link #next() next} one after the corresponding {@link State#END_OBJECT}.
    *
    * @param map the {@link Map} where to add the properties. Unlike {@link #readValue(boolean)} this allows you to
    *        choose the {@link Map} implementation.
@@ -71,8 +69,9 @@ public interface StructuredReader extends AutoCloseable {
   void readObject(Map<String, Object> map);
 
   /**
-   * This method may be called immediately after {@link #readStartArray()} in case {@code true} was returned to read the
-   * array into the given {@link Collection}.
+   * This method may be called called if the {@link #getState() current state} is {@link State#START_ARRAY} to read the
+   * array into the given {@link Collection}. After the call of this method the {@link #getState() state} will point to
+   * the {@link #next() next} one after the corresponding {@link State#END_ARRAY}.
    *
    * @param array the {@link Collection} where to add the {@link #readValue(boolean) values}.
    */
