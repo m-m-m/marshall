@@ -10,5 +10,5 @@ image:https://travis-ci.org/m-m-m/marshall.svg?branch=master["build-status",link
 
 The `mmm-marshall` is a simple library to marshall (serialize) and unmarshall (deserialize) data from/to structured formats such as JSON or XML.
 
-* https://m-m-m.github.io/maven/apidocs/net/sf/mmm/marshall/api/package-summary.html#package.description[Marshall API]
+* https://m-m-m.github.io/maven/apidocs/net/sf/mmm/marshall/package-summary.html#package.description[Marshall API]
 * https://m-m-m.github.io/maven/apidocs/[and much more... ]
