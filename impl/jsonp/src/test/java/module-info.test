@@ -1,2 +1,0 @@
---add-reads
-  net.sf.mmm.marshall.impl.jsonp=org.junit.jupiter.api
