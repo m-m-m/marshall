@@ -12,3 +12,30 @@ The `mmm-marshall` is a simple library to marshall (serialize) and unmarshall (d
 
 * https://m-m-m.github.io/maven/apidocs/net/sf/mmm/marshall/package-summary.html#package.description[Marshall API]
 * https://m-m-m.github.io/maven/apidocs/[and much more... ]
+
+=== Usage
+
+Maven Dependency:
+```xml
+<dependency>
+  <groupId>io.github.m-m-m</groupId>
+  <artifactId>mmm-marshall</artifactId>
+</dependency>
+<!-- For JSON support -->
+<dependency>
+  <groupId>io.github.m-m-m</groupId>
+  <artifactId>mmm-marshall-jsonp</artifactId>
+</dependency>
+<!-- For XML support -->
+<dependency>
+  <groupId>io.github.m-m-m</groupId>
+  <artifactId>mmm-marshall-stax</artifactId>
+</dependency>
+```
+
+Module Dependency:
+```java
+  requires transitive io.github.mmm.marshall;
+  requires static io.github.mmm.marshall.jsonp; // for JSON
+  requires static io.github.mmm.marshall.stax; // for XML
+```
