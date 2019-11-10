@@ -2,6 +2,8 @@ image:https://raw.github.com/m-m-m/mmm/master/src/site/resources/images/logo.png
 
 == mmm-marshall
 
+image:https://img.shields.io/github/license/m-m-m/marshall.svg?label=License["Apache License, Version 2.0",link=https://github.com/m-m-m/marshall/blob/master/LICENSE]
+image:https://img.shields.io/maven-central/v/io.github.m-m-m/mmm-marshall.svg?label=Maven%20Central["Maven Central",link=https://search.maven.org/search?q=g:io.github.m-m-m]
 image:https://travis-ci.org/m-m-m/marshall.svg?branch=master["build-status",link="https://travis-ci.org/m-m-m/marshall"]
 
 The module `mmm-marshall` allows to marshall (serialize) and unmarshall (deserialize) data from/to structured formats such as JSON or XML.
