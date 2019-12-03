@@ -2,12 +2,12 @@
 <settings>
   <servers>
     <server>
-      <id>sonatype-nexus-staging</id>
+      <id>deploy-releases</id>
       <username>${env.SONARTYPE_USERNAME}</username>
       <password>${env.SONARTYPE_PASSWORD}</password>
     </server>
     <server>
-      <id>sonatype-nexus-snapshots</id>
+      <id>deploy-snapshots</id>
       <username>${env.SONARTYPE_USERNAME}</username>
       <password>${env.SONARTYPE_PASSWORD}</password>
     </server>
@@ -19,14 +19,11 @@
       <activation>
         <activeByDefault>true</activeByDefault>
       </activation>
-      <properties>
-      </properties>
       <repositories>
        <repository>
-         <id>snapshots-repo</id>
-         <url>https://oss.sonatype.org/content/repositories/snapshots</url>
-         <releases><enabled>false</enabled></releases>
-         <snapshots><enabled>true</enabled></snapshots>
+         <id>ossrh</id>
+         <name>OSSRH Snapshots</name>
+         <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
        </repository>
      </repositories>
     </profile>
