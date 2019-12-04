@@ -6,8 +6,7 @@ env:
   - secure: CyuN5VyPatcixFtkEBJop5IW0FxMuGdVmp1GrU6VRGV2xPADmx1zH1ETzHX7FTxsG++y5M0rVJ//O8hUD7jc90IHJmNxdGJ7F2rICcOaVpLxbvrfsTP0s1bG1rnR+0Ucldvce2w12HptSZ/iYTGQPC1hdcLAv1+a87bfM9m2/eAOQ2cDBWLnBeYa+OWXj094BxhNxOn1VYi3Cze86ipq/thoSVej70IrsS7lDhOAoSREVznmNf0qrY28iHzJCJRkM4aYyXNm6SMS5snegD+h9JANwDNHLQlKYlpMW+903GfzyT/ZGYf3j1ZRuipEKGhfV5YnENgkbOJ6OkIl+WSNpIj86lzd1kuJSgRfR6ImHFoq/Z0XcenFwTbcshGX35pzOQblzpSW7P/JeIj+bit46sdYtLOeQS4Q83bMDi2Y029vK/ZH6qhBzSoCr/El6yspysAdLSf/0lRYm1znsRUz1uIVuskGcKMenkTgdW96BA0plckyk5oPoAnPjkCLjJKJr9ZxbNVUjqu5CG+CPVZKijQMfZO3VKIXz8cJTUc0UfVht2dkn2a2Uum0Z/UfMIGnJFjkb7X5Z47i3e+8CBKyeJdDocPmg6nk8Beb+G5FjT4qs5jngSRLhtQJFoOTcN3vfYv+Q32DJAElMm1L3E23UdNNli4WlXKYzP8CpdV3HwI=
 install: skip
 script: mvn --settings .mvn/settings.xml install
-after_script: '[[ $TRAVIS_BRANCH == "master" ]] && mvn --settings .mvn/settings.xml
-  deploy'
+after_script: '[[ $TRAVIS_BRANCH == "master" ]] && mvn --settings .mvn/settings.xml -DskipTests=true deploy'
 cache:
   directories: "$HOME/.m2"
 branches:
