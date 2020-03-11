@@ -3,18 +3,27 @@
 package io.github.mmm.marshall;
 
 /**
- * Interface for an object with read-access that can therefore be {@link #write(StructuredWriter) written} to structured
- * formats such as JSON or XmlFormat.
+ * Interface for an object that can {@link #write(StructuredWriter) write itself} to structured formats such as JSON or
+ * XML. The generic type is bound to {@link Object} since Java does not properly support {@literal <SELF>} leading to
+ * trouble in usage.
  *
  * @see UnmarshallableObject
  * @since 1.0.0
  */
-public interface MarshallableObject {
+public interface MarshallableObject extends Marshaller<Object> {
+
+  @Override
+  default void writeObject(StructuredWriter writer, Object object) {
+
+    if (object != this) {
+      throw new IllegalStateException();
+    }
+    write(writer);
+  }
 
   /**
-   * @param writer the {@link StructuredWriter} where to write the data of this object to. This process is also called
-   *        serialization or marshalling. Create via e.g. {@code JsonFormat.get().writer(writer)} or
-   *        {@code XmlFormat.get().writer(writer)}.
+   * @param writer the {@link StructuredWriter} where to marshall (serialize) the data of this object to.
+   * @see #writeObject(StructuredWriter, Object)
    */
   void write(StructuredWriter writer);
 

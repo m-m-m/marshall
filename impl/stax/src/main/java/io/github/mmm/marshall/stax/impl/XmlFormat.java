@@ -4,6 +4,8 @@ package io.github.mmm.marshall.stax.impl;
 
 import java.io.Reader;
 import java.io.Writer;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLOutputFactory;
@@ -46,6 +48,28 @@ public class XmlFormat implements StructuredFormat {
     super();
     this.readerFactory = readerFactory;
     this.writerFactory = writerFactory;
+  }
+
+  /**
+   * The constructor.
+   *
+   * @param configuration
+   */
+  public XmlFormat(Map<String, Object> configuration) {
+
+    super();
+    XMLInputFactory xmlReaderFactory = XMLInputFactory.newFactory();
+    XMLOutputFactory xmlWriterFactory = XMLOutputFactory.newFactory();
+    for (Entry<String, Object> entry : configuration.entrySet()) {
+      // TODO: normalize properties and only apply to reader/writer where suitable...
+      // TODO: maybe catch exception and ignore unsupported properties...
+      String name = entry.getKey();
+      Object value = entry.getValue();
+      xmlReaderFactory.setProperty(name, value);
+      xmlWriterFactory.setProperty(name, value);
+    }
+    this.readerFactory = xmlReaderFactory;
+    this.writerFactory = xmlWriterFactory;
   }
 
   @Override

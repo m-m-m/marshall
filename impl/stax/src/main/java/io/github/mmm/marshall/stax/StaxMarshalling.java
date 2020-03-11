@@ -2,6 +2,8 @@
  * http://www.apache.org/licenses/LICENSE-2.0 */
 package io.github.mmm.marshall.stax;
 
+import java.util.Map;
+
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLOutputFactory;
 
@@ -36,6 +38,15 @@ public final class StaxMarshalling {
   public static StructuredFormat of(XMLInputFactory readerFactory, XMLOutputFactory writerFactory) {
 
     return new XmlFormat(readerFactory, writerFactory);
+  }
+
+  /**
+   * @param configuration the configuration properties.
+   * @return a new instance of {@link StructuredFormat} for "JSON-style" XML based on StAX.
+   */
+  public static StructuredFormat of(Map<String, Object> configuration) {
+
+    return new XmlFormat(configuration);
   }
 
 }
