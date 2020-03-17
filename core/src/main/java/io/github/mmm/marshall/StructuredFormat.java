@@ -7,6 +7,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Reader;
+import java.io.StringReader;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.nio.charset.StandardCharsets;
@@ -20,17 +21,26 @@ public interface StructuredFormat {
 
   /**
    * @param reader the {@link Reader} pointing to the structured data to read and parse.
-   * @return the wrapped {@link StructuredReader}.
+   * @return the {@link StructuredReader}.
    */
   StructuredReader reader(Reader reader);
 
   /**
    * @param in the {@link InputStream} pointing to the structured data to read (in UTF-8) and parse.
-   * @return the wrapped {@link StructuredReader}.
+   * @return the {@link StructuredReader}.
    */
   default StructuredReader reader(InputStream in) {
 
     return reader(new InputStreamReader(in, StandardCharsets.UTF_8));
+  }
+
+  /**
+   * @param result the structured data as {@link String}.
+   * @return the {@link StructuredReader}.
+   */
+  default StructuredReader reader(String result) {
+
+    return reader(new StringReader(result));
   }
 
   /**
@@ -62,4 +72,5 @@ public interface StructuredFormat {
     object.write(structuredWriter);
     return writer.toString();
   }
+
 }

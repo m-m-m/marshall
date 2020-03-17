@@ -11,4 +11,11 @@
   <packaging>jar</packaging>
   <name>${project.artifactId}</name>
   <description>API for marshalling and unmarshalling data.</description>
+
+  <dependencies>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>mmm-base</artifactId>
+    </dependency>
+  </dependencies>
 </project>

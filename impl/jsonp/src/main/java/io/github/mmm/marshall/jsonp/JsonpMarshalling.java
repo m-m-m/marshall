@@ -7,6 +7,7 @@ import java.util.Map;
 import javax.json.stream.JsonGeneratorFactory;
 import javax.json.stream.JsonParserFactory;
 
+import io.github.mmm.marshall.MarshallingConfig;
 import io.github.mmm.marshall.StructuredFormat;
 import io.github.mmm.marshall.jsonp.impl.JsonFormat;
 
@@ -34,7 +35,7 @@ public final class JsonpMarshalling {
    * @param config the {@link Map} with the configuration properties for the JSON vendor implementation.
    * @return a new instance of {@link StructuredFormat} for JSON based on JSON-P.
    */
-  public static StructuredFormat of(Map<String, ?> config) {
+  public static StructuredFormat of(MarshallingConfig config) {
 
     return JsonFormat.of(config);
   }
@@ -42,11 +43,13 @@ public final class JsonpMarshalling {
   /**
    * @param readerFactory the {@link JsonParserFactory}.
    * @param writerFactory the {@link JsonGeneratorFactory}.
+   * @param config the {@link MarshallingConfig} for the JSON vendor implementation.
    * @return a new instance of {@link StructuredFormat} for JSON based on JSON-P.
    */
-  public static StructuredFormat of(JsonParserFactory readerFactory, JsonGeneratorFactory writerFactory) {
+  public static StructuredFormat of(JsonParserFactory readerFactory, JsonGeneratorFactory writerFactory,
+      MarshallingConfig config) {
 
-    return new JsonFormat(readerFactory, writerFactory);
+    return new JsonFormat(readerFactory, writerFactory, config);
   }
 
 }

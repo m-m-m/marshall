@@ -1,3 +1,4 @@
+
 /*
  * Copyright (c) The m-m-m Team, Licensed under the Apache License, Version 2.0
  * http://www.apache.org/licenses/LICENSE-2.0
@@ -11,6 +12,9 @@ import io.github.mmm.marshall.stax.XmlFormatProvider;
 module io.github.mmm.marshall.stax {
 
   requires transitive io.github.mmm.marshall;
+
+  // JPMS bug with transitive dependencies...
+  requires transitive io.github.mmm.base;
 
   requires transitive java.xml;
 

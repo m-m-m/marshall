@@ -10,6 +10,7 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
 import io.github.mmm.marshall.AbstractStructuredReader;
+import io.github.mmm.marshall.MarshallingConfig;
 import io.github.mmm.marshall.StructuredReader;
 
 /**
@@ -27,10 +28,11 @@ public class XmlReader extends AbstractStructuredReader {
    * The constructor.
    *
    * @param xml the {@link XMLStreamReader}.
+   * @param config the {@link MarshallingConfig}.
    */
-  public XmlReader(XMLStreamReader xml) {
+  public XmlReader(XMLStreamReader xml, MarshallingConfig config) {
 
-    super();
+    super(config);
     this.xml = xml;
     try {
       int e = xml.nextTag();

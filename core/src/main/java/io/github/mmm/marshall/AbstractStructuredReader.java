@@ -21,12 +21,26 @@ import java.util.Map;
  */
 public abstract class AbstractStructuredReader implements StructuredReader {
 
+  /** The {@link MarshallingConfig}. */
+  protected final MarshallingConfig config;
+
   /**
    * The current name.
    *
    * @see #readName()
    */
   protected String name;
+
+  /**
+   * The constructor.
+   *
+   * @param config the {@link MarshallingConfig}.
+   */
+  public AbstractStructuredReader(MarshallingConfig config) {
+
+    super();
+    this.config = config;
+  }
 
   /**
    * @see #getState()

@@ -8,6 +8,9 @@ import io.github.mmm.marshall.StructuredFormatProvider;
  * Provides the API for mashalling and unmarshalling data to structured formats.
  */
 module io.github.mmm.marshall {
+
+  requires transitive io.github.mmm.base;
+
   exports io.github.mmm.marshall;
 
   exports io.github.mmm.marshall.standard;

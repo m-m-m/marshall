@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.ServiceLoader;
 
+import io.github.mmm.base.exception.ObjectNotFoundException;
 import io.github.mmm.marshall.StructuredFormatFactory;
 import io.github.mmm.marshall.StructuredFormatProvider;
 
@@ -30,17 +31,14 @@ public class StructuredFormatFactoryImpl implements StructuredFormatFactory {
     this.providerMap = new HashMap<>();
     ServiceLoader<StructuredFormatProvider> serviceLoader = ServiceLoader.load(StructuredFormatProvider.class);
     for (StructuredFormatProvider provider : serviceLoader) {
-      registerProvider(provider);
+      register(provider);
     }
-    // if (this.providerMap.isEmpty()) {
-    // throw new IllegalStateException("No StructuredFormatProvider available!");
-    // }
   }
 
   /**
    * @param provider the {@link StructuredFormatProvider} to register.
    */
-  public void registerProvider(StructuredFormatProvider provider) {
+  public void register(StructuredFormatProvider provider) {
 
     StructuredFormatProvider duplicate = this.providerMap.put(provider.getName(), provider);
     if (duplicate != null) {
@@ -51,7 +49,11 @@ public class StructuredFormatFactoryImpl implements StructuredFormatFactory {
   @Override
   public StructuredFormatProvider getProvider(String format) {
 
-    return this.providerMap.get(format);
+    StructuredFormatProvider provider = this.providerMap.get(format);
+    if (provider == null) {
+      throw new ObjectNotFoundException("StructuredFormatProvider", format);
+    }
+    return provider;
   }
 
 }

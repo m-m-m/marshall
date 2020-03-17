@@ -2,8 +2,6 @@
  * http://www.apache.org/licenses/LICENSE-2.0 */
 package io.github.mmm.marshall;
 
-import java.util.Map;
-
 /**
  * Factory to create instances of {@link StructuredFormat}.
  *
@@ -23,9 +21,9 @@ public interface StructuredFormatProvider {
   StructuredFormat create();
 
   /**
-   * @param configuration the {@link Map} with the configuration to customize the format.
+   * @param config the {@link MarshallingConfig} to customize the format.
    * @return a new {@link StructuredFormat} for {@link #getName() this} format using the given {@code config}.
    */
-  StructuredFormat create(Map<String, Object> configuration);
+  StructuredFormat create(MarshallingConfig config);
 
 }

@@ -123,7 +123,9 @@ public interface StructuredWriter extends AutoCloseable {
   }
 
   /**
-   * Writes the value {@code null} (undefined).
+   * Writes the value {@code null} (undefined). Called from all other {@code writeValue*} methods in case {@code null}
+   * is provided as value. Via {@link MarshallingConfig#WRITE_NULL_VALUES} one can configure if {@code null} values
+   * should be written or omitted (to save bandwidth).
    *
    * @see #writeValue(Object)
    */

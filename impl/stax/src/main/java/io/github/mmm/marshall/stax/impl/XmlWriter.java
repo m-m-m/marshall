@@ -6,6 +6,7 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
 import io.github.mmm.marshall.AbstractStructuredWriter;
+import io.github.mmm.marshall.MarshallingConfig;
 import io.github.mmm.marshall.StructuredWriter;
 
 /**
@@ -34,16 +35,15 @@ public class XmlWriter extends AbstractStructuredWriter {
 
   private XMLStreamWriter xml;
 
-  private boolean writeNullValues;
-
   /**
    * The constructor.
    *
    * @param xml the {@link XMLStreamWriter} to wrap.
+   * @param config the {@link MarshallingConfig}.
    */
-  public XmlWriter(XMLStreamWriter xml) {
+  public XmlWriter(XMLStreamWriter xml, MarshallingConfig config) {
 
-    super();
+    super(config);
     this.xml = xml;
     try {
       this.xml.writeStartDocument();

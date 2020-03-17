@@ -8,6 +8,7 @@ import javax.json.stream.JsonParser;
 import javax.json.stream.JsonParser.Event;
 
 import io.github.mmm.marshall.AbstractStructuredReader;
+import io.github.mmm.marshall.MarshallingConfig;
 import io.github.mmm.marshall.StructuredReader;
 
 /**
@@ -27,10 +28,11 @@ public class JsonReader extends AbstractStructuredReader {
    * The constructor.
    *
    * @param json the {@link JsonReader}.
+   * @param config the {@link MarshallingConfig}.
    */
-  public JsonReader(JsonParser json) {
+  public JsonReader(JsonParser json, MarshallingConfig config) {
 
-    super();
+    super(config);
     this.json = json;
     next();
   }

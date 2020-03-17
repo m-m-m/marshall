@@ -2,8 +2,6 @@
  * http://www.apache.org/licenses/LICENSE-2.0 */
 package io.github.mmm.marshall;
 
-import java.util.Map;
-
 import io.github.mmm.marshall.impl.StructuredFormatFactoryImpl;
 
 /**
@@ -23,16 +21,11 @@ public interface StructuredFormatFactory {
   String NAME_YAML = "yml";
 
   /**
-   * {@link #create(String, Map) Configuration} {@link Map#containsKey(Object) key} for the indendation. Value is of
-   * type {@link String} such as " " or "\t".
-   */
-  String CONFIG_KEY_INDENDATION = "indendation";
-
-  /**
    * @param format the {@link StructuredFormatProvider#getName() format name}. E.g. {@link #NAME_JSON JSON},
    *        {@link #NAME_XML XML}, or {@link #NAME_YAML YAML}.
    * @return a new {@link StructuredFormatProvider} for the given {@code format} or {@code null} if no such provider is
    *         registered.
+   * @throws io.github.mmm.base.exception.ObjectNotFoundException if no such provider could be found.
    */
   StructuredFormatProvider getProvider(String format);
 
@@ -43,26 +36,19 @@ public interface StructuredFormatFactory {
    */
   default StructuredFormat create(String format) {
 
-    StructuredFormatProvider provider = getProvider(format);
-    if (provider == null) {
-      throw new IllegalArgumentException(format);
-    }
-    return provider.create();
+    return getProvider(format).create();
   }
 
   /**
    * @param format the {@link StructuredFormatProvider#getName() format name}. E.g. {@link #NAME_JSON JSON},
    *        {@link #NAME_XML XML}, or {@link #NAME_YAML YAML}.
-   * @param configuration the {@link Map} with the configuration to customize the format.
+   * @param config the {@link MarshallingConfig} to customize the format.
    * @return a new {@link StructuredFormat} for the given {@code format} using the given {@code config}.
+   * @see StructuredFormatProvider#create(MarshallingConfig)
    */
-  default StructuredFormat create(String format, Map<String, Object> configuration) {
+  default StructuredFormat create(String format, MarshallingConfig config) {
 
-    StructuredFormatProvider provider = getProvider(format);
-    if (provider == null) {
-      throw new IllegalArgumentException(format);
-    }
-    return provider.create(configuration);
+    return getProvider(format).create(config);
   }
 
   /**

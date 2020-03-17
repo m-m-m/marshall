@@ -4,7 +4,6 @@ package io.github.mmm.marshall.stax.impl;
 
 import java.io.Reader;
 import java.io.Writer;
-import java.util.Map;
 import java.util.Map.Entry;
 
 import javax.xml.stream.XMLInputFactory;
@@ -13,6 +12,7 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamWriter;
 
+import io.github.mmm.marshall.MarshallingConfig;
 import io.github.mmm.marshall.StructuredFormat;
 import io.github.mmm.marshall.StructuredReader;
 import io.github.mmm.marshall.StructuredWriter;
@@ -30,11 +30,13 @@ public class XmlFormat implements StructuredFormat {
 
   private final XMLOutputFactory writerFactory;
 
+  private final MarshallingConfig config;
+
   static {
 
     XMLInputFactory inFactory = XMLInputFactory.newDefaultFactory();
     XMLOutputFactory outFactory = XMLOutputFactory.newDefaultFactory();
-    DEFAULT = new XmlFormat(inFactory, outFactory);
+    DEFAULT = new XmlFormat(inFactory, outFactory, MarshallingConfig.DEFAULTS);
   }
 
   /**
@@ -42,25 +44,27 @@ public class XmlFormat implements StructuredFormat {
    *
    * @param readerFactory the {@link XMLInputFactory} to create readers.
    * @param writerFactory the {@link XMLOutputFactory} to create writers.
+   * @param config the {@link MarshallingConfig}.
    */
-  public XmlFormat(XMLInputFactory readerFactory, XMLOutputFactory writerFactory) {
+  public XmlFormat(XMLInputFactory readerFactory, XMLOutputFactory writerFactory, MarshallingConfig config) {
 
     super();
     this.readerFactory = readerFactory;
     this.writerFactory = writerFactory;
+    this.config = config;
   }
 
   /**
    * The constructor.
    *
-   * @param configuration
+   * @param config the {@link MarshallingConfig}.
    */
-  public XmlFormat(Map<String, Object> configuration) {
+  public XmlFormat(MarshallingConfig config) {
 
     super();
     XMLInputFactory xmlReaderFactory = XMLInputFactory.newFactory();
     XMLOutputFactory xmlWriterFactory = XMLOutputFactory.newFactory();
-    for (Entry<String, Object> entry : configuration.entrySet()) {
+    for (Entry<String, Object> entry : config.getMap().entrySet()) {
       // TODO: normalize properties and only apply to reader/writer where suitable...
       // TODO: maybe catch exception and ignore unsupported properties...
       String name = entry.getKey();
@@ -70,6 +74,7 @@ public class XmlFormat implements StructuredFormat {
     }
     this.readerFactory = xmlReaderFactory;
     this.writerFactory = xmlWriterFactory;
+    this.config = config;
   }
 
   @Override
@@ -77,7 +82,7 @@ public class XmlFormat implements StructuredFormat {
 
     try {
       XMLStreamReader xml = this.readerFactory.createXMLStreamReader(reader);
-      return new XmlReader(xml);
+      return new XmlReader(xml, this.config);
     } catch (XMLStreamException e) {
       throw new IllegalStateException(e);
     }
@@ -88,7 +93,7 @@ public class XmlFormat implements StructuredFormat {
 
     try {
       XMLStreamWriter xml = this.writerFactory.createXMLStreamWriter(writer);
-      return new XmlWriter(xml);
+      return new XmlWriter(xml, this.config);
     } catch (XMLStreamException e) {
       throw new IllegalStateException(e);
     }

@@ -1,3 +1,4 @@
+
 /*
  * Copyright (c) The m-m-m Team, Licensed under the Apache License, Version 2.0
  * http://www.apache.org/licenses/LICENSE-2.0
@@ -11,6 +12,9 @@ import io.github.mmm.marshall.jsonp.JsonFormatProvider;
 module io.github.mmm.marshall.jsonp {
 
   requires transitive io.github.mmm.marshall;
+
+  // JPMS buggy, transitive dependency not working
+  requires transitive io.github.mmm.base;
 
   requires transitive java.json;
 

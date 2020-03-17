@@ -12,6 +12,7 @@ import javax.json.stream.JsonGeneratorFactory;
 import javax.json.stream.JsonParser;
 import javax.json.stream.JsonParserFactory;
 
+import io.github.mmm.marshall.MarshallingConfig;
 import io.github.mmm.marshall.StructuredFormat;
 import io.github.mmm.marshall.StructuredReader;
 import io.github.mmm.marshall.StructuredWriter;
@@ -23,37 +24,42 @@ import io.github.mmm.marshall.StructuredWriter;
  */
 public class JsonFormat implements StructuredFormat {
 
-  private static final JsonFormat DEFAULT = of(null);
+  private static final JsonFormat DEFAULT = of(MarshallingConfig.DEFAULTS);
 
   private final JsonGeneratorFactory writerFactory;
 
   private final JsonParserFactory readerFactory;
 
+  private final MarshallingConfig config;
+
   /**
    * The constructor.
-   * 
+   *
    * @param readerFactory the {@link JsonParserFactory}.
    * @param writerFactory the {@link JsonGeneratorFactory}.
+   * @param config the {@link MarshallingConfig}.
+   * @see io.github.mmm.marshall.StructuredFormatFactory#create(String, MarshallingConfig)
    */
-  public JsonFormat(JsonParserFactory readerFactory, JsonGeneratorFactory writerFactory) {
+  public JsonFormat(JsonParserFactory readerFactory, JsonGeneratorFactory writerFactory, MarshallingConfig config) {
 
     super();
     this.writerFactory = writerFactory;
     this.readerFactory = readerFactory;
+    this.config = config;
   }
 
   @Override
   public StructuredReader reader(Reader reader) {
 
     JsonParser json = this.readerFactory.createParser(reader);
-    return new JsonReader(json);
+    return new JsonReader(json, this.config);
   }
 
   @Override
   public StructuredWriter writer(Writer writer) {
 
     JsonGenerator json = this.writerFactory.createGenerator(writer);
-    return new JsonWriter(json);
+    return new JsonWriter(json, this.config);
   }
 
   /**
@@ -65,12 +71,13 @@ public class JsonFormat implements StructuredFormat {
   }
 
   /**
-   * @param config the {@link Map} with the configuration properties for the JSON vendor implementation.
+   * @param config the {@link MarshallingConfig} for the JSON vendor implementation.
    * @return the new instance of {@link JsonFormat} with the given {@code config}.
    */
-  public static JsonFormat of(Map<String, ?> config) {
+  public static JsonFormat of(MarshallingConfig config) {
 
-    return new JsonFormat(Json.createParserFactory(config), Json.createGeneratorFactory(config));
+    Map<String, Object> map = config.getMap();
+    return new JsonFormat(Json.createParserFactory(map), Json.createGeneratorFactory(map), config);
   }
 
 }

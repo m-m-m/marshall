@@ -8,6 +8,7 @@ import java.math.BigInteger;
 import javax.json.stream.JsonGenerator;
 
 import io.github.mmm.marshall.AbstractStructuredWriter;
+import io.github.mmm.marshall.MarshallingConfig;
 import io.github.mmm.marshall.StructuredWriter;
 
 /**
@@ -29,10 +30,12 @@ public class JsonWriter extends AbstractStructuredWriter {
    * The constructor.
    *
    * @param json the underlying {@link JsonGenerator} to write to.
+   * @param config the {@link MarshallingConfig}.
+   * @see io.github.mmm.marshall.StructuredFormatFactory#create(String, MarshallingConfig)
    */
-  public JsonWriter(JsonGenerator json) {
+  public JsonWriter(JsonGenerator json, MarshallingConfig config) {
 
-    super();
+    super(config);
     this.json = json;
   }
 
@@ -70,8 +73,10 @@ public class JsonWriter extends AbstractStructuredWriter {
     if (this.name == null) {
       this.json.writeNull();
     } else {
-      this.json.writeNull(this.name);
-      this.name = null;
+      if (this.writeNullValues) {
+        this.json.writeNull(this.name);
+        this.name = null;
+      }
     }
   }
 
