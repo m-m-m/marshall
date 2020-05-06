@@ -14,11 +14,11 @@ import io.github.mmm.marshall.StructuredReader;
 /**
  * Implementation of {@link StructuredReader} for JSON using {@link JsonParser}.
  *
- * @see JsonFormat
+ * @see JsonpFormat
  *
  * @since 1.0.0
  */
-public class JsonReader extends AbstractStructuredReader {
+public class JsonpReader extends AbstractStructuredReader {
 
   private JsonParser json;
 
@@ -27,10 +27,10 @@ public class JsonReader extends AbstractStructuredReader {
   /**
    * The constructor.
    *
-   * @param json the {@link JsonReader}.
+   * @param json the {@link JsonpReader}.
    * @param config the {@link MarshallingConfig}.
    */
-  public JsonReader(JsonParser json, MarshallingConfig config) {
+  public JsonpReader(JsonParser json, MarshallingConfig config) {
 
     super(config);
     this.json = json;

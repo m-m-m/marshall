@@ -9,7 +9,7 @@ import javax.json.stream.JsonParserFactory;
 
 import io.github.mmm.marshall.MarshallingConfig;
 import io.github.mmm.marshall.StructuredFormat;
-import io.github.mmm.marshall.jsonp.impl.JsonFormat;
+import io.github.mmm.marshall.jsonp.impl.JsonpFormat;
 
 /**
  * Provides {@link StructuredFormat} for JSON based on JSON-P.
@@ -28,7 +28,7 @@ public final class JsonpMarshalling {
    */
   public static StructuredFormat of() {
 
-    return JsonFormat.of();
+    return JsonpFormat.of();
   }
 
   /**
@@ -37,7 +37,7 @@ public final class JsonpMarshalling {
    */
   public static StructuredFormat of(MarshallingConfig config) {
 
-    return JsonFormat.of(config);
+    return JsonpFormat.of(config);
   }
 
   /**
@@ -49,7 +49,7 @@ public final class JsonpMarshalling {
   public static StructuredFormat of(JsonParserFactory readerFactory, JsonGeneratorFactory writerFactory,
       MarshallingConfig config) {
 
-    return new JsonFormat(readerFactory, writerFactory, config);
+    return new JsonpFormat(readerFactory, writerFactory, config);
   }
 
 }

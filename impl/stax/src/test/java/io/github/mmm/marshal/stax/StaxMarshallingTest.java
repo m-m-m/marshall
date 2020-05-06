@@ -19,7 +19,7 @@ import io.github.mmm.marshall.StructuredReader;
 import io.github.mmm.marshall.StructuredWriter;
 import io.github.mmm.marshall.StructuredReader.State;
 import io.github.mmm.marshall.stax.StaxMarshalling;
-import io.github.mmm.marshall.stax.impl.XmlFormat;
+import io.github.mmm.marshall.stax.impl.StaxFormat;
 
 /**
  * Test of {@link StaxMarshalling}.
@@ -65,7 +65,7 @@ public class StaxMarshallingTest extends Assertions {
       + "</o:json>";
 
   /**
-   * Test {@link XmlFormat#writer(java.io.Writer) writing as XML}.
+   * Test {@link StaxFormat#writer(java.io.Writer) writing as XML}.
    */
   @Test
   public void testWrite() {
@@ -101,7 +101,7 @@ public class StaxMarshallingTest extends Assertions {
   }
 
   /**
-   * Test {@link XmlFormat#reader(java.io.Reader) reading from XML}.
+   * Test {@link StaxFormat#reader(java.io.Reader) reading from XML}.
    */
   @Test
   public void testRead() {
@@ -218,7 +218,7 @@ public class StaxMarshallingTest extends Assertions {
   }
 
   /**
-   * Test {@link XmlFormat#reader(java.io.Reader) reading} a top-level array from XML.
+   * Test {@link StaxFormat#reader(java.io.Reader) reading} a top-level array from XML.
    */
   @Test
   public void testReadRootArray() {

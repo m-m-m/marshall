@@ -14,11 +14,11 @@ import io.github.mmm.marshall.StructuredWriter;
 /**
  * Implementation of {@link StructuredWriter} for JSON using {@link JsonGenerator}.
  *
- * @see JsonFormat
+ * @see JsonpFormat
  *
  * @since 1.0.0
  */
-public class JsonWriter extends AbstractStructuredWriter {
+public class JsonpWriter extends AbstractStructuredWriter {
 
   private static final long JS_NUMBER_MAX = (2L << 52) - 1;
 
@@ -33,7 +33,7 @@ public class JsonWriter extends AbstractStructuredWriter {
    * @param config the {@link MarshallingConfig}.
    * @see io.github.mmm.marshall.StructuredFormatFactory#create(String, MarshallingConfig)
    */
-  public JsonWriter(JsonGenerator json, MarshallingConfig config) {
+  public JsonpWriter(JsonGenerator json, MarshallingConfig config) {
 
     super(config);
     this.json = json;

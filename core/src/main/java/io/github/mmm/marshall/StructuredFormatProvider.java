@@ -10,19 +10,18 @@ package io.github.mmm.marshall;
 public interface StructuredFormatProvider {
 
   /**
-   * @return the name of this format. E.g. {@link StructuredFormatFactory#NAME_JSON JSON},
-   *         {@link StructuredFormatFactory#NAME_XML XML}, or {@link StructuredFormatFactory#NAME_YAML YAML}.
+   * @return the {@link StructuredFormat#getId() ID} of the {@link StructuredFormat} to {@link #create()}.
    */
-  String getName();
+  String getId();
 
   /**
-   * @return a new {@link StructuredFormat} for {@link #getName() this} format using default configuration.
+   * @return a new {@link StructuredFormat} for {@link #getId() this} format using default configuration.
    */
   StructuredFormat create();
 
   /**
    * @param config the {@link MarshallingConfig} to customize the format.
-   * @return a new {@link StructuredFormat} for {@link #getName() this} format using the given {@code config}.
+   * @return a new {@link StructuredFormat} for {@link #getId() this} format using the given {@code config}.
    */
   StructuredFormat create(MarshallingConfig config);
 

@@ -7,7 +7,7 @@ import javax.xml.stream.XMLOutputFactory;
 
 import io.github.mmm.marshall.MarshallingConfig;
 import io.github.mmm.marshall.StructuredFormat;
-import io.github.mmm.marshall.stax.impl.XmlFormat;
+import io.github.mmm.marshall.stax.impl.StaxFormat;
 
 /**
  * Provides {@link StructuredFormat} for XML based on StAX (Streaming API for XML).
@@ -26,7 +26,7 @@ public final class StaxMarshalling {
    */
   public static StructuredFormat of() {
 
-    return XmlFormat.of();
+    return StaxFormat.of();
   }
 
   /**
@@ -36,7 +36,7 @@ public final class StaxMarshalling {
    */
   public static StructuredFormat of(XMLInputFactory readerFactory, XMLOutputFactory writerFactory) {
 
-    return new XmlFormat(readerFactory, writerFactory, MarshallingConfig.DEFAULTS);
+    return new StaxFormat(readerFactory, writerFactory, MarshallingConfig.DEFAULTS);
   }
 
   /**
@@ -45,7 +45,7 @@ public final class StaxMarshalling {
    */
   public static StructuredFormat of(MarshallingConfig config) {
 
-    return new XmlFormat(config);
+    return new StaxFormat(config);
   }
 
 }

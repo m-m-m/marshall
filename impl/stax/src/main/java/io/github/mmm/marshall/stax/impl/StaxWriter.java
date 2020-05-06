@@ -7,31 +7,15 @@ import javax.xml.stream.XMLStreamWriter;
 
 import io.github.mmm.marshall.AbstractStructuredWriter;
 import io.github.mmm.marshall.MarshallingConfig;
+import io.github.mmm.marshall.StructuredFormat;
 import io.github.mmm.marshall.StructuredWriter;
 
 /**
  * Implementation of {@link StructuredWriter} for XML using {@link XMLStreamWriter}.
  *
+ * @since 1.0.0
  */
-public class XmlWriter extends AbstractStructuredWriter {
-
-  static final String TAG_ROOT = "json";
-
-  static final String NS_PREFIX_ARRAY = "a";
-
-  static final String NS_URI_ARRAY = "array";
-
-  static final String NS_PREFIX_OBJECT = "o";
-
-  static final String NS_URI_OBJECT = "object";
-
-  static final String TAG_ITEM = "i";
-
-  static final String ART_STRING_VALUE = "s";
-
-  static final String ART_BOOLEAN_VALUE = "b";
-
-  static final String ART_NUMBER_VALUE = "n";
+public class StaxWriter extends AbstractStructuredWriter {
 
   private XMLStreamWriter xml;
 
@@ -41,15 +25,15 @@ public class XmlWriter extends AbstractStructuredWriter {
    * @param xml the {@link XMLStreamWriter} to wrap.
    * @param config the {@link MarshallingConfig}.
    */
-  public XmlWriter(XMLStreamWriter xml, MarshallingConfig config) {
+  public StaxWriter(XMLStreamWriter xml, MarshallingConfig config) {
 
     super(config);
     this.xml = xml;
     try {
       this.xml.writeStartDocument();
-      this.xml.setPrefix(NS_PREFIX_ARRAY, NS_URI_ARRAY);
-      this.xml.setPrefix(NS_PREFIX_OBJECT, NS_URI_OBJECT);
-      this.name = TAG_ROOT;
+      this.xml.setPrefix(StructuredFormat.NS_PREFIX_ARRAY, StructuredFormat.NS_URI_ARRAY);
+      this.xml.setPrefix(StructuredFormat.NS_PREFIX_OBJECT, StructuredFormat.NS_URI_OBJECT);
+      this.name = StructuredFormat.TAG_ROOT;
     } catch (XMLStreamException e) {
       throw new IllegalStateException(e);
     }
@@ -73,10 +57,10 @@ public class XmlWriter extends AbstractStructuredWriter {
   public void writeStartArray() {
 
     try {
-      this.xml.writeStartElement(NS_PREFIX_ARRAY, requireName(), NS_URI_ARRAY);
-      if (this.name == TAG_ROOT) {
-        this.xml.writeNamespace(NS_PREFIX_ARRAY, NS_URI_ARRAY);
-        this.xml.writeNamespace(NS_PREFIX_OBJECT, NS_URI_OBJECT);
+      this.xml.writeStartElement(StructuredFormat.NS_PREFIX_ARRAY, requireName(), StructuredFormat.NS_URI_ARRAY);
+      if (this.name == StructuredFormat.TAG_ROOT) {
+        this.xml.writeNamespace(StructuredFormat.NS_PREFIX_ARRAY, StructuredFormat.NS_URI_ARRAY);
+        this.xml.writeNamespace(StructuredFormat.NS_PREFIX_OBJECT, StructuredFormat.NS_URI_OBJECT);
       }
       this.name = null;
     } catch (XMLStreamException e) {
@@ -88,10 +72,10 @@ public class XmlWriter extends AbstractStructuredWriter {
   public void writeStartObject() {
 
     try {
-      this.xml.writeStartElement(NS_PREFIX_OBJECT, requireName(), NS_URI_OBJECT);
-      if (this.name == TAG_ROOT) {
-        this.xml.writeNamespace(NS_PREFIX_ARRAY, NS_URI_ARRAY);
-        this.xml.writeNamespace(NS_PREFIX_OBJECT, NS_URI_OBJECT);
+      this.xml.writeStartElement(StructuredFormat.NS_PREFIX_OBJECT, requireName(), StructuredFormat.NS_URI_OBJECT);
+      if (this.name == StructuredFormat.TAG_ROOT) {
+        this.xml.writeNamespace(StructuredFormat.NS_PREFIX_ARRAY, StructuredFormat.NS_URI_ARRAY);
+        this.xml.writeNamespace(StructuredFormat.NS_PREFIX_OBJECT, StructuredFormat.NS_URI_OBJECT);
       }
       this.name = null;
     } catch (XMLStreamException e) {
@@ -102,8 +86,7 @@ public class XmlWriter extends AbstractStructuredWriter {
   private String requireName() {
 
     if (this.name == null) {
-      return TAG_ITEM;
-      // throw new IllegalStateException("writeName has to be called after writeEnd before new start can be written");
+      return StructuredFormat.TAG_ITEM;
     }
     return this.name;
   }
@@ -127,7 +110,7 @@ public class XmlWriter extends AbstractStructuredWriter {
   @Override
   public void writeValueAsString(String value) {
 
-    writeValue(value, ART_STRING_VALUE);
+    writeValue(value, StructuredFormat.ART_STRING_VALUE);
   }
 
   @Override
@@ -136,7 +119,7 @@ public class XmlWriter extends AbstractStructuredWriter {
     if (value == null) {
       writeValueAsNull();
     } else {
-      writeValue(value.toString(), ART_BOOLEAN_VALUE);
+      writeValue(value.toString(), StructuredFormat.ART_BOOLEAN_VALUE);
     }
   }
 
@@ -146,7 +129,7 @@ public class XmlWriter extends AbstractStructuredWriter {
     if (value == null) {
       writeValueAsNull();
     } else {
-      writeValue(value.toString(), ART_NUMBER_VALUE);
+      writeValue(value.toString(), StructuredFormat.ART_NUMBER_VALUE);
     }
   }
 
@@ -158,7 +141,7 @@ public class XmlWriter extends AbstractStructuredWriter {
     try {
       String tag = this.name;
       if (tag == null) {
-        tag = TAG_ITEM;
+        tag = StructuredFormat.TAG_ITEM;
       }
       this.xml.writeEmptyElement(tag);
       if (value != null) {

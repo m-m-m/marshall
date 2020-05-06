@@ -11,6 +11,7 @@ import javax.xml.stream.XMLStreamReader;
 
 import io.github.mmm.marshall.AbstractStructuredReader;
 import io.github.mmm.marshall.MarshallingConfig;
+import io.github.mmm.marshall.StructuredFormat;
 import io.github.mmm.marshall.StructuredReader;
 
 /**
@@ -18,7 +19,7 @@ import io.github.mmm.marshall.StructuredReader;
  *
  * @since 1.0.0
  */
-public class XmlReader extends AbstractStructuredReader {
+public class StaxReader extends AbstractStructuredReader {
 
   private XMLStreamReader xml;
 
@@ -30,7 +31,7 @@ public class XmlReader extends AbstractStructuredReader {
    * @param xml the {@link XMLStreamReader}.
    * @param config the {@link MarshallingConfig}.
    */
-  public XmlReader(XMLStreamReader xml, MarshallingConfig config) {
+  public StaxReader(XMLStreamReader xml, MarshallingConfig config) {
 
     super(config);
     this.xml = xml;
@@ -76,10 +77,10 @@ public class XmlReader extends AbstractStructuredReader {
     String uri = this.xml.getNamespaceURI();
     if (uri == null) {
       return State.VALUE;
-    } else if (uri.equals(XmlWriter.NS_URI_ARRAY)) {
+    } else if (uri.equals(StructuredFormat.NS_URI_ARRAY)) {
       this.arrayStack++;
       return State.START_ARRAY;
-    } else if (uri.equals(XmlWriter.NS_URI_OBJECT)) {
+    } else if (uri.equals(StructuredFormat.NS_URI_OBJECT)) {
       return State.START_OBJECT;
     } else {
       throw invalidXml();
@@ -95,7 +96,7 @@ public class XmlReader extends AbstractStructuredReader {
         boolean isArray = (this.arrayStack % 2) == 1;
         this.arrayStack <<= 1;
         if (isArray) {
-          if (!tagName.equals(XmlWriter.TAG_ITEM)) {
+          if (!tagName.equals(StructuredFormat.TAG_ITEM)) {
             invalidXml();
           }
           return nextValue();
@@ -107,9 +108,9 @@ public class XmlReader extends AbstractStructuredReader {
         uri = this.xml.getNamespaceURI();
         if (uri == null) {
           return null;
-        } else if (uri.equals(XmlWriter.NS_URI_ARRAY)) {
+        } else if (uri.equals(StructuredFormat.NS_URI_ARRAY)) {
           return State.END_ARRAY;
-        } else if (uri.equals(XmlWriter.NS_URI_OBJECT)) {
+        } else if (uri.equals(StructuredFormat.NS_URI_OBJECT)) {
           return State.END_OBJECT;
         } else {
           invalidXml();
@@ -143,11 +144,11 @@ public class XmlReader extends AbstractStructuredReader {
       if (this.xml.getAttributeCount() == 0) {
         value = null;
       } else {
-        value = this.xml.getAttributeValue(null, XmlWriter.ART_STRING_VALUE);
+        value = this.xml.getAttributeValue(null, StructuredFormat.ART_STRING_VALUE);
         if (value == null) {
-          String string = this.xml.getAttributeValue(null, XmlWriter.ART_BOOLEAN_VALUE);
+          String string = this.xml.getAttributeValue(null, StructuredFormat.ART_BOOLEAN_VALUE);
           if (string == null) {
-            string = this.xml.getAttributeValue(null, XmlWriter.ART_NUMBER_VALUE);
+            string = this.xml.getAttributeValue(null, StructuredFormat.ART_NUMBER_VALUE);
             if (string == null) {
               invalidXml();
             }
@@ -168,19 +169,19 @@ public class XmlReader extends AbstractStructuredReader {
   @Override
   protected String readValueAsNumberString() {
 
-    return readValue(XmlWriter.ART_NUMBER_VALUE);
+    return readValue(StructuredFormat.ART_NUMBER_VALUE);
   }
 
   @Override
   public String readValueAsString() {
 
-    return readValue(XmlWriter.ART_STRING_VALUE);
+    return readValue(StructuredFormat.ART_STRING_VALUE);
   }
 
   @Override
   public Boolean readValueAsBoolean() {
 
-    String value = readValue(XmlWriter.ART_BOOLEAN_VALUE);
+    String value = readValue(StructuredFormat.ART_BOOLEAN_VALUE);
     return parseBoolean(value);
   }
 
@@ -220,8 +221,8 @@ public class XmlReader extends AbstractStructuredReader {
     expect(State.VALUE);
     String value = this.xml.getAttributeValue(null, attribute);
     if ((value == null) && (this.xml.getAttributeCount() > 0)) {
-      if (attribute == XmlWriter.ART_NUMBER_VALUE) {
-        value = this.xml.getAttributeValue(null, XmlWriter.ART_STRING_VALUE);
+      if (attribute == StructuredFormat.ART_NUMBER_VALUE) {
+        value = this.xml.getAttributeValue(null, StructuredFormat.ART_STRING_VALUE);
       }
       if (value == null) {
         invalidXml();

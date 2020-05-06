@@ -16,7 +16,7 @@ import io.github.mmm.marshall.StructuredReader;
 import io.github.mmm.marshall.StructuredWriter;
 import io.github.mmm.marshall.StructuredReader.State;
 import io.github.mmm.marshall.jsonp.JsonpMarshalling;
-import io.github.mmm.marshall.jsonp.impl.JsonFormat;
+import io.github.mmm.marshall.jsonp.impl.JsonpFormat;
 
 /**
  * Test of {@link JsonpMarshalling}.
@@ -39,7 +39,7 @@ public class JsonpMarshallingTest extends Assertions {
       + "}";
 
   /**
-   * Test {@link JsonFormat#writer(java.io.Writer) writing JSON}.
+   * Test {@link JsonpFormat#writer(java.io.Writer) writing JSON}.
    *
    * @throws Exception on error.
    */
@@ -71,7 +71,7 @@ public class JsonpMarshallingTest extends Assertions {
   }
 
   /**
-   * Test {@link JsonFormat#reader(Reader) reading JSON}.
+   * Test {@link JsonpFormat#reader(Reader) reading JSON}.
    *
    * @throws Exception on error.
    */

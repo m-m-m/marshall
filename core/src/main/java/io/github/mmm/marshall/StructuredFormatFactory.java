@@ -9,20 +9,9 @@ import io.github.mmm.marshall.impl.StructuredFormatFactoryImpl;
  */
 public interface StructuredFormatFactory {
 
-  /** {@link StructuredFormatProvider#getName() Name} of <a href="https://www.json.org/j">JSON format</a>. */
-  String NAME_JSON = "json";
-
-  /** {@link StructuredFormatProvider#getName() Name} of <a href="https://www.w3.org/XML/">XML format</a>. */
-  String NAME_XML = "xml";
-
   /**
-   * {@link StructuredFormatProvider#getName() Name} of <a href="https://en.wikipedia.org/wiki/YAML">YAML format</a>.
-   */
-  String NAME_YAML = "yml";
-
-  /**
-   * @param format the {@link StructuredFormatProvider#getName() format name}. E.g. {@link #NAME_JSON JSON},
-   *        {@link #NAME_XML XML}, or {@link #NAME_YAML YAML}.
+   * @param format the {@link StructuredFormatProvider#getId() format name}. E.g. {@link StructuredFormat#ID_JSON JSON},
+   *        {@link StructuredFormat#ID_XML XML}, or {@link StructuredFormat#ID_YAML YAML}.
    * @return a new {@link StructuredFormatProvider} for the given {@code format} or {@code null} if no such provider is
    *         registered.
    * @throws io.github.mmm.base.exception.ObjectNotFoundException if no such provider could be found.
@@ -30,8 +19,8 @@ public interface StructuredFormatFactory {
   StructuredFormatProvider getProvider(String format);
 
   /**
-   * @param format the {@link StructuredFormatProvider#getName() format name}. E.g. {@link #NAME_JSON JSON},
-   *        {@link #NAME_XML XML}, or {@link #NAME_YAML YAML}.
+   * @param format the {@link StructuredFormatProvider#getId() format name}. E.g. {@link StructuredFormat#ID_JSON JSON},
+   *        {@link StructuredFormat#ID_XML XML}, or {@link StructuredFormat#ID_YAML YAML}.
    * @return a new {@link StructuredFormat} for the given {@code format} using default configuration.
    */
   default StructuredFormat create(String format) {
@@ -40,8 +29,8 @@ public interface StructuredFormatFactory {
   }
 
   /**
-   * @param format the {@link StructuredFormatProvider#getName() format name}. E.g. {@link #NAME_JSON JSON},
-   *        {@link #NAME_XML XML}, or {@link #NAME_YAML YAML}.
+   * @param format the {@link StructuredFormatProvider#getId() format name}. E.g. {@link StructuredFormat#ID_JSON JSON},
+   *        {@link StructuredFormat#ID_XML XML}, or {@link StructuredFormat#ID_YAML YAML}.
    * @param config the {@link MarshallingConfig} to customize the format.
    * @return a new {@link StructuredFormat} for the given {@code format} using the given {@code config}.
    * @see StructuredFormatProvider#create(MarshallingConfig)

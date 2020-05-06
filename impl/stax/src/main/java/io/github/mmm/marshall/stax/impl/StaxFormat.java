@@ -22,9 +22,9 @@ import io.github.mmm.marshall.StructuredWriter;
  *
  * @since 1.0.0
  */
-public class XmlFormat implements StructuredFormat {
+public class StaxFormat implements StructuredFormat {
 
-  private static final XmlFormat DEFAULT;
+  private static final StaxFormat DEFAULT;
 
   private final XMLInputFactory readerFactory;
 
@@ -36,7 +36,7 @@ public class XmlFormat implements StructuredFormat {
 
     XMLInputFactory inFactory = XMLInputFactory.newDefaultFactory();
     XMLOutputFactory outFactory = XMLOutputFactory.newDefaultFactory();
-    DEFAULT = new XmlFormat(inFactory, outFactory, MarshallingConfig.DEFAULTS);
+    DEFAULT = new StaxFormat(inFactory, outFactory, MarshallingConfig.DEFAULTS);
   }
 
   /**
@@ -46,7 +46,7 @@ public class XmlFormat implements StructuredFormat {
    * @param writerFactory the {@link XMLOutputFactory} to create writers.
    * @param config the {@link MarshallingConfig}.
    */
-  public XmlFormat(XMLInputFactory readerFactory, XMLOutputFactory writerFactory, MarshallingConfig config) {
+  public StaxFormat(XMLInputFactory readerFactory, XMLOutputFactory writerFactory, MarshallingConfig config) {
 
     super();
     this.readerFactory = readerFactory;
@@ -59,7 +59,7 @@ public class XmlFormat implements StructuredFormat {
    *
    * @param config the {@link MarshallingConfig}.
    */
-  public XmlFormat(MarshallingConfig config) {
+  public StaxFormat(MarshallingConfig config) {
 
     super();
     XMLInputFactory xmlReaderFactory = XMLInputFactory.newFactory();
@@ -78,11 +78,17 @@ public class XmlFormat implements StructuredFormat {
   }
 
   @Override
+  public String getId() {
+
+    return ID_XML;
+  }
+
+  @Override
   public StructuredReader reader(Reader reader) {
 
     try {
       XMLStreamReader xml = this.readerFactory.createXMLStreamReader(reader);
-      return new XmlReader(xml, this.config);
+      return new StaxReader(xml, this.config);
     } catch (XMLStreamException e) {
       throw new IllegalStateException(e);
     }
@@ -93,16 +99,16 @@ public class XmlFormat implements StructuredFormat {
 
     try {
       XMLStreamWriter xml = this.writerFactory.createXMLStreamWriter(writer);
-      return new XmlWriter(xml, this.config);
+      return new StaxWriter(xml, this.config);
     } catch (XMLStreamException e) {
       throw new IllegalStateException(e);
     }
   }
 
   /**
-   * @return the default instance of {@link XmlFormat}.
+   * @return the default instance of {@link StaxFormat}.
    */
-  public static XmlFormat of() {
+  public static StaxFormat of() {
 
     return DEFAULT;
   }

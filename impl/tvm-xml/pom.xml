@@ -4,25 +4,19 @@
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>io.github.m-m-m</groupId>
-    <artifactId>mmm-marshall-parent</artifactId>
+    <artifactId>mmm-marshall-impl</artifactId>
     <version>${revision}${changelist}</version>
   </parent>
-  <artifactId>mmm-marshall-impl</artifactId>
-  <packaging>pom</packaging>
+  <artifactId>mmm-marshall-tvm-xml</artifactId>
+  <packaging>jar</packaging>
   <name>${project.artifactId}</name>
-  <description>Implementations of mmm-marshal.</description>
-
-  <modules>
-    <module>jsonp</module>
-    <module>stax</module>
-    <module>tvm-json</module>
-    <module>tvm-xml</module>
-  </modules>
-
+  <description>Implementations of mmm-marshall API for XML using TeaVM.</description>
+  
   <dependencies>
     <dependency>
-      <groupId>${project.groupId}</groupId>
-      <artifactId>mmm-marshall</artifactId>
+      <groupId>org.teavm</groupId>
+      <artifactId>teavm-jso-apis</artifactId>
+      <scope>provided</scope>
     </dependency>
   </dependencies>
 </project>

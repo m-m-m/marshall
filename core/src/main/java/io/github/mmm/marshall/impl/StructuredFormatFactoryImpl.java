@@ -40,7 +40,7 @@ public class StructuredFormatFactoryImpl implements StructuredFormatFactory {
    */
   public void register(StructuredFormatProvider provider) {
 
-    StructuredFormatProvider duplicate = this.providerMap.put(provider.getName(), provider);
+    StructuredFormatProvider duplicate = this.providerMap.put(provider.getId(), provider);
     if (duplicate != null) {
 
     }

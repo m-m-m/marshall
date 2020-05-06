@@ -6,17 +6,16 @@
 /**
  * Provides an implementation of {@code mmm-marshall} for XML based on StAX.
  */
-module io.github.mmm.marshall.stax {
+module io.github.mmm.marshall.tvm.xml {
 
   requires transitive io.github.mmm.marshall;
 
-  // JPMS bug with transitive dependencies...
-  requires transitive io.github.mmm.base;
+  requires transitive org.teavm.jso;
 
-  requires transitive java.xml;
+  requires transitive org.teavm.jso.apis;
 
-  exports io.github.mmm.marshall.stax;
+  exports io.github.mmm.marshall.tvm.xml;
 
   provides io.github.mmm.marshall.StructuredFormatProvider with //
-      io.github.mmm.marshall.stax.StaxFormatProvider;
+      io.github.mmm.marshall.tvm.xml.TvmXmlFormatProvider;
 }
