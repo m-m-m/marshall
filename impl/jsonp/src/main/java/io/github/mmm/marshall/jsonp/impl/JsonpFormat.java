@@ -3,7 +3,6 @@
 package io.github.mmm.marshall.jsonp.impl;
 
 import java.io.Reader;
-import java.io.Writer;
 import java.util.Map;
 
 import javax.json.Json;
@@ -12,6 +11,7 @@ import javax.json.stream.JsonGeneratorFactory;
 import javax.json.stream.JsonParser;
 import javax.json.stream.JsonParserFactory;
 
+import io.github.mmm.base.io.AppendableWriter;
 import io.github.mmm.marshall.MarshallingConfig;
 import io.github.mmm.marshall.StructuredFormat;
 import io.github.mmm.marshall.StructuredReader;
@@ -62,9 +62,9 @@ public class JsonpFormat implements StructuredFormat {
   }
 
   @Override
-  public StructuredWriter writer(Writer writer) {
+  public StructuredWriter writer(Appendable writer) {
 
-    JsonGenerator json = this.writerFactory.createGenerator(writer);
+    JsonGenerator json = this.writerFactory.createGenerator(AppendableWriter.asWriter(writer));
     return new JsonpWriter(json, this.config);
   }
 

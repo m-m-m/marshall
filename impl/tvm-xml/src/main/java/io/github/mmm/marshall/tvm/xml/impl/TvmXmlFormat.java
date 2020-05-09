@@ -4,7 +4,6 @@ package io.github.mmm.marshall.tvm.xml.impl;
 
 import java.io.IOException;
 import java.io.Reader;
-import java.io.Writer;
 
 import org.teavm.jso.dom.xml.Document;
 
@@ -90,7 +89,7 @@ public class TvmXmlFormat implements StructuredFormat {
   }
 
   @Override
-  public StructuredWriter writer(Writer writer) {
+  public StructuredWriter writer(Appendable writer) {
 
     return new TvmXmlStringWriter(writer, this.config);
   }

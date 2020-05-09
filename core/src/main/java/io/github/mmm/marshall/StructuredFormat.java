@@ -8,8 +8,6 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Reader;
 import java.io.StringReader;
-import java.io.StringWriter;
-import java.io.Writer;
 import java.nio.charset.StandardCharsets;
 
 /**
@@ -99,10 +97,11 @@ public interface StructuredFormat {
   }
 
   /**
-   * @param writer the {@link Writer} where to write the structured data to.
+   * @param writer the {@link Appendable} ({@link java.io.Writer} or {@link StringBuilder}) where to write the
+   *        structured data to.
    * @return the wrapped {@link StructuredWriter}.
    */
-  StructuredWriter writer(Writer writer);
+  StructuredWriter writer(Appendable writer);
 
   /**
    * @param out the {@link OutputStream} where to write the structured data to (in UTF-8).
@@ -122,7 +121,7 @@ public interface StructuredFormat {
     if (object == null) {
       return null;
     }
-    StringWriter writer = new StringWriter(512);
+    StringBuilder writer = new StringBuilder(512);
     StructuredWriter structuredWriter = writer(writer);
     object.write(structuredWriter);
     return writer.toString();

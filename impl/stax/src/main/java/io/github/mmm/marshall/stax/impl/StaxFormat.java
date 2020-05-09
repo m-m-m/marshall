@@ -3,7 +3,6 @@
 package io.github.mmm.marshall.stax.impl;
 
 import java.io.Reader;
-import java.io.Writer;
 import java.util.Map.Entry;
 
 import javax.xml.stream.XMLInputFactory;
@@ -12,6 +11,7 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamWriter;
 
+import io.github.mmm.base.io.AppendableWriter;
 import io.github.mmm.marshall.MarshallingConfig;
 import io.github.mmm.marshall.StructuredFormat;
 import io.github.mmm.marshall.StructuredReader;
@@ -95,10 +95,10 @@ public class StaxFormat implements StructuredFormat {
   }
 
   @Override
-  public StructuredWriter writer(Writer writer) {
+  public StructuredWriter writer(Appendable writer) {
 
     try {
-      XMLStreamWriter xml = this.writerFactory.createXMLStreamWriter(writer);
+      XMLStreamWriter xml = this.writerFactory.createXMLStreamWriter(AppendableWriter.asWriter(writer));
       return new StaxWriter(xml, this.config);
     } catch (XMLStreamException e) {
       throw new IllegalStateException(e);
