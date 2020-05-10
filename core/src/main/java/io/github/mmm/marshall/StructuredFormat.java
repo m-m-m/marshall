@@ -85,6 +85,18 @@ public interface StructuredFormat {
   }
 
   /**
+   * @param data the structured data as {@link String}.
+   * @param object the {@link UnmarshallableObject} to read.
+   * @see UnmarshallableObject#read(StructuredReader)
+   */
+  default void read(String data, UnmarshallableObject object) {
+
+    StructuredReader reader = reader(data);
+    object.read(reader);
+    reader.close();
+  }
+
+  /**
    * @param data the data as a potentially proprietary implementation-specific type.
    * @return the {@link StringReader}.
    */
@@ -124,6 +136,7 @@ public interface StructuredFormat {
     StringBuilder writer = new StringBuilder(512);
     StructuredWriter structuredWriter = writer(writer);
     object.write(structuredWriter);
+    structuredWriter.close();
     return writer.toString();
   }
 
