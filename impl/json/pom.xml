@@ -7,16 +7,15 @@
     <artifactId>mmm-marshall-impl</artifactId>
     <version>${revision}${changelist}</version>
   </parent>
-  <artifactId>mmm-marshall-tvm-json</artifactId>
+  <artifactId>mmm-marshall-json</artifactId>
   <packaging>jar</packaging>
   <name>${project.artifactId}</name>
-  <description>Implementations of mmm-marshall API for JSON using TeaVM.</description>
+  <description>Implementations of mmm-marshall API for JSON without any 3rd-party lib.</description>
   
   <dependencies>
     <dependency>
-      <groupId>org.teavm</groupId>
-      <artifactId>teavm-jso-apis</artifactId>
-      <scope>provided</scope>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>mmm-scanner</artifactId>
     </dependency>
   </dependencies>
 </project>

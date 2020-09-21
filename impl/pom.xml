@@ -13,9 +13,9 @@
   <description>Implementations of mmm-marshal.</description>
 
   <modules>
+    <module>json</module>
     <module>jsonp</module>
     <module>stax</module>
-    <module>tvm-json</module>
     <module>tvm-xml</module>
   </modules>
 

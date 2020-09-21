@@ -117,13 +117,18 @@ public class TvmXmlStringWriter extends AbstractStructuredStringWriter {
       write(" ");
       write(attribute);
       write("=\"");
-      write(value.replace("\"", "&quot;"));
+      write(escapeAttributeValue(value));
       write("\"");
     }
     write("/>");
     if (this.name != StructuredFormat.TAG_ITEM) {
       this.name = null;
     }
+  }
+
+  private String escapeAttributeValue(String value) {
+
+    return value.replace("&", "&amp;").replace("<", "&lt;").replace("\"", "&quot;");
   }
 
 }

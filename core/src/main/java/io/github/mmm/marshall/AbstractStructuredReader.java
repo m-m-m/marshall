@@ -147,6 +147,18 @@ public abstract class AbstractStructuredReader implements StructuredReader {
   }
 
   /**
+   * Verifies that the {@link #getState() current state} is not the same as the given state.
+   *
+   * @param unexpected the unexpected state.
+   */
+  protected void expectNot(State unexpected) {
+
+    if (this.state == unexpected) {
+      throw new IllegalStateException("Unexpected event " + unexpected + ".");
+    }
+  }
+
+  /**
    * @param value the value that was read.
    * @param typeClass the expected type.
    * @param e a potential error that occurred or {@code null} if no cause.

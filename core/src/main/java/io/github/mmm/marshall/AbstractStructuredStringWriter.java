@@ -58,6 +58,18 @@ public abstract class AbstractStructuredStringWriter extends AbstractStructuredW
   }
 
   /**
+   * @param data the {@code char} to write.
+   */
+  protected void write(char data) {
+
+    try {
+      this.out.append(data);
+    } catch (IOException e) {
+      throw new IllegalStateException(e);
+    }
+  }
+
+  /**
    * @param data the {@link String} to write.
    */
   protected void write(String data) {
