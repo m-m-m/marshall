@@ -12,7 +12,7 @@ import io.github.mmm.marshall.StructuredWriter;
 /**
  * Implementation of {@link StructuredWriter} for JSON from scratch.
  *
- * @see JsonFormat
+ * @see JsonFormatImpl
  *
  * @since 1.0.0
  */

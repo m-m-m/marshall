@@ -6,7 +6,7 @@ import java.util.Map;
 
 import io.github.mmm.marshall.MarshallingConfig;
 import io.github.mmm.marshall.StructuredFormat;
-import io.github.mmm.marshall.json.impl.JsonFormat;
+import io.github.mmm.marshall.json.impl.JsonFormatImpl;
 
 /**
  * Provides {@link StructuredFormat} for JSON based on TeaVM.
@@ -25,7 +25,7 @@ public final class JsonMarshalling {
    */
   public static StructuredFormat of() {
 
-    return JsonFormat.of();
+    return JsonFormatImpl.of();
   }
 
   /**
@@ -34,7 +34,7 @@ public final class JsonMarshalling {
    */
   public static StructuredFormat of(MarshallingConfig config) {
 
-    return JsonFormat.of(config);
+    return JsonFormatImpl.of(config);
   }
 
 }

@@ -22,9 +22,9 @@ import io.github.mmm.marshall.StructuredWriter;
  *
  * @since 1.0.0
  */
-public class JsonpFormat implements StructuredFormat {
+public class JsonpFormatImpl implements StructuredFormat {
 
-  private static final JsonpFormat DEFAULT = of(MarshallingConfig.DEFAULTS);
+  private static final JsonpFormatImpl DEFAULT = of(MarshallingConfig.DEFAULTS);
 
   private final JsonGeneratorFactory writerFactory;
 
@@ -40,7 +40,7 @@ public class JsonpFormat implements StructuredFormat {
    * @param config the {@link MarshallingConfig}.
    * @see io.github.mmm.marshall.StructuredFormatFactory#create(String, MarshallingConfig)
    */
-  public JsonpFormat(JsonParserFactory readerFactory, JsonGeneratorFactory writerFactory, MarshallingConfig config) {
+  public JsonpFormatImpl(JsonParserFactory readerFactory, JsonGeneratorFactory writerFactory, MarshallingConfig config) {
 
     super();
     this.writerFactory = writerFactory;
@@ -69,21 +69,21 @@ public class JsonpFormat implements StructuredFormat {
   }
 
   /**
-   * @return the default instance of {@link JsonpFormat}.
+   * @return the default instance of {@link JsonpFormatImpl}.
    */
-  public static JsonpFormat of() {
+  public static JsonpFormatImpl of() {
 
     return DEFAULT;
   }
 
   /**
    * @param config the {@link MarshallingConfig} for the JSON vendor implementation.
-   * @return the new instance of {@link JsonpFormat} with the given {@code config}.
+   * @return the new instance of {@link JsonpFormatImpl} with the given {@code config}.
    */
-  public static JsonpFormat of(MarshallingConfig config) {
+  public static JsonpFormatImpl of(MarshallingConfig config) {
 
     Map<String, Object> map = config.getMap();
-    return new JsonpFormat(Json.createParserFactory(map), Json.createGeneratorFactory(map), config);
+    return new JsonpFormatImpl(Json.createParserFactory(map), Json.createGeneratorFactory(map), config);
   }
 
 }

@@ -14,7 +14,7 @@ import io.github.mmm.marshall.StructuredWriter;
 /**
  * Implementation of {@link StructuredWriter} for JSON using {@link JsonGenerator}.
  *
- * @see JsonpFormat
+ * @see JsonpFormatImpl
  *
  * @since 1.0.0
  */

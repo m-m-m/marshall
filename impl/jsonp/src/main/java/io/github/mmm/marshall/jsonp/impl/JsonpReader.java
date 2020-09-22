@@ -14,7 +14,7 @@ import io.github.mmm.marshall.StructuredReader;
 /**
  * Implementation of {@link StructuredReader} for JSON using {@link JsonParser}.
  *
- * @see JsonpFormat
+ * @see JsonpFormatImpl
  *
  * @since 1.0.0
  */

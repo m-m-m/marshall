@@ -13,7 +13,7 @@ import io.github.mmm.scanner.CharStreamScanner;
 /**
  * Implementation of {@link StructuredReader} for JSON from scratch.
  *
- * @see JsonFormat
+ * @see JsonFormatImpl
  *
  * @since 1.0.0
  */

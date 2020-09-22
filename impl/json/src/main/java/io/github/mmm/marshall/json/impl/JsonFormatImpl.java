@@ -16,9 +16,9 @@ import io.github.mmm.scanner.CharSequenceScanner;
  *
  * @since 1.0.0
  */
-public class JsonFormat implements StructuredFormat {
+public class JsonFormatImpl implements StructuredFormat {
 
-  private static final JsonFormat DEFAULT = of(MarshallingConfig.DEFAULTS);
+  private static final JsonFormatImpl DEFAULT = of(MarshallingConfig.DEFAULTS);
 
   private final MarshallingConfig config;
 
@@ -28,7 +28,7 @@ public class JsonFormat implements StructuredFormat {
    * @param config the {@link MarshallingConfig}.
    * @see io.github.mmm.marshall.StructuredFormatFactory#create(String, MarshallingConfig)
    */
-  public JsonFormat(MarshallingConfig config) {
+  public JsonFormatImpl(MarshallingConfig config) {
 
     super();
     this.config = config;
@@ -59,20 +59,20 @@ public class JsonFormat implements StructuredFormat {
   }
 
   /**
-   * @return the default instance of {@link JsonFormat}.
+   * @return the default instance of {@link JsonFormatImpl}.
    */
-  public static JsonFormat of() {
+  public static JsonFormatImpl of() {
 
     return DEFAULT;
   }
 
   /**
    * @param config the {@link MarshallingConfig} for the JSON vendor implementation.
-   * @return the new instance of {@link JsonFormat} with the given {@code config}.
+   * @return the new instance of {@link JsonFormatImpl} with the given {@code config}.
    */
-  public static JsonFormat of(MarshallingConfig config) {
+  public static JsonFormatImpl of(MarshallingConfig config) {
 
-    return new JsonFormat(config);
+    return new JsonFormatImpl(config);
   }
 
 }

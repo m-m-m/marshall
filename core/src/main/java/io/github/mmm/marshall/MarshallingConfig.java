@@ -3,7 +3,9 @@
 package io.github.mmm.marshall;
 
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 import io.github.mmm.base.config.ConfigMap;
 import io.github.mmm.base.config.ConfigOption;
@@ -13,7 +15,7 @@ import io.github.mmm.base.config.ConfigOption;
  *
  * @since 1.0.0
  */
-public class MarshallingConfig extends ConfigMap {
+public final class MarshallingConfig extends ConfigMap {
 
   /** {@link ConfigOption} for the indendation used by {@link StructuredWriter} to format the output. */
   public static final ConfigOption<String> INDENDATION = new ConfigOption<>("indendation", "  ");
@@ -44,6 +46,24 @@ public class MarshallingConfig extends ConfigMap {
   public MarshallingConfig(Map<String, Object> map) {
 
     super(map);
+  }
+
+  /**
+   * @param <T> type of the value.
+   * @param option the {@link ConfigOption} to set.
+   * @param value the value for the given {@link ConfigOption}.
+   * @return a new {@link MarshallingConfig} with the given {@link ConfigOption} set to the given {@code value} or this
+   *         {@link MarshallingConfig} if the given {@code value} is already configured.
+   */
+  public <T> MarshallingConfig with(ConfigOption<T> option, T value) {
+
+    T oldValue = get(option);
+    if (Objects.equals(oldValue, value)) {
+      return this;
+    }
+    Map<String, Object> map = new HashMap<>(getMap());
+    map.put(option.getKey(), value);
+    return new MarshallingConfig(map);
   }
 
 }

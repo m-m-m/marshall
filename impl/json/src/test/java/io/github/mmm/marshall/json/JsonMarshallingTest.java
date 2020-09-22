@@ -15,7 +15,7 @@ import org.junit.jupiter.api.Test;
 import io.github.mmm.marshall.StructuredReader;
 import io.github.mmm.marshall.StructuredReader.State;
 import io.github.mmm.marshall.StructuredWriter;
-import io.github.mmm.marshall.json.impl.JsonFormat;
+import io.github.mmm.marshall.json.impl.JsonFormatImpl;
 
 /**
  * Test of {@link JsonMarshalling}.
@@ -38,7 +38,7 @@ public class JsonMarshallingTest extends Assertions {
       + "}";
 
   /**
-   * Test {@link JsonFormat#writer(Appendable) writing JSON}.
+   * Test {@link JsonFormatImpl#writer(Appendable) writing JSON}.
    *
    * @throws Exception on error.
    */
@@ -70,7 +70,7 @@ public class JsonMarshallingTest extends Assertions {
   }
 
   /**
-   * Test {@link JsonFormat#reader(Reader) reading JSON}.
+   * Test {@link JsonFormatImpl#reader(Reader) reading JSON}.
    *
    * @throws Exception on error.
    */
