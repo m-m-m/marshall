@@ -25,7 +25,7 @@ public final class MarshallingConfig extends ConfigMap {
    * values (if configured to {@link Boolean#TRUE}) or omit {@code null} values (if configured to
    * {@link Boolean#FALSE}).
    */
-  public static final ConfigOption<Boolean> WRITE_NULL_VALUES = new ConfigOption<>("indendation", Boolean.TRUE);
+  public static final ConfigOption<Boolean> WRITE_NULL_VALUES = new ConfigOption<>("write-null", Boolean.TRUE);
 
   /** Immutable instance of {@link MarshallingConfig} with the default values. */
   public static final MarshallingConfig DEFAULTS = new MarshallingConfig(Collections.emptyMap());
