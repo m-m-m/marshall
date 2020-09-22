@@ -4,14 +4,6 @@ package io.github.mmm.marshall;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.time.Instant;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.time.OffsetDateTime;
-import java.time.OffsetTime;
-import java.time.ZonedDateTime;
-import java.time.temporal.Temporal;
 
 /**
  * Interface for a writer to produce a {@link StructuredFormat structured format} such as JSON or XML.
@@ -67,24 +59,24 @@ public interface StructuredWriter extends AutoCloseable {
       writeValueAsBoolean((Boolean) value);
     } else if (value instanceof Number) {
       writeValueAsNumber((Number) value);
-    } else if (value instanceof Temporal) {
-      if (value instanceof Instant) {
-        writeValueAsInstant(((Instant) value));
-      } else if (value instanceof LocalDateTime) {
-        writeValueAsLocalDateTime(((LocalDateTime) value));
-      } else if (value instanceof LocalDate) {
-        writeValueAsLocalDate(((LocalDate) value));
-      } else if (value instanceof LocalTime) {
-        writeValueAsLocalTime(((LocalTime) value));
-      } else if (value instanceof ZonedDateTime) {
-        writeValueAsZonedDateTime(((ZonedDateTime) value));
-      } else if (value instanceof OffsetDateTime) {
-        writeValueAsOffsetDateTime(((OffsetDateTime) value));
-      } else if (value instanceof OffsetTime) {
-        writeValueAsOffsetTime(((OffsetTime) value));
-      } else {
-        writeValueAsString(value.toString());
-      }
+      // } else if (value instanceof Temporal) {
+      // if (value instanceof Instant) {
+      // writeValueAsInstant(((Instant) value));
+      // } else if (value instanceof LocalDateTime) {
+      // writeValueAsLocalDateTime(((LocalDateTime) value));
+      // } else if (value instanceof LocalDate) {
+      // writeValueAsLocalDate(((LocalDate) value));
+      // } else if (value instanceof LocalTime) {
+      // writeValueAsLocalTime(((LocalTime) value));
+      // } else if (value instanceof ZonedDateTime) {
+      // writeValueAsZonedDateTime(((ZonedDateTime) value));
+      // } else if (value instanceof OffsetDateTime) {
+      // writeValueAsOffsetDateTime(((OffsetDateTime) value));
+      // } else if (value instanceof OffsetTime) {
+      // writeValueAsOffsetTime(((OffsetTime) value));
+      // } else {
+      // writeValueAsString(value.toString());
+      // }
     } else if (value instanceof MarshallableObject) {
       ((MarshallableObject) value).write(this);
     } else {
@@ -131,96 +123,96 @@ public interface StructuredWriter extends AutoCloseable {
    */
   void writeValueAsNull();
 
-  /**
-   * @param value the value to write.
-   * @see #writeValue(Object)
-   */
-  default void writeValueAsInstant(Instant value) {
-
-    if (value == null) {
-      writeValueAsNull();
-    } else {
-      writeValueAsString(value.toString());
-    }
-  }
-
-  /**
-   * @param value the value to write.
-   * @see #writeValue(Object)
-   */
-  default void writeValueAsLocalDateTime(LocalDateTime value) {
-
-    if (value == null) {
-      writeValueAsNull();
-    } else {
-      writeValueAsString(value.toString());
-    }
-  }
-
-  /**
-   * @param value the value to write.
-   * @see #writeValue(Object)
-   */
-  default void writeValueAsLocalDate(LocalDate value) {
-
-    if (value == null) {
-      writeValueAsNull();
-    } else {
-      writeValueAsString(value.toString());
-    }
-  }
-
-  /**
-   * @param value the value to write.
-   * @see #writeValue(Object)
-   */
-  default void writeValueAsLocalTime(LocalTime value) {
-
-    if (value == null) {
-      writeValueAsNull();
-    } else {
-      writeValueAsString(value.toString());
-    }
-  }
-
-  /**
-   * @param value the value to write.
-   * @see #writeValue(Object)
-   */
-  default void writeValueAsZonedDateTime(ZonedDateTime value) {
-
-    if (value == null) {
-      writeValueAsNull();
-    } else {
-      writeValueAsString(value.toString());
-    }
-  }
-
-  /**
-   * @param value the value to write.
-   * @see #writeValue(Object)
-   */
-  default void writeValueAsOffsetDateTime(OffsetDateTime value) {
-
-    if (value == null) {
-      writeValueAsNull();
-    } else {
-      writeValueAsString(value.toString());
-    }
-  }
-
-  /**
-   * @param value the value to write.
-   * @see #writeValue(Object)
-   */
-  default void writeValueAsOffsetTime(OffsetTime value) {
-
-    if (value == null) {
-      writeValueAsNull();
-    } else {
-      writeValueAsString(value.toString());
-    }
-  }
+  // /**
+  // * @param value the value to write.
+  // * @see #writeValue(Object)
+  // */
+  // default void writeValueAsInstant(Instant value) {
+  //
+  // if (value == null) {
+  // writeValueAsNull();
+  // } else {
+  // writeValueAsString(value.toString());
+  // }
+  // }
+  //
+  // /**
+  // * @param value the value to write.
+  // * @see #writeValue(Object)
+  // */
+  // default void writeValueAsLocalDateTime(LocalDateTime value) {
+  //
+  // if (value == null) {
+  // writeValueAsNull();
+  // } else {
+  // writeValueAsString(value.toString());
+  // }
+  // }
+  //
+  // /**
+  // * @param value the value to write.
+  // * @see #writeValue(Object)
+  // */
+  // default void writeValueAsLocalDate(LocalDate value) {
+  //
+  // if (value == null) {
+  // writeValueAsNull();
+  // } else {
+  // writeValueAsString(value.toString());
+  // }
+  // }
+  //
+  // /**
+  // * @param value the value to write.
+  // * @see #writeValue(Object)
+  // */
+  // default void writeValueAsLocalTime(LocalTime value) {
+  //
+  // if (value == null) {
+  // writeValueAsNull();
+  // } else {
+  // writeValueAsString(value.toString());
+  // }
+  // }
+  //
+  // /**
+  // * @param value the value to write.
+  // * @see #writeValue(Object)
+  // */
+  // default void writeValueAsZonedDateTime(ZonedDateTime value) {
+  //
+  // if (value == null) {
+  // writeValueAsNull();
+  // } else {
+  // writeValueAsString(value.toString());
+  // }
+  // }
+  //
+  // /**
+  // * @param value the value to write.
+  // * @see #writeValue(Object)
+  // */
+  // default void writeValueAsOffsetDateTime(OffsetDateTime value) {
+  //
+  // if (value == null) {
+  // writeValueAsNull();
+  // } else {
+  // writeValueAsString(value.toString());
+  // }
+  // }
+  //
+  // /**
+  // * @param value the value to write.
+  // * @see #writeValue(Object)
+  // */
+  // default void writeValueAsOffsetTime(OffsetTime value) {
+  //
+  // if (value == null) {
+  // writeValueAsNull();
+  // } else {
+  // writeValueAsString(value.toString());
+  // }
+  // }
 
   /**
    * @param value the value to write.
