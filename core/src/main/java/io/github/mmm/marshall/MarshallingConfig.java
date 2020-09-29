@@ -17,8 +17,8 @@ import io.github.mmm.base.config.ConfigOption;
  */
 public final class MarshallingConfig extends ConfigMap {
 
-  /** {@link ConfigOption} for the indendation used by {@link StructuredWriter} to format the output. */
-  public static final ConfigOption<String> INDENDATION = new ConfigOption<>("indendation", "  ");
+  /** {@link ConfigOption} for the indentation used by {@link StructuredWriter} to format the output. */
+  public static final ConfigOption<String> INDENTATION = new ConfigOption<>("indentation", "  ");
 
   /**
    * {@link ConfigOption} to configure if {@link StructuredWriter#writeValueAsNull()} should actually write {@code null}

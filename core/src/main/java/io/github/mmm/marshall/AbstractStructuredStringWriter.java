@@ -14,7 +14,7 @@ public abstract class AbstractStructuredStringWriter extends AbstractStructuredW
   /** The {@link Appendable} where to {@link Appendable#append(CharSequence) write} the data to. */
   protected Appendable out;
 
-  /** The current indendation count. */
+  /** The current indentation count. */
   protected int indentCount;
 
   /**
@@ -30,7 +30,7 @@ public abstract class AbstractStructuredStringWriter extends AbstractStructuredW
   }
 
   /**
-   * Writes a new indendation.
+   * Writes a new indentation.
    */
   protected void writeIndent() {
 
@@ -38,19 +38,19 @@ public abstract class AbstractStructuredStringWriter extends AbstractStructuredW
   }
 
   /**
-   * Writes a new indendation.
+   * Writes a new indentation.
    *
-   * @param count the number of indendations to write.
+   * @param count the number of indentations to write.
    */
   protected void writeIndent(int count) {
 
-    if (this.indendation == null) {
+    if (this.indentation == null) {
       return;
     }
     try {
       this.out.append('\n');
       for (int i = count; i > 0; i--) {
-        this.out.append(this.indendation);
+        this.out.append(this.indentation);
       }
     } catch (IOException e) {
       throw new IllegalStateException(e);

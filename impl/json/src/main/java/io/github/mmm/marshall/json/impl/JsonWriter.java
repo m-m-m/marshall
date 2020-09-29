@@ -70,7 +70,7 @@ public class JsonWriter extends AbstractStructuredStringWriter {
     }
     write('"');
     write(this.name);
-    if (this.indendation == null) {
+    if (this.indentation == null) {
       write("\":");
     } else {
       write("\": ");

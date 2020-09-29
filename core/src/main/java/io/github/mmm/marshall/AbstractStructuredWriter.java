@@ -13,8 +13,8 @@ public abstract class AbstractStructuredWriter implements StructuredWriter {
   /** @see #writeValueAsNull() */
   protected final boolean writeNullValues;
 
-  /** @see MarshallingConfig#INDENDATION */
-  protected final String indendation;
+  /** @see MarshallingConfig#INDENTATION */
+  protected final String indentation;
 
   /**
    * The current name.
@@ -33,7 +33,7 @@ public abstract class AbstractStructuredWriter implements StructuredWriter {
     super();
     this.config = config;
     this.writeNullValues = config.get(MarshallingConfig.WRITE_NULL_VALUES).booleanValue();
-    this.indendation = config.get(MarshallingConfig.INDENDATION);
+    this.indentation = config.get(MarshallingConfig.INDENTATION);
   }
 
   @Override
