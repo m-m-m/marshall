@@ -96,7 +96,7 @@ public class JsonWriter extends AbstractStructuredStringWriter {
   @Override
   public void writeValueAsNull() {
 
-    write("null");
+    writeValueInternal("null");
   }
 
   @Override
