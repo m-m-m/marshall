@@ -7,6 +7,7 @@ import java.io.StringReader;
 import java.io.StringWriter;
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.time.Instant;
 import java.util.Map;
 
 import org.assertj.core.api.Assertions;
@@ -24,6 +25,7 @@ public class JsonMarshallingTest extends Assertions {
 
   private static final String JSON = "{\n" //
       + "  \"foo\": \"bar\",\n" //
+      + "  \"instant\": \"1999-12-31T23:59:59.999999Z\",\n" //
       + "  \"list\": [\n" //
       + "    -1,\n" //
       + "    -1,\n" //
@@ -50,6 +52,8 @@ public class JsonMarshallingTest extends Assertions {
     writer.writeStartObject();
     writer.writeName("foo");
     writer.writeValue("bar");
+    writer.writeName("instant");
+    writer.writeValueAsInstant(Instant.parse("1999-12-31T23:59:59.999999Z"));
     writer.writeName("list");
     writer.writeStartArray();
     writer.writeValueAsByte((byte) -1);
@@ -86,6 +90,11 @@ public class JsonMarshallingTest extends Assertions {
     assertThat(reader.readName()).isEqualTo("foo");
     assertThat(reader.getState()).isSameAs(State.VALUE);
     assertThat(reader.readValue(String.class)).isEqualTo("bar");
+    assertThat(reader.getState()).isSameAs(State.NAME);
+    assertThat(reader.getState()).isSameAs(State.NAME);
+    assertThat(reader.readName()).isEqualTo("instant");
+    assertThat(reader.getState()).isSameAs(State.VALUE);
+    assertThat(reader.readValueAsInstant()).isEqualTo(Instant.parse("1999-12-31T23:59:59.999999Z"));
     assertThat(reader.getState()).isSameAs(State.NAME);
     assertThat(reader.readName()).isEqualTo("list");
     assertThat(reader.getState()).isSameAs(State.START_ARRAY);

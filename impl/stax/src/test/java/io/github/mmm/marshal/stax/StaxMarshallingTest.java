@@ -7,6 +7,7 @@ import java.io.StringReader;
 import java.io.StringWriter;
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -16,8 +17,8 @@ import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import io.github.mmm.marshall.StructuredReader;
-import io.github.mmm.marshall.StructuredWriter;
 import io.github.mmm.marshall.StructuredReader.State;
+import io.github.mmm.marshall.StructuredWriter;
 import io.github.mmm.marshall.stax.StaxMarshalling;
 import io.github.mmm.marshall.stax.impl.StaxFormat;
 
@@ -45,6 +46,7 @@ public class StaxMarshallingTest extends Assertions {
   private static final String XML_EXPECTED = "<?xml version=\"1.0\" ?>" //
       + "<o:json xmlns:a=\"array\" xmlns:o=\"object\">" //
       + "<foo s=\"bar\"/>" //
+      + "<instant s=\"1999-12-31T23:59:59.999999Z\"/>" //
       + "<a:list>" //
       + "<i n=\"-1\"/>" //
       + "<i n=\"-1\"/>" //
@@ -65,7 +67,7 @@ public class StaxMarshallingTest extends Assertions {
       + "</o:json>";
 
   /**
-   * Test {@link StaxFormat#writer(java.io.Writer) writing as XML}.
+   * Test {@link StaxFormat#writer(Appendable) writing as XML}.
    */
   @Test
   public void testWrite() {
@@ -75,6 +77,8 @@ public class StaxMarshallingTest extends Assertions {
     writer.writeStartObject();
     writer.writeName("foo");
     writer.writeValue("bar");
+    writer.writeName("instant");
+    writer.writeValueAsInstant(Instant.parse("1999-12-31T23:59:59.999999Z"));
     writer.writeName("list");
     writer.writeStartArray();
     writer.writeValueAsByte(VALUE_1);
@@ -115,6 +119,10 @@ public class StaxMarshallingTest extends Assertions {
     assertThat(reader.readName()).isEqualTo("foo");
     assertThat(reader.getState()).isSameAs(State.VALUE);
     assertThat(reader.readValue(String.class)).isEqualTo("bar");
+    assertThat(reader.getState()).isSameAs(State.NAME);
+    assertThat(reader.readName()).isEqualTo("instant");
+    assertThat(reader.getState()).isSameAs(State.VALUE);
+    assertThat(reader.readValueAsInstant()).isEqualTo(Instant.parse("1999-12-31T23:59:59.999999Z"));
     assertThat(reader.getState()).isSameAs(State.NAME);
     assertThat(reader.readName()).isEqualTo("list");
     assertThat(reader.getState()).isSameAs(State.START_ARRAY);
@@ -174,6 +182,10 @@ public class StaxMarshallingTest extends Assertions {
     assertThat(reader.readStartObject()).isTrue();
     assertThat(reader.getState()).isSameAs(State.NAME);
     assertThat(reader.readName()).isEqualTo("foo");
+    assertThat(reader.getState()).isSameAs(State.VALUE);
+    reader.skipValue();
+    assertThat(reader.getState()).isSameAs(State.NAME);
+    assertThat(reader.readName()).isEqualTo("instant");
     assertThat(reader.getState()).isSameAs(State.VALUE);
     reader.skipValue();
     assertThat(reader.getState()).isSameAs(State.NAME);

@@ -4,6 +4,13 @@ package io.github.mmm.marshall;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.OffsetDateTime;
+import java.time.OffsetTime;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -279,103 +286,103 @@ public abstract class AbstractStructuredReader implements StructuredReader {
     }
   }
 
-  // @Override
-  // public Instant readValueAsInstant() {
-  //
-  // String value = readValueAsString();
-  // if (value == null) {
-  // return null;
-  // }
-  // try {
-  // return Instant.parse(value);
-  // } catch (RuntimeException e) {
-  // throw handleValueParseError(value, Instant.class, e);
-  // }
-  // }
-  //
-  // @Override
-  // public LocalDate readValueAsLocalDate() {
-  //
-  // String value = readValueAsString();
-  // if (value == null) {
-  // return null;
-  // }
-  // try {
-  // return LocalDate.parse(value);
-  // } catch (RuntimeException e) {
-  // throw handleValueParseError(value, LocalDate.class, e);
-  // }
-  // }
-  //
-  // @Override
-  // public LocalDateTime readValueAsLocalDateTime() {
-  //
-  // String value = readValueAsString();
-  // if (value == null) {
-  // return null;
-  // }
-  // try {
-  // return LocalDateTime.parse(value);
-  // } catch (RuntimeException e) {
-  // throw handleValueParseError(value, LocalDateTime.class, e);
-  // }
-  // }
-  //
-  // @Override
-  // public LocalTime readValueAsLocalTime() {
-  //
-  // String value = readValueAsString();
-  // if (value == null) {
-  // return null;
-  // }
-  // try {
-  // return LocalTime.parse(value);
-  // } catch (RuntimeException e) {
-  // throw handleValueParseError(value, LocalTime.class, e);
-  // }
-  // }
-  //
-  // @Override
-  // public ZonedDateTime readValueAsZonedDateTime() {
-  //
-  // String value = readValueAsString();
-  // if (value == null) {
-  // return null;
-  // }
-  // try {
-  // return ZonedDateTime.parse(value);
-  // } catch (RuntimeException e) {
-  // throw handleValueParseError(value, ZonedDateTime.class, e);
-  // }
-  // }
-  //
-  // @Override
-  // public OffsetDateTime readValueAsOffsetDateTime() {
-  //
-  // String value = readValueAsString();
-  // if (value == null) {
-  // return null;
-  // }
-  // try {
-  // return OffsetDateTime.parse(value);
-  // } catch (RuntimeException e) {
-  // throw handleValueParseError(value, OffsetDateTime.class, e);
-  // }
-  // }
-  //
-  // @Override
-  // public OffsetTime readValueAsOffsetTime() {
-  //
-  // String value = readValueAsString();
-  // if (value == null) {
-  // return null;
-  // }
-  // try {
-  // return OffsetTime.parse(value);
-  // } catch (RuntimeException e) {
-  // throw handleValueParseError(value, OffsetDateTime.class, e);
-  // }
-  // }
+  @Override
+  public Instant readValueAsInstant() {
+
+    String value = readValueAsString();
+    if (value == null) {
+      return null;
+    }
+    try {
+      return Instant.parse(value);
+    } catch (RuntimeException e) {
+      throw handleValueParseError(value, Instant.class, e);
+    }
+  }
+
+  @Override
+  public LocalDate readValueAsLocalDate() {
+
+    String value = readValueAsString();
+    if (value == null) {
+      return null;
+    }
+    try {
+      return LocalDate.parse(value);
+    } catch (RuntimeException e) {
+      throw handleValueParseError(value, LocalDate.class, e);
+    }
+  }
+
+  @Override
+  public LocalDateTime readValueAsLocalDateTime() {
+
+    String value = readValueAsString();
+    if (value == null) {
+      return null;
+    }
+    try {
+      return LocalDateTime.parse(value);
+    } catch (RuntimeException e) {
+      throw handleValueParseError(value, LocalDateTime.class, e);
+    }
+  }
+
+  @Override
+  public LocalTime readValueAsLocalTime() {
+
+    String value = readValueAsString();
+    if (value == null) {
+      return null;
+    }
+    try {
+      return LocalTime.parse(value);
+    } catch (RuntimeException e) {
+      throw handleValueParseError(value, LocalTime.class, e);
+    }
+  }
+
+  @Override
+  public ZonedDateTime readValueAsZonedDateTime() {
+
+    String value = readValueAsString();
+    if (value == null) {
+      return null;
+    }
+    try {
+      return ZonedDateTime.parse(value);
+    } catch (RuntimeException e) {
+      throw handleValueParseError(value, ZonedDateTime.class, e);
+    }
+  }
+
+  @Override
+  public OffsetDateTime readValueAsOffsetDateTime() {
+
+    String value = readValueAsString();
+    if (value == null) {
+      return null;
+    }
+    try {
+      return OffsetDateTime.parse(value);
+    } catch (RuntimeException e) {
+      throw handleValueParseError(value, OffsetDateTime.class, e);
+    }
+  }
+
+  @Override
+  public OffsetTime readValueAsOffsetTime() {
+
+    String value = readValueAsString();
+    if (value == null) {
+      return null;
+    }
+    try {
+      return OffsetTime.parse(value);
+    } catch (RuntimeException e) {
+      throw handleValueParseError(value, OffsetDateTime.class, e);
+    }
+  }
 
   @Override
   public Object readValue(boolean recursive) {

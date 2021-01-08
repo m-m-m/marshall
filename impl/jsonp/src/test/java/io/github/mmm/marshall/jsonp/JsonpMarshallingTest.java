@@ -7,15 +7,15 @@ import java.io.StringReader;
 import java.io.StringWriter;
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.time.Instant;
 import java.util.Map;
 
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import io.github.mmm.marshall.StructuredReader;
-import io.github.mmm.marshall.StructuredWriter;
 import io.github.mmm.marshall.StructuredReader.State;
-import io.github.mmm.marshall.jsonp.JsonpMarshalling;
+import io.github.mmm.marshall.StructuredWriter;
 import io.github.mmm.marshall.jsonp.impl.JsonpFormatImpl;
 
 /**
@@ -25,6 +25,7 @@ public class JsonpMarshallingTest extends Assertions {
 
   private static final String JSON = "{" //
       + "\"foo\":\"bar\"," //
+      + "\"instant\":\"1999-12-31T23:59:59.999999Z\"," //
       + "\"list\":[" //
       + "-1," //
       + "-1," //
@@ -39,7 +40,7 @@ public class JsonpMarshallingTest extends Assertions {
       + "}";
 
   /**
-   * Test {@link JsonpFormatImpl#writer(java.io.Writer) writing JSON}.
+   * Test {@link JsonpFormatImpl#writer(Appendable) writing JSON}.
    *
    * @throws Exception on error.
    */
@@ -51,6 +52,8 @@ public class JsonpMarshallingTest extends Assertions {
     writer.writeStartObject();
     writer.writeName("foo");
     writer.writeValue("bar");
+    writer.writeName("instant");
+    writer.writeValue(Instant.parse("1999-12-31T23:59:59.999999Z"));
     writer.writeName("list");
     writer.writeStartArray();
     writer.writeValueAsByte((byte) -1);
@@ -87,6 +90,10 @@ public class JsonpMarshallingTest extends Assertions {
     assertThat(reader.readName()).isEqualTo("foo");
     assertThat(reader.getState()).isSameAs(State.VALUE);
     assertThat(reader.readValue(String.class)).isEqualTo("bar");
+    assertThat(reader.getState()).isSameAs(State.NAME);
+    assertThat(reader.readName()).isEqualTo("instant");
+    assertThat(reader.getState()).isSameAs(State.VALUE);
+    assertThat(reader.readValueAsInstant()).isEqualTo(Instant.parse("1999-12-31T23:59:59.999999Z"));
     assertThat(reader.getState()).isSameAs(State.NAME);
     assertThat(reader.readName()).isEqualTo("list");
     assertThat(reader.getState()).isSameAs(State.START_ARRAY);

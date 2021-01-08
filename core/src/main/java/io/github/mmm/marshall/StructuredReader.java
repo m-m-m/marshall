@@ -4,6 +4,13 @@ package io.github.mmm.marshall;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.OffsetDateTime;
+import java.time.OffsetTime;
+import java.time.ZonedDateTime;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Objects;
@@ -187,47 +194,47 @@ public interface StructuredReader extends AutoCloseable {
    */
   BigDecimal readValueAsBigDecimal();
 
-  // /**
-  // * @return reads the value as {@link Instant}.
-  // * @see #readValue(Class)
-  // */
-  // Instant readValueAsInstant();
-  //
-  // /**
-  // * @return reads the value as {@link LocalDate}.
-  // * @see #readValue(Class)
-  // */
-  // LocalDate readValueAsLocalDate();
-  //
-  // /**
-  // * @return reads the value as {@link LocalDateTime}.
-  // * @see #readValue(Class)
-  // */
-  // LocalDateTime readValueAsLocalDateTime();
-  //
-  // /**
-  // * @return reads the value as {@link LocalTime}.
-  // * @see #readValue(Class)
-  // */
-  // LocalTime readValueAsLocalTime();
-  //
-  // /**
-  // * @return reads the value as {@link ZonedDateTime}.
-  // * @see #readValue(Class)
-  // */
-  // ZonedDateTime readValueAsZonedDateTime();
-  //
-  // /**
-  // * @return reads the value as {@link OffsetDateTime}.
-  // * @see #readValue(Class)
-  // */
-  // OffsetDateTime readValueAsOffsetDateTime();
-  //
-  // /**
-  // * @return reads the value as {@link OffsetTime}.
-  // * @see #readValue(Class)
-  // */
-  // OffsetTime readValueAsOffsetTime();
+  /**
+   * @return reads the value as {@link Instant}.
+   * @see #readValue(Class)
+   */
+  Instant readValueAsInstant();
+
+  /**
+   * @return reads the value as {@link LocalDate}.
+   * @see #readValue(Class)
+   */
+  LocalDate readValueAsLocalDate();
+
+  /**
+   * @return reads the value as {@link LocalDateTime}.
+   * @see #readValue(Class)
+   */
+  LocalDateTime readValueAsLocalDateTime();
+
+  /**
+   * @return reads the value as {@link LocalTime}.
+   * @see #readValue(Class)
+   */
+  LocalTime readValueAsLocalTime();
+
+  /**
+   * @return reads the value as {@link ZonedDateTime}.
+   * @see #readValue(Class)
+   */
+  ZonedDateTime readValueAsZonedDateTime();
+
+  /**
+   * @return reads the value as {@link OffsetDateTime}.
+   * @see #readValue(Class)
+   */
+  OffsetDateTime readValueAsOffsetDateTime();
+
+  /**
+   * @return reads the value as {@link OffsetTime}.
+   * @see #readValue(Class)
+   */
+  OffsetTime readValueAsOffsetTime();
 
   /**
    * Skips the current value. Should be called after {@link #readName()}.
