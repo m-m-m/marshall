@@ -5,6 +5,8 @@
 
 /**
  * Provides an implementation of {@code mmm-marshall} for JSON using JSON-P.
+ *
+ * @provides io.github.mmm.marshall.StructuredFormatProvider
  */
 module io.github.mmm.marshall.jsonp {
 
