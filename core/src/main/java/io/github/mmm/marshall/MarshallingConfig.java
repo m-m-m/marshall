@@ -18,17 +18,20 @@ import io.github.mmm.base.config.ConfigOption;
 public final class MarshallingConfig extends ConfigMap {
 
   /** {@link ConfigOption} for the indentation used by {@link StructuredWriter} to format the output. */
-  public static final ConfigOption<String> INDENTATION = new ConfigOption<>("indentation", "  ");
+  public static final ConfigOption<String> OPT_INDENTATION = new ConfigOption<>("indentation", "  ");
 
   /**
    * {@link ConfigOption} to configure if {@link StructuredWriter#writeValueAsNull()} should actually write {@code null}
    * values (if configured to {@link Boolean#TRUE}) or omit {@code null} values (if configured to
    * {@link Boolean#FALSE}).
    */
-  public static final ConfigOption<Boolean> WRITE_NULL_VALUES = new ConfigOption<>("write-null", Boolean.TRUE);
+  public static final ConfigOption<Boolean> OPT_WRITE_NULL_VALUES = new ConfigOption<>("write-null", Boolean.TRUE);
 
   /** Immutable instance of {@link MarshallingConfig} with the default values. */
   public static final MarshallingConfig DEFAULTS = new MarshallingConfig(Collections.emptyMap());
+
+  /** Immutable instance of {@link MarshallingConfig} with {@link #OPT_INDENTATION} disabled. */
+  public static final MarshallingConfig NO_INDENTATION = DEFAULTS.with(OPT_INDENTATION, null);
 
   /**
    * The constructor.
