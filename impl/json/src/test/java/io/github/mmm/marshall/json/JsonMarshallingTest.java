@@ -155,4 +155,26 @@ public class JsonMarshallingTest extends Assertions {
     assertThat(value).isInstanceOf(Map.class);
   }
 
+  /** Test of {@link StructuredWriter#writeValue(Object)} in atomic way (without start object). */
+  @Test
+  public void testWriteAtomicValue() {
+
+    StringBuilder sb = new StringBuilder();
+    StructuredWriter writer = JsonMarshalling.of().writer(sb);
+    writer.writeValue(Long.valueOf(42));
+    writer.close();
+    assertThat(sb.toString()).isEqualTo("42");
+  }
+
+  /** Test of {@link StructuredReader#readValue()} in atomic way (without start object). */
+  @Test
+  public void testReadAtomicValue() {
+
+    Reader stringReader = new StringReader("42");
+    StructuredReader reader = JsonMarshalling.of().reader(stringReader);
+    Object value = reader.readValue();
+    assertThat(value).isEqualTo(Long.valueOf(42));
+    assertThat(reader.getState()).isEqualTo(State.DONE);
+  }
+
 }
