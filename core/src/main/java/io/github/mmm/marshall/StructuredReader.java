@@ -15,6 +15,8 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.Objects;
 
+import io.github.mmm.base.exception.ObjectMismatchException;
+
 /**
  * Interface for a reader to parse a {@link StructuredFormat structured format} such as JSON or XML.
  *
@@ -258,6 +260,13 @@ public interface StructuredReader extends AutoCloseable {
   boolean isDone();
 
   /**
+   * @return {@code true} if the {@link #getState() current state} is {@link State#VALUE} and the value is encoded as
+   *         {@link String}, {@code false} otherwise. This can be helpful whilst reading numbers to distinguish between
+   *         values such as {@code "1"} and {@code 1}.
+   */
+  boolean isStringValue();
+
+  /**
    * @return the current state of this reader.
    */
   State getState();
@@ -268,6 +277,21 @@ public interface StructuredReader extends AutoCloseable {
    * @return the new {@link State}.
    */
   State next();
+
+  /**
+   * @param expected the required {@link State} expect for the current {@link #getState() state}.
+   * @return the {@link #next() next} {@link State} after successfully matching the {@link #getState() current state}.
+   * @throws ObjectMismatchException if the {@link #getState() current state} is not the same as the given
+   *         {@code expected} {@link State}.
+   */
+  default State require(State expected) {
+
+    State currentState = getState();
+    if (currentState != expected) {
+      throw new ObjectMismatchException(currentState, expected);
+    }
+    return next();
+  }
 
   @Override
   void close();

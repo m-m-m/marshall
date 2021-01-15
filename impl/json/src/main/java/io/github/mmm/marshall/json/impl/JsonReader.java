@@ -33,6 +33,8 @@ public class JsonReader extends AbstractStructuredReader {
 
   private Object value;
 
+  private boolean stringValue;
+
   /** 0 if no comma read, 1 if comma read, else illegal state. */
   private int commaCount;
 
@@ -53,6 +55,7 @@ public class JsonReader extends AbstractStructuredReader {
   @Override
   public State next() {
 
+    this.stringValue = false;
     this.reader.skipWhile(SPACE_FILTER);
     if (!this.reader.hasNext()) {
       this.state = State.DONE;
@@ -119,9 +122,16 @@ public class JsonReader extends AbstractStructuredReader {
     if (!mustBeValue && (this.jsonState.type == JsonNodeType.OBJECT)) {
       nextName(string);
     } else {
+      this.stringValue = true;
       nextValue(string);
     }
     this.commaCount = 0;
+  }
+
+  @Override
+  public boolean isStringValue() {
+
+    return this.stringValue;
   }
 
   private void nextNumber() {

@@ -208,6 +208,16 @@ public class TvmXmlDocumentReader extends AbstractStructuredReader {
     return value;
   }
 
+  @Override
+  public boolean isStringValue() {
+
+    if (this.state == State.VALUE) {
+      Attr stringAttr = this.node.getAttributes().getNamedItem(StructuredFormat.ART_STRING_VALUE);
+      return (stringAttr != null);
+    }
+    return false;
+  }
+
   private RuntimeException invalidXml() {
 
     throw new IllegalStateException("Invalid XML!");

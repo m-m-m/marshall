@@ -81,6 +81,12 @@ public class JsonpReader extends AbstractStructuredReader {
   }
 
   @Override
+  public boolean isStringValue() {
+
+    return this.event == Event.VALUE_STRING;
+  }
+
+  @Override
   public String readName() {
 
     expect(Event.KEY_NAME);
