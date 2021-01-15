@@ -87,11 +87,13 @@ public class JsonpReader extends AbstractStructuredReader {
   }
 
   @Override
-  public String readName() {
+  public String getName(boolean next) {
 
     expect(Event.KEY_NAME);
     this.name = this.json.getString();
-    next();
+    if (next) {
+      next();
+    }
     return this.name;
   }
 

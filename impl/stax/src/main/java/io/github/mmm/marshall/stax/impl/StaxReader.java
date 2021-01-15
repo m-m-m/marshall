@@ -129,10 +129,12 @@ public class StaxReader extends AbstractStructuredReader {
   }
 
   @Override
-  public String readName() {
+  public String getName(boolean next) {
 
     expect(State.NAME);
-    next();
+    if (next) {
+      next();
+    }
     return this.name;
   }
 

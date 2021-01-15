@@ -25,9 +25,31 @@ import io.github.mmm.base.exception.ObjectMismatchException;
 public interface StructuredReader extends AutoCloseable {
 
   /**
+   * @return the name of the current property or element. Consumes to the {@link #next() next} {@link #getState()
+   *         state}.
+   * @see #getName()
+   */
+  default String readName() {
+
+    return getName(true);
+  }
+
+  /**
+   * @return the name of the current property or element. Does not change the state of this reader and can be called
+   *         multiple times.
+   * @see #getName(boolean)
+   */
+  default String getName() {
+
+    return getName(false);
+  }
+
+  /**
+   * @param next - {@code true} to advance to the {@link #next() next} {@link #getState() state}, {@code false}
+   *        otherwise (keep current state and only peek the name).
    * @return the name of the current property or element.
    */
-  String readName();
+  String getName(boolean next);
 
   /**
    * @return {@code true} if pointing to the start of an object, {@code false} otherwise.

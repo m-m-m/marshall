@@ -187,9 +187,11 @@ public class JsonReader extends AbstractStructuredReader {
   }
 
   @Override
-  public String readName() {
+  public String getName(boolean next) {
 
-    next();
+    if (next) {
+      next();
+    }
     return this.name;
   }
 
