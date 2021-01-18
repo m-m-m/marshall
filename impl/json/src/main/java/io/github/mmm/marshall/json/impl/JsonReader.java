@@ -190,7 +190,7 @@ public class JsonReader extends AbstractStructuredReader {
   public String getName(boolean next) {
 
     if (next) {
-      next();
+      require(State.NAME);
     }
     return this.name;
   }
@@ -254,6 +254,12 @@ public class JsonReader extends AbstractStructuredReader {
     // }
     this.jsonState = null;
     this.reader = null;
+  }
+
+  @Override
+  public String toString() {
+
+    return this.reader.toString();
   }
 
 }

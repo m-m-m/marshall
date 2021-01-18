@@ -11,9 +11,8 @@ package io.github.mmm.marshall;
 public interface UnmarshallableObject extends Unmarshaller<Object> {
 
   /**
-   * ATTENTION: This object will be modified such that the read data will be applied. For complex objects (e.g. beans
-   * with multiple properties) those properties not defined in the data that is read will not be overwritten. In order
-   * to get a clean representation of the data from the given reader you should invoke this method on an empty object.
+   * <b>ATTENTION:</b> Will read the data from the reader into this object instance. This can cause unexpected results
+   * if this object already contains data as described in {@link #read(StructuredReader)}.
    *
    * @see #read(StructuredReader)
    */
@@ -26,9 +25,9 @@ public interface UnmarshallableObject extends Unmarshaller<Object> {
 
   /**
    * @param reader the {@link StructuredReader} where to read the data from. This object will be modified such that the
-   *        read data will be applied. For complex objects (e.g. beans with multiple properties) those properties not
-   *        defined in the data that is read will not be overwritten. In order to get a clean representation of the data
-   *        from the given reader you should invoke this method on an empty object.
+   *        read data will be applied. Only properties present in the read data will be set (overridden). In order to
+   *        get a clean representation of the data from the given reader you should invoke this method on an empty
+   *        object (new instance).
    */
   void read(StructuredReader reader);
 
