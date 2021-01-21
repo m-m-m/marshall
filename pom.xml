@@ -15,8 +15,6 @@
   <description>Simple adapter for marshalling and unmarshalling data to structured formats such as JSON or XML.</description>
 
   <properties>
-    <revision>1.0.0</revision>
-    <changelist>-SNAPSHOT</changelist>
     <mmm.repository>marshal</mmm.repository>
     <teavm.version>0.7.0-dev-1090</teavm.version>
   </properties>
@@ -31,7 +29,7 @@
       <dependency>
         <groupId>${project.groupId}</groupId>
         <artifactId>mmm-scanner-parent</artifactId>
-        <version>1.0.0-SNAPSHOT</version>
+        <version>0.1.0</version>
         <type>pom</type>
         <scope>import</scope>
       </dependency>
