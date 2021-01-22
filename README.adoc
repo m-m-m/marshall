@@ -6,7 +6,7 @@ image:https://travis-ci.com/m-m-m/marshall.svg?branch=master["build-status",link
 == mmm-marshall
 
 image:https://img.shields.io/maven-central/v/io.github.m-m-m/mmm-marshall.svg?label=Maven%20Central["Maven Central",link=https://search.maven.org/search?q=g:io.github.m-m-m]
-image:https://m-m-m.github.io/javadoc.svg?status=online["apidoc",link="https://m-m-m.github.io/docs/api/io.github.mmm.marshall/module-summary.html"]
+image:https://javadoc.io/badge2/io.github.m-m-m/mmm-marshall/javadoc.svg["base JavaDoc", link=https://javadoc.io/doc/io.github.m-m-m/mmm-marshall]
 
 The module `io.github.mmm.marshall` (artifactId `mmm-marshall`) provides the API to marshall (serialize) and unmarshall (deserialize) data from/to structured formats such as JSON or XML.
 
