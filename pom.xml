@@ -28,14 +28,14 @@
       <dependency>
         <groupId>${project.groupId}</groupId>
         <artifactId>mmm-scanner-parent</artifactId>
-        <version>0.2.0</version>
+        <version>${project.version}</version>
         <type>pom</type>
         <scope>import</scope>
       </dependency>
       <dependency>
         <groupId>${project.groupId}</groupId>
         <artifactId>mmm-tvm-parent</artifactId>
-        <version>0.2.0</version>
+        <version>${project.version}</version>
         <type>pom</type>
         <scope>import</scope>
       </dependency>
