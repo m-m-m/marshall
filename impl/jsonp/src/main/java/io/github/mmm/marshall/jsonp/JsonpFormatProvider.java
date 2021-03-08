@@ -5,13 +5,15 @@ package io.github.mmm.marshall.jsonp;
 import io.github.mmm.marshall.MarshallingConfig;
 import io.github.mmm.marshall.StructuredFormat;
 import io.github.mmm.marshall.StructuredFormatProvider;
+import io.github.mmm.marshall.StructuredTextFormat;
+import io.github.mmm.marshall.StructuredTextFormatProvider;
 
 /**
  * Implementation of {@link StructuredFormatProvider} for JSON-P.
  *
  * @since 1.0.0
  */
-public class JsonpFormatProvider implements StructuredFormatProvider {
+public class JsonpFormatProvider implements StructuredTextFormatProvider {
 
   @Override
   public String getId() {
@@ -20,13 +22,13 @@ public class JsonpFormatProvider implements StructuredFormatProvider {
   }
 
   @Override
-  public StructuredFormat create() {
+  public StructuredTextFormat create() {
 
     return JsonpMarshalling.of();
   }
 
   @Override
-  public StructuredFormat create(MarshallingConfig config) {
+  public StructuredTextFormat create(MarshallingConfig config) {
 
     return JsonpMarshalling.of(config);
   }

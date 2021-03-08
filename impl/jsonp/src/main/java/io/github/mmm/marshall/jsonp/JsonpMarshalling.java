@@ -9,6 +9,7 @@ import javax.json.stream.JsonParserFactory;
 
 import io.github.mmm.marshall.MarshallingConfig;
 import io.github.mmm.marshall.StructuredFormat;
+import io.github.mmm.marshall.StructuredTextFormat;
 import io.github.mmm.marshall.jsonp.impl.JsonpFormatImpl;
 
 /**
@@ -26,7 +27,7 @@ public final class JsonpMarshalling {
   /**
    * @return the default instance of {@link StructuredFormat} for JSON based on JSON-P.
    */
-  public static StructuredFormat of() {
+  public static StructuredTextFormat of() {
 
     return JsonpFormatImpl.of();
   }
@@ -35,7 +36,7 @@ public final class JsonpMarshalling {
    * @param config the {@link Map} with the configuration properties for the JSON vendor implementation.
    * @return a new instance of {@link StructuredFormat} for JSON based on JSON-P.
    */
-  public static StructuredFormat of(MarshallingConfig config) {
+  public static StructuredTextFormat of(MarshallingConfig config) {
 
     return JsonpFormatImpl.of(config);
   }
@@ -46,7 +47,7 @@ public final class JsonpMarshalling {
    * @param config the {@link MarshallingConfig} for the JSON vendor implementation.
    * @return a new instance of {@link StructuredFormat} for JSON based on JSON-P.
    */
-  public static StructuredFormat of(JsonParserFactory readerFactory, JsonGeneratorFactory writerFactory,
+  public static StructuredTextFormat of(JsonParserFactory readerFactory, JsonGeneratorFactory writerFactory,
       MarshallingConfig config) {
 
     return new JsonpFormatImpl(readerFactory, writerFactory, config);

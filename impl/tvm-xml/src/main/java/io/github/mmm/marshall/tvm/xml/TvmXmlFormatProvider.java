@@ -5,6 +5,8 @@ package io.github.mmm.marshall.tvm.xml;
 import io.github.mmm.marshall.MarshallingConfig;
 import io.github.mmm.marshall.StructuredFormat;
 import io.github.mmm.marshall.StructuredFormatProvider;
+import io.github.mmm.marshall.StructuredTextFormat;
+import io.github.mmm.marshall.StructuredTextFormatProvider;
 import io.github.mmm.marshall.tvm.xml.impl.TvmXmlFormat;
 
 /**
@@ -12,7 +14,7 @@ import io.github.mmm.marshall.tvm.xml.impl.TvmXmlFormat;
  *
  * @since 1.0.0
  */
-public class TvmXmlFormatProvider implements StructuredFormatProvider {
+public class TvmXmlFormatProvider implements StructuredTextFormatProvider {
 
   @Override
   public String getId() {
@@ -21,14 +23,17 @@ public class TvmXmlFormatProvider implements StructuredFormatProvider {
   }
 
   @Override
-  public StructuredFormat create() {
+  public StructuredTextFormat create() {
 
     return TvmXmlFormat.of();
   }
 
   @Override
-  public StructuredFormat create(MarshallingConfig config) {
+  public StructuredTextFormat create(MarshallingConfig config) {
 
+    if (config == null) {
+      return TvmXmlFormat.of();
+    }
     return new TvmXmlFormat(config);
   }
 }

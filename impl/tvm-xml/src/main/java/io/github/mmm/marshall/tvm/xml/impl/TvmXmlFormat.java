@@ -11,6 +11,7 @@ import io.github.mmm.marshall.MarshallableObject;
 import io.github.mmm.marshall.MarshallingConfig;
 import io.github.mmm.marshall.StructuredFormat;
 import io.github.mmm.marshall.StructuredReader;
+import io.github.mmm.marshall.StructuredTextFormat;
 import io.github.mmm.marshall.StructuredWriter;
 
 /**
@@ -18,7 +19,7 @@ import io.github.mmm.marshall.StructuredWriter;
  *
  * @since 1.0.0
  */
-public class TvmXmlFormat implements StructuredFormat {
+public class TvmXmlFormat implements StructuredTextFormat {
 
   private static final TvmXmlFormat DEFAULT = new TvmXmlFormat(MarshallingConfig.DEFAULTS);
 
@@ -54,7 +55,7 @@ public class TvmXmlFormat implements StructuredFormat {
     if (data instanceof Document) {
       return new TvmXmlDocumentReader(((Document) data).getDocumentElement(), this.config);
     }
-    return StructuredFormat.super.reader(data);
+    return StructuredTextFormat.super.reader(data);
   }
 
   @Override

@@ -10,7 +10,10 @@ package io.github.mmm.marshall;
 public interface StructuredFormatProvider {
 
   /**
-   * @return the {@link StructuredFormat#getId() ID} of the {@link StructuredFormat} to {@link #create()}.
+   * @return the {@link StructuredFormat#getId() ID} of the {@link StructuredFormat} to {@link #create()}. E.g.
+   *         {@link StructuredFormat#ID_JSON JSON}, {@link StructuredFormat#ID_XML XML}, {@link StructuredFormat#ID_YAML
+   *         YAML}, or {@link StructuredFormat#ID_PROTOBUF}.
+   * @see StructuredFormat#getId()
    */
   String getId();
 

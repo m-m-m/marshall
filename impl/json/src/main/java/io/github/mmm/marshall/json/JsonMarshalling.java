@@ -6,6 +6,7 @@ import java.util.Map;
 
 import io.github.mmm.marshall.MarshallingConfig;
 import io.github.mmm.marshall.StructuredFormat;
+import io.github.mmm.marshall.StructuredTextFormat;
 import io.github.mmm.marshall.json.impl.JsonFormatImpl;
 
 /**
@@ -23,7 +24,7 @@ public final class JsonMarshalling {
   /**
    * @return the default instance of {@link StructuredFormat} for JSON based on JSON-P.
    */
-  public static StructuredFormat of() {
+  public static StructuredTextFormat of() {
 
     return JsonFormatImpl.of();
   }
@@ -32,7 +33,7 @@ public final class JsonMarshalling {
    * @param config the {@link Map} with the configuration properties for the JSON vendor implementation.
    * @return a new instance of {@link StructuredFormat} for JSON based on JSON-P.
    */
-  public static StructuredFormat of(MarshallingConfig config) {
+  public static StructuredTextFormat of(MarshallingConfig config) {
 
     return JsonFormatImpl.of(config);
   }

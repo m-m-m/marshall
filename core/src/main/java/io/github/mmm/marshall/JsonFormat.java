@@ -12,21 +12,21 @@ package io.github.mmm.marshall;
 public interface JsonFormat {
 
   /**
-   * @return the {@link StructuredFormat} for {@link StructuredFormat#ID_JSON JSON} with default configuration.
+   * @return the {@link StructuredTextFormat} for {@link StructuredFormat#ID_JSON JSON} with default configuration.
    */
-  static StructuredFormat of() {
+  static StructuredTextFormat of() {
 
-    return StructuredFormatFactory.get().create(StructuredFormat.ID_JSON);
+    return StructuredFormatFactory.get().createText(StructuredFormat.ID_JSON);
   }
 
   /**
    * @param configuration the {@link MarshallingConfig}.
-   * @return the {@link StructuredFormat} for {@link StructuredFormat#ID_JSON JSON} with the given
+   * @return the {@link StructuredTextFormat} for {@link StructuredFormat#ID_JSON JSON} with the given
    *         {@code configuration}.
    */
-  static StructuredFormat of(MarshallingConfig configuration) {
+  static StructuredTextFormat of(MarshallingConfig configuration) {
 
-    return StructuredFormatFactory.get().create(StructuredFormat.ID_JSON, configuration);
+    return StructuredFormatFactory.get().createText(StructuredFormat.ID_JSON, configuration);
   }
 
 }

@@ -12,20 +12,21 @@ package io.github.mmm.marshall;
 public interface XmlFormat {
 
   /**
-   * @return the {@link StructuredFormat} for {@link StructuredFormat#ID_XML XML} with default configuration.
+   * @return the {@link StructuredTextFormat} for {@link StructuredFormat#ID_XML XML} with default configuration.
    */
-  static StructuredFormat of() {
+  static StructuredTextFormat of() {
 
-    return StructuredFormatFactory.get().create(StructuredFormat.ID_XML);
+    return StructuredFormatFactory.get().createText(StructuredFormat.ID_XML);
   }
 
   /**
    * @param configuration the {@link MarshallingConfig}.
-   * @return the {@link StructuredFormat} for {@link StructuredFormat#ID_XML XML} with the given {@code configuration}.
+   * @return the {@link StructuredTextFormat} for {@link StructuredFormat#ID_XML XML} with the given
+   *         {@code configuration}.
    */
-  static StructuredFormat of(MarshallingConfig configuration) {
+  static StructuredTextFormat of(MarshallingConfig configuration) {
 
-    return StructuredFormatFactory.get().create(StructuredFormat.ID_XML, configuration);
+    return StructuredFormatFactory.get().createText(StructuredFormat.ID_XML, configuration);
   }
 
 }

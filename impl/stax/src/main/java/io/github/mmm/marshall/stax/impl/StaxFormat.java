@@ -15,6 +15,7 @@ import io.github.mmm.base.io.AppendableWriter;
 import io.github.mmm.marshall.MarshallingConfig;
 import io.github.mmm.marshall.StructuredFormat;
 import io.github.mmm.marshall.StructuredReader;
+import io.github.mmm.marshall.StructuredTextFormat;
 import io.github.mmm.marshall.StructuredWriter;
 
 /**
@@ -22,7 +23,7 @@ import io.github.mmm.marshall.StructuredWriter;
  *
  * @since 1.0.0
  */
-public class StaxFormat implements StructuredFormat {
+public class StaxFormat implements StructuredTextFormat {
 
   private static final StaxFormat DEFAULT;
 

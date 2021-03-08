@@ -3,12 +3,8 @@
 package io.github.mmm.marshall;
 
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.io.Reader;
 import java.io.StringReader;
-import java.nio.charset.StandardCharsets;
 
 /**
  * Interface providing a structured format such as JSON or XML.
@@ -27,6 +23,9 @@ public interface StructuredFormat {
    * {@link StructuredFormatProvider#getId() Name} of <a href="https://en.wikipedia.org/wiki/YAML">YAML format</a>.
    */
   String ID_YAML = "text/yaml";
+
+  /** {@link StructuredFormatProvider#getId() Name} of <a href="https://grpc.io/">GRPC/protobuf format</a>. */
+  String ID_PROTOBUF = "application/x-protobuf";
 
   /** The (XML) namespace prefix for an object. */
   String NS_PREFIX_OBJECT = "o";
@@ -56,45 +55,16 @@ public interface StructuredFormat {
   String ART_NUMBER_VALUE = "n";
 
   /**
-   * @return the name of this format. E.g. {@link #ID_JSON JSON}, {@link #ID_XML XML}, or {@link #ID_YAML YAML}.
+   * @return the name of this format. E.g. {@link #ID_JSON JSON}, {@link #ID_XML XML}, {@link #ID_YAML YAML}, or
+   *         {@link #ID_PROTOBUF}.
    */
   String getId();
-
-  /**
-   * @param reader the {@link Reader} pointing to the structured data to read and parse.
-   * @return the {@link StructuredReader}.
-   */
-  StructuredReader reader(Reader reader);
 
   /**
    * @param in the {@link InputStream} pointing to the structured data to read (in UTF-8) and parse.
    * @return the {@link StructuredReader}.
    */
-  default StructuredReader reader(InputStream in) {
-
-    return reader(new InputStreamReader(in, StandardCharsets.UTF_8));
-  }
-
-  /**
-   * @param data the structured data as {@link String}.
-   * @return the {@link StructuredReader}.
-   */
-  default StructuredReader reader(String data) {
-
-    return reader(new StringReader(data));
-  }
-
-  /**
-   * @param data the structured data as {@link String}.
-   * @param object the {@link UnmarshallableObject} to read.
-   * @see UnmarshallableObject#read(StructuredReader)
-   */
-  default void read(String data, UnmarshallableObject object) {
-
-    StructuredReader reader = reader(data);
-    object.read(reader);
-    reader.close();
-  }
+  StructuredReader reader(InputStream in);
 
   /**
    * @param data the data as a potentially proprietary implementation-specific type.
@@ -102,42 +72,28 @@ public interface StructuredFormat {
    */
   default StructuredReader reader(Object data) {
 
-    if (data instanceof CharSequence) {
-      return reader(data.toString());
-    }
     throw new UnsupportedOperationException();
   }
-
-  /**
-   * @param writer the {@link Appendable} ({@link java.io.Writer} or {@link StringBuilder}) where to write the
-   *        structured data to.
-   * @return the wrapped {@link StructuredWriter}.
-   */
-  StructuredWriter writer(Appendable writer);
 
   /**
    * @param out the {@link OutputStream} where to write the structured data to (in UTF-8).
    * @return the wrapped {@link StructuredWriter}.
    */
-  default StructuredWriter writer(OutputStream out) {
-
-    return writer(new OutputStreamWriter(out, StandardCharsets.UTF_8));
-  }
+  StructuredWriter writer(OutputStream out);
 
   /**
-   * @param object the {@link MarshallableObject} to serialize.
-   * @return the serialized data as {@link String}.
+   * @return {@code true} if this is a {@link StructuredBinaryFormat binary format}, {@code false} if
+   *         {@link StructuredTextFormat text format}.
    */
-  default String write(MarshallableObject object) {
+  boolean isBinary();
 
-    if (object == null) {
-      return null;
-    }
-    StringBuilder writer = new StringBuilder(512);
-    StructuredWriter structuredWriter = writer(writer);
-    object.write(structuredWriter);
-    structuredWriter.close();
-    return writer.toString();
+  /**
+   * @return {@code true} if this is a {@link StructuredTextFormat text format} , {@code false} if
+   *         {@link StructuredBinaryFormat binary format}.
+   */
+  default boolean isText() {
+
+    return !isBinary();
   }
 
 }

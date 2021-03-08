@@ -7,6 +7,7 @@ import java.io.Reader;
 import io.github.mmm.marshall.MarshallingConfig;
 import io.github.mmm.marshall.StructuredFormat;
 import io.github.mmm.marshall.StructuredReader;
+import io.github.mmm.marshall.StructuredTextFormat;
 import io.github.mmm.marshall.StructuredWriter;
 import io.github.mmm.scanner.CharReaderScanner;
 import io.github.mmm.scanner.CharSequenceScanner;
@@ -16,7 +17,7 @@ import io.github.mmm.scanner.CharSequenceScanner;
  *
  * @since 1.0.0
  */
-public class JsonFormatImpl implements StructuredFormat {
+public class JsonFormatImpl implements StructuredTextFormat {
 
   private static final JsonFormatImpl DEFAULT = of(MarshallingConfig.DEFAULTS);
 
@@ -72,6 +73,9 @@ public class JsonFormatImpl implements StructuredFormat {
    */
   public static JsonFormatImpl of(MarshallingConfig config) {
 
+    if (config == null) {
+      return DEFAULT;
+    }
     return new JsonFormatImpl(config);
   }
 

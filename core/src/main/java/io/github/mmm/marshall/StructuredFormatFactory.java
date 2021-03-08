@@ -10,34 +10,83 @@ import io.github.mmm.marshall.impl.StructuredFormatFactoryImpl;
 public interface StructuredFormatFactory {
 
   /**
-   * @param format the {@link StructuredFormatProvider#getId() format name}. E.g. {@link StructuredFormat#ID_JSON JSON},
-   *        {@link StructuredFormat#ID_XML XML}, or {@link StructuredFormat#ID_YAML YAML}.
-   * @return a new {@link StructuredFormatProvider} for the given {@code format} or {@code null} if no such provider is
-   *         registered.
+   * @param formatId the {@link StructuredFormatProvider#getId() format Id}.
+   * @return a new {@link StructuredFormatProvider} for the given {@code formatId} or {@code null} if no such provider
+   *         is registered.
    * @throws io.github.mmm.base.exception.ObjectNotFoundException if no such provider could be found.
    */
-  StructuredFormatProvider getProvider(String format);
+  StructuredFormatProvider getProvider(String formatId);
 
   /**
-   * @param format the {@link StructuredFormatProvider#getId() format name}. E.g. {@link StructuredFormat#ID_JSON JSON},
-   *        {@link StructuredFormat#ID_XML XML}, or {@link StructuredFormat#ID_YAML YAML}.
-   * @return a new {@link StructuredFormat} for the given {@code format} using default configuration.
+   * @param formatId the {@link StructuredFormat#getId() format ID}.
+   * @return a new {@link StructuredFormat} for the given {@code formatId} using default configuration.
    */
-  default StructuredFormat create(String format) {
+  default StructuredFormat create(String formatId) {
 
-    return getProvider(format).create();
+    return create(formatId, null);
   }
 
   /**
-   * @param format the {@link StructuredFormatProvider#getId() format name}. E.g. {@link StructuredFormat#ID_JSON JSON},
-   *        {@link StructuredFormat#ID_XML XML}, or {@link StructuredFormat#ID_YAML YAML}.
+   * @param formatId the {@link StructuredFormat#getId() format ID}.
    * @param config the {@link MarshallingConfig} to customize the format.
-   * @return a new {@link StructuredFormat} for the given {@code format} using the given {@code config}.
+   * @return a new {@link StructuredFormat} for the given {@code formatId} using the given {@code config}.
    * @see StructuredFormatProvider#create(MarshallingConfig)
    */
-  default StructuredFormat create(String format, MarshallingConfig config) {
+  default StructuredFormat create(String formatId, MarshallingConfig config) {
 
-    return getProvider(format).create(config);
+    return getProvider(formatId).create(config);
+  }
+
+  /**
+   * @param formatId the {@link StructuredFormat#getId() format ID}.
+   * @return a new {@link StructuredTextFormat} for the given {@code formatId} using default configuration.
+   * @see StructuredTextFormatProvider#create()
+   */
+  default StructuredTextFormat createText(String formatId) {
+
+    return createText(formatId, null);
+  }
+
+  /**
+   * @param formatId the {@link StructuredFormatProvider#getId() format ID}. E.g. {@link StructuredFormat#ID_JSON JSON},
+   *        {@link StructuredFormat#ID_XML XML}, or {@link StructuredFormat#ID_YAML YAML}.
+   * @param config the {@link MarshallingConfig} to customize the format.
+   * @return a new {@link StructuredTextFormat} for the given {@code formatId} using the given {@code config}.
+   * @see StructuredTextFormatProvider#create(MarshallingConfig)
+   */
+  default StructuredTextFormat createText(String formatId, MarshallingConfig config) {
+
+    StructuredFormat format = getProvider(formatId).create(config);
+    if (!format.isText()) {
+      throw new IllegalStateException("Format is not text: " + formatId);
+    }
+    return (StructuredTextFormat) format;
+  }
+
+  /**
+   * @param formatId the {@link StructuredFormat#getId() format ID}.
+   * @return a new {@link StructuredBinaryFormat} for the given {@code formatId} using default configuration.
+   * @see StructuredBinaryFormatProvider#create()
+   */
+  default StructuredBinaryFormat createBinary(String formatId) {
+
+    return createBinary(formatId, null);
+  }
+
+  /**
+   * @param formatId the {@link StructuredFormatProvider#getId() format ID}. E.g. {@link StructuredFormat#ID_JSON JSON},
+   *        {@link StructuredFormat#ID_XML XML}, or {@link StructuredFormat#ID_YAML YAML}.
+   * @param config the {@link MarshallingConfig} to customize the format.
+   * @return a new {@link StructuredBinaryFormat} for the given {@code formatId} using the given {@code config}.
+   * @see StructuredBinaryFormatProvider#create(MarshallingConfig)
+   */
+  default StructuredBinaryFormat createBinary(String formatId, MarshallingConfig config) {
+
+    StructuredFormat format = getProvider(formatId).create(config);
+    if (!format.isBinary()) {
+      throw new IllegalStateException("Format is not binary: " + formatId);
+    }
+    return (StructuredBinaryFormat) format;
   }
 
   /**
