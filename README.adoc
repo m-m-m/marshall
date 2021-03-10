@@ -18,7 +18,7 @@ When you want to do (un)marshalling with Java EE standards the current state is:
 * https://javaee.github.io/jaxb-v2/[JAXB] to map to/from https://en.wikipedia.org/wiki/XML[XML].
 * no support for other formats like https://yaml.org/[YAML], https://grpc.io/[gRPC], https://developers.google.com/protocol-buffers/[ProtoBuf], etc.
 
-As a result you implement your marshalling and unmarshalling code to a single format. If you want to support a different format, you have to start from scratch.
+As a result you implement your marshalling and unmarshalling code for a single format. If you want to support a different format, you have to start from scratch.
 Further, the reference implementation for https://javaee.github.io/jsonp/[JSON-P] is lacking obvious features. E.g. the indendation is hardcoded as you can see 
 https://github.com/eclipse-ee4j/jsonp/blob/dcef07f088197eb7f44829a3ccf4f6a9b99d29ff/impl/src/main/java/org/glassfish/json/JsonPrettyGeneratorImpl.java#L31[here].
 You can also not configure to include or omit `null` values. Also, there is no build in support to skip a value and doing so requires an awful lot of code (in case the value might contain nested arrays and/or objects).
@@ -32,7 +32,7 @@ So instead we define a universal API for (un)marshalling. You can write your map
 * Simple but powerful API to marshall and unmarshall your data in a format agnostic way.
 * link:core/src/main/java/io/github/mmm/marshall/MarshallingConfig.java#L21[Configurable indendation]
 * link:core/src/main/java/io/github/mmm/marshall/MarshallingConfig.java#L28[Configuration to omit null values]
-* Works in JVM as well as in the browser using teavm.org/[TeaVM] or as cloud-native binary using https://www.graalvm.org/[GraalVM].
+* Works in JVM as well as in the browser using http://teavm.org/[TeaVM] or as cloud-native binary using https://www.graalvm.org/[GraalVM].
 * You can even use https://github.com/m-m-m/bean[mmm-bean] to get the entire marshalling and unmarshalling for free with many other cool features.
 * You can furhter use https://github.com/m-m-m/rpc[mmm-rpc] to implement client and/or server for https://en.wikipedia.org/wiki/Remote_procedure_call[RCP] communication with minimum code but maximum benefits (support for different formats, sync/async/reactive support, etc.).
 
