@@ -117,13 +117,16 @@ The interesting fact is that you can exchange `JsonFormat.of()` with something e
 
 ```java
 public void unmarshall(StructuredReader reader, Person person) {
-  reader.next();
-  if (reader.isName("name", 1)) {
-     person.setName(reader.readValueAsString());
-  } else if (reader.isName("age", 2)) {
-     person.setAge(reader.readValueAsInteger());
-  } else {
-    // ignore unknown property for compatibility
+  while (!reader.readEnd()) {
+    if (reader.isName("name", 1)) {
+      person.setName(reader.readValueAsString());
+    } else if (reader.isName("age", 2)) {
+      person.setAge(reader.readValueAsInteger());
+    } else {
+      // ignore unknown property for compatibility
+      // we have dynamic properties support in mmm-bean
+      // even much better than gRPC generated unknownFields
+    }
   }
 }
 ```
