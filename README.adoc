@@ -21,7 +21,7 @@ When you want to do (un)marshalling with Java EE standards the current state is:
 As a result you implement your marshalling and unmarshalling code to a single format. If you want to support a different format, you have to start from scratch.
 Further, the reference implementation for https://javaee.github.io/jsonp/[JSON-P] is lacking obvious features. E.g. the indendation is hardcoded as you can see 
 https://github.com/eclipse-ee4j/jsonp/blob/dcef07f088197eb7f44829a3ccf4f6a9b99d29ff/impl/src/main/java/org/glassfish/json/JsonPrettyGeneratorImpl.java#L31[here].
-You can also not configure to include or omit `null` values. Also, there is no build in support to skip a value and doing so requires an aweful lot of code.
+You can also not configure to include or omit `null` values. Also, there is no build in support to skip a value and doing so requires an awful lot of code (in case the value might contain nested arrays and/or objects).
 
 == Solution
 
