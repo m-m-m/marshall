@@ -10,7 +10,6 @@ import org.teavm.jso.dom.xml.NamedNodeMap;
 import org.teavm.jso.dom.xml.Node;
 
 import io.github.mmm.marshall.AbstractStructuredReader;
-import io.github.mmm.marshall.MarshallingConfig;
 import io.github.mmm.marshall.StructuredFormat;
 import io.github.mmm.marshall.StructuredReader;
 
@@ -27,11 +26,11 @@ public class TvmXmlDocumentReader extends AbstractStructuredReader {
    * The constructor.
    *
    * @param node the root {@link Node}.
-   * @param config the {@link MarshallingConfig}.
+   * @param format the {@link #getFormat() format}.
    */
-  public TvmXmlDocumentReader(Node node, MarshallingConfig config) {
+  public TvmXmlDocumentReader(Node node, StructuredFormat format) {
 
-    super(config);
+    super(format);
     this.node = node;
     this.state = State.NAME;
     next();

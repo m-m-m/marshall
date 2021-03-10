@@ -21,11 +21,11 @@ public abstract class AbstractStructuredStringWriter extends AbstractStructuredW
    * The constructor.
    *
    * @param out the {@link Appendable} to write the data to.
-   * @param config the {@link MarshallingConfig}.
+   * @param format the {@link #getFormat() format}.
    */
-  public AbstractStructuredStringWriter(Appendable out, MarshallingConfig config) {
+  public AbstractStructuredStringWriter(Appendable out, StructuredFormat format) {
 
-    super(config);
+    super(format);
     this.out = out;
   }
 

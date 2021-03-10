@@ -3,7 +3,6 @@
 package io.github.mmm.marshall.tvm.xml.impl;
 
 import io.github.mmm.marshall.AbstractStructuredStringWriter;
-import io.github.mmm.marshall.MarshallingConfig;
 import io.github.mmm.marshall.StructuredFormat;
 import io.github.mmm.marshall.StructuredWriter;
 
@@ -20,11 +19,11 @@ public class TvmXmlStringWriter extends AbstractStructuredStringWriter {
    * The constructor.
    *
    * @param out the {@link Appendable} to write the XML to.
-   * @param config the {@link MarshallingConfig}.
+   * @param format the {@link #getFormat() format}.
    */
-  public TvmXmlStringWriter(Appendable out, MarshallingConfig config) {
+  public TvmXmlStringWriter(Appendable out, TvmXmlFormat format) {
 
-    super(out, config);
+    super(out, format);
     write("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
     // write("<o:json xmlns:o=\"object\" xmlns:a=\"array\">");
   }

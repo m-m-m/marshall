@@ -6,7 +6,7 @@ import java.io.Reader;
 
 import io.github.mmm.base.filter.CharFilter;
 import io.github.mmm.marshall.AbstractStructuredReader;
-import io.github.mmm.marshall.MarshallingConfig;
+import io.github.mmm.marshall.StructuredFormat;
 import io.github.mmm.marshall.StructuredReader;
 import io.github.mmm.scanner.CharStreamScanner;
 
@@ -42,11 +42,11 @@ public class JsonReader extends AbstractStructuredReader {
    * The constructor.
    *
    * @param reader the {@link Reader} with the JSON to parse.
-   * @param config the {@link MarshallingConfig}.
+   * @param format the {@link #getFormat() format}.
    */
-  public JsonReader(CharStreamScanner reader, MarshallingConfig config) {
+  public JsonReader(CharStreamScanner reader, StructuredFormat format) {
 
-    super(config);
+    super(format);
     this.reader = reader;
     this.jsonState = new JsonState();
     next();
@@ -184,15 +184,6 @@ public class JsonReader extends AbstractStructuredReader {
     this.value = v;
     this.state = State.VALUE;
     this.commaCount = 0;
-  }
-
-  @Override
-  public String getName(boolean next) {
-
-    if (next) {
-      require(State.NAME);
-    }
-    return this.name;
   }
 
   @Override

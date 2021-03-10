@@ -8,7 +8,7 @@ import javax.json.stream.JsonParser;
 import javax.json.stream.JsonParser.Event;
 
 import io.github.mmm.marshall.AbstractStructuredReader;
-import io.github.mmm.marshall.MarshallingConfig;
+import io.github.mmm.marshall.StructuredFormat;
 import io.github.mmm.marshall.StructuredReader;
 
 /**
@@ -28,11 +28,11 @@ public class JsonpReader extends AbstractStructuredReader {
    * The constructor.
    *
    * @param json the {@link JsonpReader}.
-   * @param config the {@link MarshallingConfig}.
+   * @param format the {@link #getFormat() format}.
    */
-  public JsonpReader(JsonParser json, MarshallingConfig config) {
+  public JsonpReader(JsonParser json, StructuredFormat format) {
 
-    super(config);
+    super(format);
     this.json = json;
     next();
   }
@@ -50,6 +50,9 @@ public class JsonpReader extends AbstractStructuredReader {
     if (this.json.hasNext()) {
       this.event = this.json.next();
       this.state = convertEvent(this.event);
+      if (this.state == State.NAME) {
+        this.name = this.json.getString();
+      }
     } else {
       this.event = null;
       this.state = State.DONE;
@@ -84,17 +87,6 @@ public class JsonpReader extends AbstractStructuredReader {
   public boolean isStringValue() {
 
     return this.event == Event.VALUE_STRING;
-  }
-
-  @Override
-  public String getName(boolean next) {
-
-    expect(Event.KEY_NAME);
-    this.name = this.json.getString();
-    if (next) {
-      next();
-    }
-    return this.name;
   }
 
   @Override

@@ -6,7 +6,6 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
 import io.github.mmm.marshall.AbstractStructuredWriter;
-import io.github.mmm.marshall.MarshallingConfig;
 import io.github.mmm.marshall.StructuredFormat;
 import io.github.mmm.marshall.StructuredWriter;
 
@@ -23,11 +22,11 @@ public class StaxWriter extends AbstractStructuredWriter {
    * The constructor.
    *
    * @param xml the {@link XMLStreamWriter} to wrap.
-   * @param config the {@link MarshallingConfig}.
+   * @param format the {@link #getFormat() format}.
    */
-  public StaxWriter(XMLStreamWriter xml, MarshallingConfig config) {
+  public StaxWriter(XMLStreamWriter xml, StructuredFormat format) {
 
-    super(config);
+    super(format);
     this.xml = xml;
     try {
       this.xml.writeStartDocument();

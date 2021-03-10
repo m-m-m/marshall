@@ -37,6 +37,12 @@ public class TvmXmlFormat implements StructuredTextFormat {
   }
 
   @Override
+  public MarshallingConfig getConfig() {
+
+    return this.config;
+  }
+
+  @Override
   public String getId() {
 
     return ID_XML;
@@ -46,14 +52,14 @@ public class TvmXmlFormat implements StructuredTextFormat {
   public StructuredReader reader(String xml) {
 
     Document document = DOMParser.of().parseFromString(xml, StructuredFormat.ID_XML);
-    return new TvmXmlDocumentReader(document.getDocumentElement(), this.config);
+    return new TvmXmlDocumentReader(document.getDocumentElement(), this);
   }
 
   @Override
   public StructuredReader reader(Object data) {
 
     if (data instanceof Document) {
-      return new TvmXmlDocumentReader(((Document) data).getDocumentElement(), this.config);
+      return new TvmXmlDocumentReader(((Document) data).getDocumentElement(), this);
     }
     return StructuredTextFormat.super.reader(data);
   }
@@ -84,7 +90,7 @@ public class TvmXmlFormat implements StructuredTextFormat {
       return null;
     }
     StringBuilder writer = new StringBuilder(512);
-    StructuredWriter structuredWriter = new TvmXmlStringWriter(writer, this.config);
+    StructuredWriter structuredWriter = new TvmXmlStringWriter(writer, this);
     object.write(structuredWriter);
     return writer.toString();
   }
@@ -92,7 +98,7 @@ public class TvmXmlFormat implements StructuredTextFormat {
   @Override
   public StructuredWriter writer(Appendable writer) {
 
-    return new TvmXmlStringWriter(writer, this.config);
+    return new TvmXmlStringWriter(writer, this);
   }
 
   /**

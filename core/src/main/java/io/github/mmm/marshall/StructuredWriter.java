@@ -44,9 +44,23 @@ public interface StructuredWriter extends AutoCloseable {
    * {@link #writeStartObject()} or {@link #writeValue(Object)} (including any of its typed variants) needs to be
    * called.
    *
-   * @param name
+   * @param name the name of the property.
    */
-  void writeName(String name);
+  default void writeName(String name) {
+
+    writeName(name, -1);
+  }
+
+  /**
+   * Writes the name of a property. After the call of this method a subsequent call of {@link #writeStartArray()},
+   * {@link #writeStartObject()} or {@link #writeValue(Object)} (including any of its typed variants) needs to be
+   * called.
+   *
+   * @param name the name of the property.
+   * @param id the ID of the field name. Will only be required by specific {@link StructuredFormat formats} such as
+   *        {@link StructuredFormat#ID_PROTOBUF ProtoBuf/gRPC}.
+   */
+  void writeName(String name, int id);
 
   /**
    * Writes a value for the current property or {@link #writeStartArray() array} element.<br>
@@ -308,5 +322,11 @@ public interface StructuredWriter extends AutoCloseable {
 
   @Override
   void close();
+
+  /**
+   * @return the owning {@link StructuredFormat} that {@link StructuredFormat#writer(java.io.OutputStream) created} this
+   *         writer.
+   */
+  StructuredFormat getFormat();
 
 }

@@ -7,6 +7,8 @@ package io.github.mmm.marshall;
  */
 public abstract class AbstractStructuredWriter implements StructuredWriter {
 
+  private final StructuredFormat format;
+
   /** The {@link MarshallingConfig}. */
   protected final MarshallingConfig config;
 
@@ -26,18 +28,25 @@ public abstract class AbstractStructuredWriter implements StructuredWriter {
   /**
    * The constructor.
    *
-   * @param config the {@link MarshallingConfig}.
+   * @param format the {@link #getFormat() format}.
    */
-  public AbstractStructuredWriter(MarshallingConfig config) {
+  public AbstractStructuredWriter(StructuredFormat format) {
 
     super();
-    this.config = config;
-    this.writeNullValues = config.get(MarshallingConfig.OPT_WRITE_NULL_VALUES).booleanValue();
-    this.indentation = config.get(MarshallingConfig.OPT_INDENTATION);
+    this.format = format;
+    this.config = format.getConfig();
+    this.writeNullValues = this.config.get(MarshallingConfig.OPT_WRITE_NULL_VALUES).booleanValue();
+    this.indentation = this.config.get(MarshallingConfig.OPT_INDENTATION);
   }
 
   @Override
-  public void writeName(String newName) {
+  public StructuredFormat getFormat() {
+
+    return this.format;
+  }
+
+  @Override
+  public void writeName(String newName, int newId) {
 
     if (this.name != null) {
       throw new IllegalStateException("Cannot write name " + newName + " while previous name " + this.name

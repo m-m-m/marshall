@@ -10,7 +10,6 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
 import io.github.mmm.marshall.AbstractStructuredReader;
-import io.github.mmm.marshall.MarshallingConfig;
 import io.github.mmm.marshall.StructuredFormat;
 import io.github.mmm.marshall.StructuredReader;
 
@@ -29,11 +28,11 @@ public class StaxReader extends AbstractStructuredReader {
    * The constructor.
    *
    * @param xml the {@link XMLStreamReader}.
-   * @param config the {@link MarshallingConfig}.
+   * @param format the {@link #getFormat() format}.
    */
-  public StaxReader(XMLStreamReader xml, MarshallingConfig config) {
+  public StaxReader(XMLStreamReader xml, StructuredFormat format) {
 
-    super(config);
+    super(format);
     this.xml = xml;
     try {
       int e = xml.nextTag();
@@ -131,9 +130,8 @@ public class StaxReader extends AbstractStructuredReader {
   @Override
   public String getName(boolean next) {
 
-    expect(State.NAME);
     if (next) {
-      next();
+      require(State.NAME);
     }
     return this.name;
   }

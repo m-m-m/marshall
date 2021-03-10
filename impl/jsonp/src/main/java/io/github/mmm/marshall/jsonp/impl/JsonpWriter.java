@@ -9,6 +9,7 @@ import javax.json.stream.JsonGenerator;
 
 import io.github.mmm.marshall.AbstractStructuredWriter;
 import io.github.mmm.marshall.MarshallingConfig;
+import io.github.mmm.marshall.StructuredFormat;
 import io.github.mmm.marshall.StructuredWriter;
 
 /**
@@ -30,12 +31,12 @@ public class JsonpWriter extends AbstractStructuredWriter {
    * The constructor.
    *
    * @param json the underlying {@link JsonGenerator} to write to.
-   * @param config the {@link MarshallingConfig}.
+   * @param format the {@link #getFormat() format}.
    * @see io.github.mmm.marshall.StructuredFormatFactory#create(String, MarshallingConfig)
    */
-  public JsonpWriter(JsonGenerator json, MarshallingConfig config) {
+  public JsonpWriter(JsonGenerator json, StructuredFormat format) {
 
-    super(config);
+    super(format);
     this.json = json;
   }
 

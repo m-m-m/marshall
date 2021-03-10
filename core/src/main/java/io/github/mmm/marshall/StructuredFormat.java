@@ -24,7 +24,7 @@ public interface StructuredFormat {
    */
   String ID_YAML = "text/yaml";
 
-  /** {@link StructuredFormatProvider#getId() Name} of <a href="https://grpc.io/">GRPC/protobuf format</a>. */
+  /** {@link StructuredFormatProvider#getId() Name} of <a href="https://grpc.io/">gRPC/protobuf format</a>. */
   String ID_PROTOBUF = "application/x-protobuf";
 
   /** The (XML) namespace prefix for an object. */
@@ -56,7 +56,7 @@ public interface StructuredFormat {
 
   /**
    * @return the name of this format. E.g. {@link #ID_JSON JSON}, {@link #ID_XML XML}, {@link #ID_YAML YAML}, or
-   *         {@link #ID_PROTOBUF}.
+   *         {@link #ID_PROTOBUF gRPC/ProtoBuf}.
    */
   String getId();
 
@@ -82,6 +82,11 @@ public interface StructuredFormat {
   StructuredWriter writer(OutputStream out);
 
   /**
+   * @return the {@link MarshallingConfig} of this format.
+   */
+  MarshallingConfig getConfig();
+
+  /**
    * @return {@code true} if this is a {@link StructuredBinaryFormat binary format}, {@code false} if
    *         {@link StructuredTextFormat text format}.
    */
@@ -94,6 +99,17 @@ public interface StructuredFormat {
   default boolean isText() {
 
     return !isBinary();
+  }
+
+  /**
+   * @return {@code true} if this format uses IDs instead of names to identify properties (like {@link #ID_PROTOBUF
+   *         gRPC/ProtoBuf}), {@code false} otherwise.
+   * @see StructuredWriter#writeName(String, int)
+   * @see StructuredReader#readId()
+   */
+  default boolean isIdBased() {
+
+    return false;
   }
 
 }

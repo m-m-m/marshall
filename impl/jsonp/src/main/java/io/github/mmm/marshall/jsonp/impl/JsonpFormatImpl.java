@@ -51,6 +51,12 @@ public class JsonpFormatImpl implements StructuredTextFormat {
   }
 
   @Override
+  public MarshallingConfig getConfig() {
+
+    return this.config;
+  }
+
+  @Override
   public String getId() {
 
     return ID_JSON;
@@ -60,14 +66,14 @@ public class JsonpFormatImpl implements StructuredTextFormat {
   public StructuredReader reader(Reader reader) {
 
     JsonParser json = this.readerFactory.createParser(reader);
-    return new JsonpReader(json, this.config);
+    return new JsonpReader(json, this);
   }
 
   @Override
   public StructuredWriter writer(Appendable writer) {
 
     JsonGenerator json = this.writerFactory.createGenerator(AppendableWriter.asWriter(writer));
-    return new JsonpWriter(json, this.config);
+    return new JsonpWriter(json, this);
   }
 
   /**

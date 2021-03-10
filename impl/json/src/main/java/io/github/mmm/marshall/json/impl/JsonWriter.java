@@ -6,7 +6,7 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 
 import io.github.mmm.marshall.AbstractStructuredStringWriter;
-import io.github.mmm.marshall.MarshallingConfig;
+import io.github.mmm.marshall.StructuredFormat;
 import io.github.mmm.marshall.StructuredWriter;
 
 /**
@@ -28,12 +28,11 @@ public class JsonWriter extends AbstractStructuredStringWriter {
    * The constructor.
    *
    * @param out the {@link Appendable} to write the data to.
-   * @param config the {@link MarshallingConfig}.
-   * @see io.github.mmm.marshall.StructuredFormatFactory#create(String, MarshallingConfig)
+   * @param format the {@link #getFormat() format}.
    */
-  public JsonWriter(Appendable out, MarshallingConfig config) {
+  public JsonWriter(Appendable out, StructuredFormat format) {
 
-    super(out, config);
+    super(out, format);
     this.jsonState = new JsonState();
   }
 

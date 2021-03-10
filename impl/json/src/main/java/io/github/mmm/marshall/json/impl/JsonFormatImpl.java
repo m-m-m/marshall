@@ -36,6 +36,12 @@ public class JsonFormatImpl implements StructuredTextFormat {
   }
 
   @Override
+  public MarshallingConfig getConfig() {
+
+    return this.config;
+  }
+
+  @Override
   public String getId() {
 
     return ID_JSON;
@@ -44,19 +50,19 @@ public class JsonFormatImpl implements StructuredTextFormat {
   @Override
   public StructuredReader reader(Reader reader) {
 
-    return new JsonReader(new CharReaderScanner(reader), this.config);
+    return new JsonReader(new CharReaderScanner(reader), this);
   }
 
   @Override
   public StructuredReader reader(String data) {
 
-    return new JsonReader(new CharSequenceScanner(data), this.config);
+    return new JsonReader(new CharSequenceScanner(data), this);
   }
 
   @Override
   public StructuredWriter writer(Appendable writer) {
 
-    return new JsonWriter(writer, this.config);
+    return new JsonWriter(writer, this);
   }
 
   /**

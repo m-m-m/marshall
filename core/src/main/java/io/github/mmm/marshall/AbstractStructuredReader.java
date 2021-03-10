@@ -21,6 +21,8 @@ import java.util.Map;
  */
 public abstract class AbstractStructuredReader implements StructuredReader {
 
+  private final StructuredFormat format;
+
   /** The {@link MarshallingConfig}. */
   protected final MarshallingConfig config;
 
@@ -34,12 +36,25 @@ public abstract class AbstractStructuredReader implements StructuredReader {
   /**
    * The constructor.
    *
-   * @param config the {@link MarshallingConfig}.
+   * @param format the {@link #getFormat() format}.
    */
-  public AbstractStructuredReader(MarshallingConfig config) {
+  public AbstractStructuredReader(StructuredFormat format) {
 
     super();
-    this.config = config;
+    this.format = format;
+    this.config = format.getConfig();
+  }
+
+  @Override
+  public StructuredFormat getFormat() {
+
+    return this.format;
+  }
+
+  @Override
+  public String getName() {
+
+    return this.name;
   }
 
   /**

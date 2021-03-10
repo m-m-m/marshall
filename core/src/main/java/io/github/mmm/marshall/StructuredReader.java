@@ -28,28 +28,115 @@ public interface StructuredReader extends AutoCloseable {
    * @return the name of the current property or element. Consumes to the {@link #next() next} {@link #getState()
    *         state}.
    * @see #getName()
+   * @see #isName(String, int)
    */
   default String readName() {
 
-    return getName(true);
+    require(State.NAME);
+    return getName();
   }
 
   /**
    * @return the name of the current property or element. Does not change the state of this reader and can be called
    *         multiple times.
    * @see #getName(boolean)
+   * @see #isName(String, int)
    */
-  default String getName() {
-
-    return getName(false);
-  }
+  String getName();
 
   /**
    * @param next - {@code true} to advance to the {@link #next() next} {@link #getState() state}, {@code false}
    *        otherwise (keep current state and only peek the name).
    * @return the name of the current property or element.
+   * @see #isName(String, int)
    */
-  String getName(boolean next);
+  default String getName(boolean next) {
+
+    if (next) {
+      require(State.NAME);
+    }
+    return getName();
+  }
+
+  /**
+   * @return the ID of the current property. Consumes to the {@link #next() next} {@link #getState() state}.
+   * @see #getId()
+   * @see #isName(String, int)
+   */
+  default int readId() {
+
+    require(State.NAME);
+    return getId();
+  }
+
+  /**
+   * @return the ID of the current property. Does not change the state of this reader and can be called multiple times.
+   * @see #getId(boolean)
+   * @see #isName(String, int)
+   */
+  default int getId() {
+
+    return -1;
+  }
+
+  /**
+   * @param next - {@code true} to advance to the {@link #next() next} {@link #getState() state}, {@code false}
+   *        otherwise (keep current state and only peek the name).
+   * @return the ID of the current property.
+   * @see #isName(String, int)
+   */
+  default int getId(boolean next) {
+
+    if (next) {
+      require(State.NAME);
+    }
+    return getId();
+  }
+
+  /**
+   * This method checks if the current property in {@link State#NAME} matches the given {@link #getName() name} or
+   * {@link #getId() ID}. In case of a match, it consumes to the {@link #next() next} {@link #getState() state}.<br>
+   * Use this method instead of directly accessing {@link #getName() name} or {@link #getId() ID} to be fully portable
+   * to any format in case you want to support both textual formats like JSON, YAML, or XML that identify properties via
+   * {@link #getName() name} as well as gRPC/ProtoBuf that uses a numeric {@link #getId() ID} instead.
+   *
+   * @param name the {@link #getName() name} of the expected property.
+   * @param id the {@link #getId() ID} of the expected property.
+   * @return {@code true} if the expected property matches accroding to {@link #getName() name} or {@link #getId() ID},
+   *         {@code false} otherwise.
+   */
+  default boolean isName(String name, int id) {
+
+    return isName(name, id, true);
+  }
+
+  /**
+   * This method checks if the current property in {@link State#NAME} matches the given {@link #getName() name} or
+   * {@link #getId() ID}.<br>
+   * Use this method instead of directly accessing {@link #getName() name} or {@link #getId() ID} to be fully portable
+   * to any format in case you want to support both textual formats like JSON, YAML, or XML that identify properties via
+   * {@link #getName() name} as well as gRPC/ProtoBuf that uses a numeric {@link #getId() ID} instead.
+   *
+   * @param name the {@link #getName() name} of the expected property.
+   * @param id the {@link #getId() ID} of the expected property.
+   * @param next - {@code true} to consumes to the {@link #next() next} {@link #getState() state} on match,
+   *        {@code false} otherwise (do not change state).
+   * @return {@code true} if the expected property matches accroding to {@link #getName() name} or {@link #getId() ID},
+   *         {@code false} otherwise.
+   */
+  default boolean isName(String name, int id, boolean next) {
+
+    boolean match = false;
+    if (getFormat().isIdBased()) {
+      match = (id == getId());
+    } else {
+      match = Objects.equals(name, getName());
+    }
+    if (match && next) {
+      next();
+    }
+    return match;
+  }
 
   /**
    * @return {@code true} if pointing to the start of an object, {@code false} otherwise.
@@ -319,6 +406,12 @@ public interface StructuredReader extends AutoCloseable {
   void close();
 
   /**
+   * @return the owning {@link StructuredFormat} that {@link StructuredFormat#reader(java.io.InputStream) created} this
+   *         writer.
+   */
+  StructuredFormat getFormat();
+
+  /**
    * Enum with the possible states of a {@link StructuredReader}.
    *
    * @see StructuredReader#getState()
@@ -406,7 +499,6 @@ public interface StructuredReader extends AutoCloseable {
           return false;
       }
     }
-
   }
 
 }

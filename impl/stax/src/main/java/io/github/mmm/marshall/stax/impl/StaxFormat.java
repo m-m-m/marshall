@@ -79,6 +79,12 @@ public class StaxFormat implements StructuredTextFormat {
   }
 
   @Override
+  public MarshallingConfig getConfig() {
+
+    return this.config;
+  }
+
+  @Override
   public String getId() {
 
     return ID_XML;
@@ -89,7 +95,7 @@ public class StaxFormat implements StructuredTextFormat {
 
     try {
       XMLStreamReader xml = this.readerFactory.createXMLStreamReader(reader);
-      return new StaxReader(xml, this.config);
+      return new StaxReader(xml, this);
     } catch (XMLStreamException e) {
       throw new IllegalStateException(e);
     }
@@ -100,7 +106,7 @@ public class StaxFormat implements StructuredTextFormat {
 
     try {
       XMLStreamWriter xml = this.writerFactory.createXMLStreamWriter(AppendableWriter.asWriter(writer));
-      return new StaxWriter(xml, this.config);
+      return new StaxWriter(xml, this);
     } catch (XMLStreamException e) {
       throw new IllegalStateException(e);
     }

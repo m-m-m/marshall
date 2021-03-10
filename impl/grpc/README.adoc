@@ -1,0 +1,39 @@
+image:https://m-m-m.github.io/logo.svg[logo,width="150",link="https://m-m-m.github.io"]
+
+image:https://img.shields.io/github/license/m-m-m/marshall.svg?label=License["Apache License, Version 2.0",link=https://github.com/m-m-m/marshall/blob/master/LICENSE]
+image:https://travis-ci.com/m-m-m/marshall.svg?branch=master["build-status",link="https://travis-ci.com/m-m-m/marshall"]
+
+== mmm-marshall-grpc
+
+image:https://img.shields.io/maven-central/v/io.github.m-m-m/mmm-marshall-grpc.svg?label=Maven%20Central["Maven Central",link=https://search.maven.org/search?q=g:io.github.m-m-m]
+image:https://javadoc.io/badge2/io.github.m-m-m/mmm-marshall-grpc/javadoc.svg["mmm-marshall-grpc JavaDoc", link=https://javadoc.io/doc/io.github.m-m-m/mmm-marshall-grpc]
+
+The module `io.github.mmm.marshall.grpc` (artifactId `mmm-marshall-grpc`) provides the implementation to marshall (serialize) and unmarshall (deserialize) data from/to ProtoBuf/gRPC.
+
+ATTENTION: This implementation is currently work in progress and cannot be used yet.
+We discovered the following design-flaws in ProtoBuf that we need to address and solve:
+
+* How to deal with name vs. IDs - now solved via API
+* How can we distinguish between a string, START_OBJECT or START_ARRAY - not at all, see https://developers.google.com/protocol-buffers/docs/encoding#structure[here], ProtoBuf design is flawed and sucks
+* Why do we have to provide the size of the data of an object or array before writing? This leads to waste and overhead as computations have to be done that will be repeated whilst writing data - this makes absolute sense for strings but IMHO no sense at all for arrays and objects, here for integrity at max the number of items could have been encoded. However the absolute size in bytes is strictly required. Some infos can be found https://groups.google.com/g/protobuf/c/UKpsthqAmjw[here]. I can not see a proper way without writing to memory bufferes and computing size from that before actually writing the data to the real stream. This can be quite expensive and will contradict all the performance benefits of ProtoBuf. I really dislike this design decision. ProtoBuf and gRPC have strictly been designed with a narrow mindset of contract first and ugly code-generation. There is no chance of reusing - not even for custom data-types what IMHO puts the entire approach in question. If I have to map again the generated code to my real handwritten data-model, I end up with yet another bunch of boilerplate code and waste performance. Feels like SOAP and WSDL after all. Why then doing gRPC after all?
+
+=== Usage
+
+Maven Dependency:
+```xml
+<dependency>
+  <groupId>io.github.m-m-m</groupId>
+  <artifactId>mmm-marshall-grpc</artifactId>
+</dependency>
+```
+
+Gradle Dependency:
+```
+implementation 'io.github.m-m-m:mmm-marshall-grpc:«version»'
+```
+For `«version»` please fill in the latest version that you can find in the badge above.
+
+Module Dependency:
+```java
+  requires static io.github.mmm.marshall.grpc;
+```

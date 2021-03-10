@@ -4,26 +4,18 @@
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>io.github.m-m-m</groupId>
-    <artifactId>mmm-marshall-parent</artifactId>
+    <artifactId>mmm-marshall-impl</artifactId>
     <version>${revision}${changelist}</version>
   </parent>
-  <artifactId>mmm-marshall-impl</artifactId>
-  <packaging>pom</packaging>
+  <artifactId>mmm-marshall-grpc</artifactId>
+  <packaging>jar</packaging>
   <name>${project.artifactId}</name>
-  <description>Implementations of mmm-marshal.</description>
-
-  <modules>
-    <module>json</module>
-    <module>jsonp</module>
-    <module>stax</module>
-    <module>tvm-xml</module>
-    <module>grpc</module>
-  </modules>
-
+  <description>Implementations of mmm-marshall API for GRPC/protobuf.</description>
+  
   <dependencies>
     <dependency>
-      <groupId>${project.groupId}</groupId>
-      <artifactId>mmm-marshall</artifactId>
+      <groupId>com.google.protobuf</groupId>
+      <artifactId>protobuf-java</artifactId>
     </dependency>
   </dependencies>
 </project>
