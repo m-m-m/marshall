@@ -114,6 +114,7 @@ This will print the following output:
 
 The interesting fact is that you can exchange `JsonFormat.of()` with something else to get a different format without changing your implementation of `marshal`. So you can also use `XmlFormat.of()` to produce XML or you can generate YAML or even gRPC/ProtoBuf.
 
+To unmarhall a `Person` you can do something like this:
 
 ```java
 public void unmarshall(StructuredReader reader, Person person) {
