@@ -1,0 +1,45 @@
+image:https://m-m-m.github.io/logo.svg[logo,width="150",link="https://m-m-m.github.io"]
+
+image:https://img.shields.io/github/license/m-m-m/marshall.svg?label=License["Apache License, Version 2.0",link=https://github.com/m-m-m/marshall/blob/master/LICENSE]
+image:https://travis-ci.com/m-m-m/marshall.svg?branch=master["build-status",link="https://travis-ci.com/m-m-m/marshall"]
+
+== mmm-marshall-protobuf
+
+image:https://img.shields.io/maven-central/v/io.github.m-m-m/mmm-marshall-protobuf.svg?label=Maven%20Central["Maven Central",link=https://search.maven.org/search?q=g:io.github.m-m-m]
+image:https://javadoc.io/badge2/io.github.m-m-m/mmm-marshall-protobuf/javadoc.svg["mmm-marshall-protobuf JavaDoc", link=https://javadoc.io/doc/io.github.m-m-m/mmm-marshall-protobuf]
+
+The module `io.github.mmm.marshall.protobuf` (artifactId `mmm-marshall-protobuf`) provides the implementation to marshall (serialize) and unmarshall (deserialize) data from/to ProtoBuf/gRPC.
+
+Due to the nature of ProtoBuf there are special apsects and limitations to be aware of:
+
+* In general you also need unique IDs for for properties. In case you omitt them (partially or at all) we do our best to generate them for you. However, to ensure stable IDs and payloads you should really hardwire your IDs. This can be rather tricky to do for polymorphic data-models - especially with multi-inheritance.
+* We do our best and try to solve all the problems with https://github.com/m-m-m/bean[mmm-bean] so you can easily define a stable mapping inside your beans even with multi-inheritance.
+* Limitations for unmarshalling data from ProtoBuf:
+** By design (flaw) of ProtoBuf it is impossible to distinguish between a string value or the start of an object or array. It is all represented by the same type as you can see https://developers.google.com/protocol-buffers/docs/encoding#structure[here]. See also https://groups.google.com/g/protobuf/c/UKpsthqAmjw[here] for dicsussion.
+** Therefore `getState()` may return `null` or `START_OBJECT` even though it may actually be `START_ARRAY`. Also `require(State)` has to be handled with care.
+** If your structure is completely static, you can easily read and parse your data without issues. However, for generic structures this can be a problem.
+** As a result `readValue(true)` as well as `readObject` and `readArray` may not always work as expected.
+** Also `skipValue` does not work properly for a single value in an array as it is technically impossible to know what the value actually is and where it ends.
+* Considerations for marshalling data to ProtoBuf:
+* When marshalling your data to protobuf, it is required to write the size of an object or array in bytes before it is written. For simpliticy we automatically write to buffers if the size is unknown to auto-calculate this for your. However, if you want best performance and minimize wasting resources you should calculate the size of your data and provide it to `writeStartObject(int)` and `writeStartArray(int)` methods. Unfortunately this limits the idea of `mmm-marshall` to allow the abstraction of the underlying format for the developer. If you write small messages the overhead should not matter. It would be easy to design a protocol that is better and solves all these quirks but then you would loose all the benefits of the ProtoBuf ecosystem and cross-language support.
+
+=== Usage
+
+Maven Dependency:
+```xml
+<dependency>
+  <groupId>io.github.m-m-m</groupId>
+  <artifactId>mmm-marshall-protobuf</artifactId>
+</dependency>
+```
+
+Gradle Dependency:
+```
+implementation 'io.github.m-m-m:mmm-marshall-protobuf:${mmmVersion}'
+```
+For `${mmmVersion}` please fill in the latest version that you can find in the badge above.
+
+Module Dependency:
+```java
+  requires static io.github.mmm.marshall.protobuf;
+```

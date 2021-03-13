@@ -37,13 +37,13 @@ public class JsonWriter extends AbstractStructuredStringWriter {
   }
 
   @Override
-  public void writeStartArray() {
+  public void writeStartArray(int size) {
 
     writeStart(JsonNodeType.ARRAY);
   }
 
   @Override
-  public void writeStartObject() {
+  public void writeStartObject(int size) {
 
     writeStart(JsonNodeType.OBJECT);
   }
@@ -52,6 +52,8 @@ public class JsonWriter extends AbstractStructuredStringWriter {
 
     if (this.jsonState.valueCount > 0) {
       write(',');
+    }
+    if (this.jsonState.parent != null) {
       writeIndent();
     }
     writeName();

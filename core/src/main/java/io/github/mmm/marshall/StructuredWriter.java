@@ -25,14 +25,40 @@ public interface StructuredWriter extends AutoCloseable {
    * collection a call of {@link #writeValue(Object)} (including any of its typed variants) needs to be called followed
    * by {@link #writeEnd()}.
    */
-  void writeStartArray();
+  default void writeStartArray() {
+
+    writeStartArray(-1);
+  }
+
+  /**
+   * Writes the start of an array or collection. After the call of this method for each element of the array or
+   * collection a call of {@link #writeValue(Object)} (including any of its typed variants) needs to be called followed
+   * by {@link #writeEnd()}.
+   *
+   * @param size the size of the array as payload in bytes or {@code -1} if unknown. Should be provided for efficient
+   *        writing of gRPC/ProtoBuf.
+   */
+  void writeStartArray(int size);
 
   /**
    * Writes the start of an object. After the call of this method for each property of the object
    * {@link #writeName(String)} needs to be called followed by writing its value. Then {@link #writeEnd()} needs to be
    * called to terminate the object.
    */
-  void writeStartObject();
+  default void writeStartObject() {
+
+    writeStartObject(-1);
+  }
+
+  /**
+   * Writes the start of an object. After the call of this method for each property of the object
+   * {@link #writeName(String)} needs to be called followed by writing its value. Then {@link #writeEnd()} needs to be
+   * called to terminate the object.
+   *
+   * @param size the size of the object as payload in bytes or {@code -1} if unknown. Should be provided for efficient
+   *        writing of gRPC/ProtoBuf.
+   */
+  void writeStartObject(int size);
 
   /**
    * Writes the end of an {@link #writeStartArray() array} or {@link #writeStartObject() object}.

@@ -140,9 +140,21 @@ public class JsonReader extends AbstractStructuredReader {
     try {
       Number number;
       if ((numberString.indexOf('.') >= 0) || (numberString.indexOf('e') >= 0)) {
-        number = Double.valueOf(numberString);
+        double d = Double.parseDouble(numberString);
+        float f = (float) d;
+        if (f == d) {
+          number = Float.valueOf(f);
+        } else {
+          number = Double.valueOf(numberString);
+        }
       } else {
-        number = Long.valueOf(numberString);
+        long l = Long.parseLong(numberString);
+        int i = (int) l;
+        if (i == l) {
+          number = Integer.valueOf(i);
+        } else {
+          number = Long.valueOf(numberString);
+        }
       }
       nextValue(number);
     } catch (NumberFormatException e) {

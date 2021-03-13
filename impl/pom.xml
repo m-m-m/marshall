@@ -17,13 +17,23 @@
     <module>jsonp</module>
     <module>stax</module>
     <module>tvm-xml</module>
-    <module>grpc</module>
+    <module>protobuf</module>
   </modules>
 
   <dependencies>
     <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-api</artifactId>
+    </dependency>
+    <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>mmm-marshall</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>mmm-marshall-test</artifactId>
+      <version>${project.version}</version>
+      <scope>test</scope>
     </dependency>
   </dependencies>
 </project>

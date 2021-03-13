@@ -22,9 +22,9 @@ Maven Dependency:
 
 Gradle Dependency:
 ```
-implementation 'io.github.m-m-m:mmm-marshall-tvm-xml:«version»'
+implementation 'io.github.m-m-m:mmm-marshall-tvm-xml:${mmmVersion}'
 ```
-For `«version»` please fill in the latest version that you can find in the badge above.
+For `${mmmVersion}` please fill in the latest version that you can find in the badge above.
 
 Module Dependency:
 ```java

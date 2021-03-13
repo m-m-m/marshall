@@ -11,6 +11,9 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamWriter;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import io.github.mmm.base.io.AppendableWriter;
 import io.github.mmm.marshall.MarshallingConfig;
 import io.github.mmm.marshall.StructuredFormat;
@@ -24,6 +27,8 @@ import io.github.mmm.marshall.StructuredWriter;
  * @since 1.0.0
  */
 public class StaxFormat implements StructuredTextFormat {
+
+  private static final Logger LOG = LoggerFactory.getLogger(StaxFormat.class);
 
   private static final StaxFormat DEFAULT;
 
@@ -66,12 +71,28 @@ public class StaxFormat implements StructuredTextFormat {
     XMLInputFactory xmlReaderFactory = XMLInputFactory.newFactory();
     XMLOutputFactory xmlWriterFactory = XMLOutputFactory.newFactory();
     for (Entry<String, Object> entry : config.getMap().entrySet()) {
-      // TODO: normalize properties and only apply to reader/writer where suitable...
-      // TODO: maybe catch exception and ignore unsupported properties...
-      String name = entry.getKey();
-      Object value = entry.getValue();
-      xmlReaderFactory.setProperty(name, value);
-      xmlWriterFactory.setProperty(name, value);
+      String key = entry.getKey();
+      if (MarshallingConfig.isProprietary(key)) {
+        Object value = entry.getValue();
+        String unsupported = null;
+        if (xmlReaderFactory.isPropertySupported(key)) {
+          xmlReaderFactory.setProperty(key, value);
+        } else {
+          unsupported = "reader";
+        }
+        if (xmlWriterFactory.isPropertySupported(key)) {
+          xmlWriterFactory.setProperty(key, value);
+        } else {
+          if (unsupported == null) {
+            unsupported = "writer";
+          } else {
+            unsupported = "reader and writer";
+          }
+        }
+        if (unsupported != null) {
+          LOG.warn("The property '{}' is not supported for StAX {}.", key, unsupported);
+        }
+      }
     }
     this.readerFactory = xmlReaderFactory;
     this.writerFactory = xmlWriterFactory;

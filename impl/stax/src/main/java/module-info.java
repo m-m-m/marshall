@@ -11,8 +11,7 @@ module io.github.mmm.marshall.stax {
 
   requires transitive io.github.mmm.marshall;
 
-  // JPMS bug with transitive dependencies...
-  requires transitive io.github.mmm.base;
+  requires org.slf4j;
 
   requires transitive java.xml;
 

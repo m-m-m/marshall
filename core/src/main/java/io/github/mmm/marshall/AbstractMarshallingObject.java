@@ -27,7 +27,7 @@ public abstract class AbstractMarshallingObject implements MarshallingObject {
   @Override
   public void read(StructuredReader reader) {
 
-    reader.require(State.START_OBJECT);
+    reader.require(State.START_OBJECT, true);
     while (!reader.readEnd()) {
       String name = reader.readName();
       readProperty(reader, name);

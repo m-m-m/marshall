@@ -29,7 +29,7 @@ public class TvmXmlStringWriter extends AbstractStructuredStringWriter {
   }
 
   @Override
-  public void writeStartArray() {
+  public void writeStartArray(int size) {
 
     writeIndent();
     if (this.node == null) {
@@ -46,7 +46,7 @@ public class TvmXmlStringWriter extends AbstractStructuredStringWriter {
   }
 
   @Override
-  public void writeStartObject() {
+  public void writeStartObject(int size) {
 
     writeIndent();
     if (this.node == null) {

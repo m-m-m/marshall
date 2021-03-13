@@ -27,7 +27,11 @@ public class StaxWriter extends AbstractStructuredWriter {
   public StaxWriter(XMLStreamWriter xml, StructuredFormat format) {
 
     super(format);
-    this.xml = xml;
+    if (this.indentation != null) {
+      this.xml = new IndentingXmlStreamWriter(xml, this.indentation);
+    } else {
+      this.xml = xml;
+    }
     try {
       this.xml.writeStartDocument();
       this.xml.setPrefix(StructuredFormat.NS_PREFIX_ARRAY, StructuredFormat.NS_URI_ARRAY);
@@ -53,7 +57,7 @@ public class StaxWriter extends AbstractStructuredWriter {
   }
 
   @Override
-  public void writeStartArray() {
+  public void writeStartArray(int size) {
 
     try {
       this.xml.writeStartElement(StructuredFormat.NS_PREFIX_ARRAY, requireName(), StructuredFormat.NS_URI_ARRAY);
@@ -68,7 +72,7 @@ public class StaxWriter extends AbstractStructuredWriter {
   }
 
   @Override
-  public void writeStartObject() {
+  public void writeStartObject(int size) {
 
     try {
       this.xml.writeStartElement(StructuredFormat.NS_PREFIX_OBJECT, requireName(), StructuredFormat.NS_URI_OBJECT);

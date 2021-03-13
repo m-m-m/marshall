@@ -32,7 +32,7 @@ public interface StructuredReader extends AutoCloseable {
    */
   default String readName() {
 
-    require(State.NAME);
+    require(State.NAME, true);
     return getName();
   }
 
@@ -53,7 +53,7 @@ public interface StructuredReader extends AutoCloseable {
   default String getName(boolean next) {
 
     if (next) {
-      require(State.NAME);
+      require(State.NAME, next);
     }
     return getName();
   }
@@ -65,7 +65,7 @@ public interface StructuredReader extends AutoCloseable {
    */
   default int readId() {
 
-    require(State.NAME);
+    require(State.NAME, true);
     return getId();
   }
 
@@ -88,7 +88,7 @@ public interface StructuredReader extends AutoCloseable {
   default int getId(boolean next) {
 
     if (next) {
-      require(State.NAME);
+      require(State.NAME, true);
     }
     return getId();
   }
@@ -389,17 +389,32 @@ public interface StructuredReader extends AutoCloseable {
 
   /**
    * @param expected the required {@link State} expect for the current {@link #getState() state}.
+   * @throws ObjectMismatchException if the {@link #getState() current state} is not the same as the given
+   *         {@code expected} {@link State}.
+   */
+  default void require(State expected) {
+
+    require(expected, false);
+  }
+
+  /**
+   * @param expected the required {@link State} expect for the current {@link #getState() state}.
+   * @param next - {@code true} to advance to the {@link #next() next} {@link #getState() state}, {@code false}
+   *        otherwise (keep current state and only peek the name).
    * @return the {@link #next() next} {@link State} after successfully matching the {@link #getState() current state}.
    * @throws ObjectMismatchException if the {@link #getState() current state} is not the same as the given
    *         {@code expected} {@link State}.
    */
-  default State require(State expected) {
+  default State require(State expected, boolean next) {
 
     State currentState = getState();
-    if (currentState != expected) {
+    if ((currentState != expected) && (currentState != null)) {
       throw new ObjectMismatchException(currentState, expected);
     }
-    return next();
+    if (next) {
+      return next();
+    }
+    return currentState;
   }
 
   @Override

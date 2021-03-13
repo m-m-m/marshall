@@ -7,6 +7,7 @@ import java.math.BigDecimal;
 import javax.json.stream.JsonParser;
 import javax.json.stream.JsonParser.Event;
 
+import io.github.mmm.base.number.NumberType;
 import io.github.mmm.marshall.AbstractStructuredReader;
 import io.github.mmm.marshall.StructuredFormat;
 import io.github.mmm.marshall.StructuredReader;
@@ -14,7 +15,7 @@ import io.github.mmm.marshall.StructuredReader;
 /**
  * Implementation of {@link StructuredReader} for JSON using {@link JsonParser}.
  *
- * @see JsonpFormatImpl
+ * @see JsonpFormat
  *
  * @since 1.0.0
  */
@@ -102,7 +103,7 @@ public class JsonpReader extends AbstractStructuredReader {
       next();
       return Boolean.FALSE;
     } else if (this.event == Event.VALUE_NUMBER) {
-      BigDecimal value = this.json.getBigDecimal();
+      Number value = NumberType.simplify(this.json.getBigDecimal(), NumberType.INTEGER);
       next();
       return value;
     } else if (this.event == Event.VALUE_STRING) {

@@ -6,6 +6,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 
 import io.github.mmm.base.config.ConfigMap;
 import io.github.mmm.base.config.ConfigOption;
@@ -32,6 +33,8 @@ public final class MarshallingConfig extends ConfigMap {
 
   /** Immutable instance of {@link MarshallingConfig} with {@link #OPT_INDENTATION} disabled. */
   public static final MarshallingConfig NO_INDENTATION = DEFAULTS.with(OPT_INDENTATION, null);
+
+  private static final Set<String> STANDARD_KEYS = Set.of(OPT_INDENTATION.getKey(), OPT_WRITE_NULL_VALUES.getKey());
 
   /**
    * The constructor.
@@ -67,6 +70,32 @@ public final class MarshallingConfig extends ConfigMap {
     Map<String, Object> map = new HashMap<>(getMap());
     map.put(option.getKey(), value);
     return new MarshallingConfig(map);
+  }
+
+  /**
+   * @param key the key of the proprietary and vendor specific property.
+   * @param value the value for the given {@code key}.
+   * @return a new {@link MarshallingConfig} with the given {@code key} set to the given {@code value} or this
+   *         {@link MarshallingConfig} if the given {@code value} is already configured.
+   */
+  public MarshallingConfig with(String key, Object value) {
+
+    Object oldValue = getMap().get(key);
+    if (Objects.equals(oldValue, value)) {
+      return this;
+    }
+    Map<String, Object> map = new HashMap<>(getMap());
+    map.put(key, value);
+    return new MarshallingConfig(map);
+  }
+
+  /**
+   * @param key the {@link ConfigOption#getKey() key} of the option to check.
+   * @return {@code true} if proprietary (vendor specific) and {@code false} otherwise.
+   */
+  public static boolean isProprietary(String key) {
+
+    return !STANDARD_KEYS.contains(key);
   }
 
 }

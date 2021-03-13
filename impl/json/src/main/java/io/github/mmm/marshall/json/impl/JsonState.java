@@ -4,6 +4,8 @@ package io.github.mmm.marshall.json.impl;
 
 /**
  * State object for reading or writing JSON.
+ *
+ * @since 1.0.0
  */
 public class JsonState {
 

@@ -15,7 +15,7 @@ import io.github.mmm.marshall.StructuredWriter;
 /**
  * Implementation of {@link StructuredWriter} for JSON using {@link JsonGenerator}.
  *
- * @see JsonpFormatImpl
+ * @see JsonpFormat
  *
  * @since 1.0.0
  */
@@ -41,7 +41,7 @@ public class JsonpWriter extends AbstractStructuredWriter {
   }
 
   @Override
-  public void writeStartArray() {
+  public void writeStartArray(int size) {
 
     if (this.name == null) {
       this.json.writeStartArray();
@@ -52,7 +52,7 @@ public class JsonpWriter extends AbstractStructuredWriter {
   }
 
   @Override
-  public void writeStartObject() {
+  public void writeStartObject(int size) {
 
     if (this.name == null) {
       this.json.writeStartObject();

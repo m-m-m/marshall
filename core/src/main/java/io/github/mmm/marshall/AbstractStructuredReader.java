@@ -127,7 +127,7 @@ public abstract class AbstractStructuredReader implements StructuredReader {
    */
   protected void expect(State expected) {
 
-    if (this.state != expected) {
+    if ((this.state != null) && (this.state != expected)) {
       throw new IllegalStateException("Expecting event " + expected + " but found " + this.state + ".");
     }
   }

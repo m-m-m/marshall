@@ -9,6 +9,7 @@ import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
+import io.github.mmm.base.number.NumberType;
 import io.github.mmm.marshall.AbstractStructuredReader;
 import io.github.mmm.marshall.StructuredFormat;
 import io.github.mmm.marshall.StructuredReader;
@@ -128,15 +129,6 @@ public class StaxReader extends AbstractStructuredReader {
   }
 
   @Override
-  public String getName(boolean next) {
-
-    if (next) {
-      require(State.NAME);
-    }
-    return this.name;
-  }
-
-  @Override
   public Object readValue() {
 
     Object value;
@@ -202,7 +194,11 @@ public class StaxReader extends AbstractStructuredReader {
 
     boolean decimal = (string.indexOf('.') >= 0);
     if (decimal) {
-      return new BigDecimal(string);
+      BigDecimal bd = new BigDecimal(string);
+      if (string.endsWith("0")) {
+        return bd; // preserve leading zeros
+      }
+      return NumberType.simplify(bd, NumberType.FLOAT);
     } else {
       BigInteger integer = new BigInteger(string);
       int bitLength = integer.bitLength();

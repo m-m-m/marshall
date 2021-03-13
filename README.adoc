@@ -8,7 +8,7 @@ image:https://travis-ci.com/m-m-m/marshall.svg?branch=master["build-status",link
 image:https://img.shields.io/maven-central/v/io.github.m-m-m/mmm-marshall.svg?label=Maven%20Central["Maven Central",link=https://search.maven.org/search?q=g:io.github.m-m-m]
 image:https://javadoc.io/badge2/io.github.m-m-m/mmm-marshall/javadoc.svg["base JavaDoc", link=https://javadoc.io/doc/io.github.m-m-m/mmm-marshall]
 
-The module `io.github.mmm.marshall` (artifactId `mmm-marshall`) provides the API to marshall (serialize) and unmarshall (deserialize) data from/to structured formats such as JSON, XML, YAML, or even gRPC/ProtoBuf without implementing your mapping code for multiple formats. 
+The module `io.github.mmm.marshall` (artifactId `mmm-marshall`) provides the API to marshall (serialize) and unmarshall (deserialize) data from/to structured formats such as JSON, XML, YAML, or even ProtoBuf (gRPC) without implementing your mapping code for multiple formats. 
 
 == Problem
 
@@ -42,7 +42,7 @@ We provide the following implementations:
 ** link:impl/jsonp/README.adoc[mmm-marhsall-jsonp] (implementation for JSON based on JSON-P)
 ** link:impl/stax/README.adoc[mmm-marshall-stax] (implementation for XML based on StAX)
 ** link:impl/tvm-xml/README.adoc[mmm-marshall-tvm-xml] (implementation for XML using TeaVM and XML API of the browser)
-** link:impl/grpc/README.adoc[mmm-marshall-grpc] (implementation for gRPC/ProtoBuf)
+** link:impl/protobuf/README.adoc[mmm-marshall-protobuf] (implementation for ProtoBuf/gRPC)
 
 === Usage
 
@@ -55,9 +55,9 @@ Maven Dependency:
 ```
 Gradle Dependency:
 ```
-implementation 'io.github.m-m-m:mmm-marshall:«version»'
+implementation 'io.github.m-m-m:mmm-marshall:${mmmVersion}'
 ```
-For `«version»` please fill in the latest version that you can find in the badge above.
+For `${mmmVersion}` please fill in the latest version that you can find in the badge above.
 
 Module Dependency:
 ```java
