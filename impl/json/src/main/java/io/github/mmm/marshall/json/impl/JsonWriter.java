@@ -6,6 +6,7 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 
 import io.github.mmm.marshall.AbstractStructuredStringWriter;
+import io.github.mmm.marshall.MarshallingConfig;
 import io.github.mmm.marshall.StructuredFormat;
 import io.github.mmm.marshall.StructuredWriter;
 
@@ -24,6 +25,8 @@ public class JsonWriter extends AbstractStructuredStringWriter {
 
   private JsonState jsonState;
 
+  private final boolean quoteProperties;
+
   /**
    * The constructor.
    *
@@ -34,6 +37,8 @@ public class JsonWriter extends AbstractStructuredStringWriter {
 
     super(out, format);
     this.jsonState = new JsonState();
+    Boolean unquotedProperties = format.getConfig().get(MarshallingConfig.OPT_UNQUOTED_PROPERTIES);
+    this.quoteProperties = !Boolean.TRUE.equals(unquotedProperties);
   }
 
   @Override
@@ -68,12 +73,22 @@ public class JsonWriter extends AbstractStructuredStringWriter {
     if (this.name == null) {
       return;
     }
-    write('"');
+    if (this.quoteProperties) {
+      write('"');
+    }
     write(this.name);
     if (this.indentation == null) {
-      write("\":");
+      if (this.quoteProperties) {
+        write("\":");
+      } else {
+        write(':');
+      }
     } else {
-      write("\": ");
+      if (this.quoteProperties) {
+        write("\": ");
+      } else {
+        write(": ");
+      }
     }
     this.name = null;
   }

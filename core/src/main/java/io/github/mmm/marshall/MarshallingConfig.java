@@ -28,6 +28,20 @@ public final class MarshallingConfig extends ConfigMap {
    */
   public static final ConfigOption<Boolean> OPT_WRITE_NULL_VALUES = new ConfigOption<>("write-null", Boolean.TRUE);
 
+  /**
+   * {@link ConfigOption} to configure if names can be unquoted in JSON. The default is to write names quoted and to
+   * read them with or without quotes. A value of {@link Boolean#TRUE} will make
+   * {@link StructuredWriter#writeName(String)} to actually write the property name without quotes ("{ property: true
+   * }"). A value of {@link Boolean#FALSE} disables that {@link StructuredReader#readName()} also accepts unquoted
+   * property names.<br>
+   * ATTENTION: Please note that unquoted property names are invalid according to official JSON specification and many
+   * parsers will not accept this. However, for internal usage and formats this may be interesting as the quotes are
+   * actually pointless (since a property name should never contain a colon) and produce waste. This option is only
+   * supported by {@code mmm-marshall-json} and is ignored by all other implementations including
+   * {@code mmm-marshall-jsonp}.
+   */
+  public static final ConfigOption<Boolean> OPT_UNQUOTED_PROPERTIES = new ConfigOption<>("unquoted-properties", null);
+
   /** Immutable instance of {@link MarshallingConfig} with the default values. */
   public static final MarshallingConfig DEFAULTS = new MarshallingConfig(Collections.emptyMap());
 

@@ -25,6 +25,17 @@ public abstract class AbstractJsonFormatTest extends StructuredTextFormatTest {
   @Override
   protected String getExpectedData(String indent, String newline) {
 
+    return getExpectedData(indent, newline, true);
+  }
+
+  /**
+   * @param indent the {@link #getIndentation() indentation}.
+   * @param newline the {@link #getNewline() newline}.
+   * @param quoteProperties - {@code true} to quote properties, {@code false} otherwise.
+   * @return the expected payload data.
+   */
+  protected String getExpectedData(String indent, String newline, boolean quoteProperties) {
+
     String space = " ";
     if (indent.isEmpty()) {
       space = "";
@@ -33,10 +44,14 @@ public abstract class AbstractJsonFormatTest extends StructuredTextFormatTest {
     if (isSmartIndent()) {
       emptyArrayIndent = "";
     }
+    String quote = "";
+    if (quoteProperties) {
+      quote = "\"";
+    }
     return "{" + newline //
-        + indent + "\"foo\":" + space + "\"bar\"," + newline //
-        + indent + "\"instant\":" + space + "\"1999-12-31T23:59:59.999999Z\"," + newline //
-        + indent + "\"list\":" + space + "[" + newline //
+        + indent + quote + "foo" + quote + ":" + space + "\"bar\"," + newline //
+        + indent + quote + "instant" + quote + ":" + space + "\"1999-12-31T23:59:59.999999Z\"," + newline //
+        + indent + quote + "list" + quote + ":" + space + "[" + newline //
         + indent + indent + "-1," + newline //
         + indent + indent + "-1," + newline //
         + indent + indent + "-1," + newline //
@@ -48,11 +63,11 @@ public abstract class AbstractJsonFormatTest extends StructuredTextFormatTest {
         + indent + indent + "\"1.10\"," + newline //
         + indent + indent + "[" + newline //
         + indent + indent + indent + "{" + newline //
-        + indent + indent + indent + indent + "\"key\":" + space + "\"value\"" + newline //
+        + indent + indent + indent + indent + quote + "key" + quote + ":" + space + "\"value\"" + newline //
         + indent + indent + indent + "}" + newline //
         + indent + indent + "]" + newline //
         + indent + "]," + newline //
-        + indent + "\"empty\":" + space + "[" //
+        + indent + quote + "empty" + quote + ":" + space + "[" //
         + emptyArrayIndent + "]" + newline //
         + "}"; //
   }

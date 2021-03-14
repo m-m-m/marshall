@@ -6,6 +6,7 @@ import java.io.Reader;
 
 import io.github.mmm.base.filter.CharFilter;
 import io.github.mmm.marshall.AbstractStructuredReader;
+import io.github.mmm.marshall.MarshallingConfig;
 import io.github.mmm.marshall.StructuredFormat;
 import io.github.mmm.marshall.StructuredReader;
 import io.github.mmm.scanner.CharStreamScanner;
@@ -29,6 +30,8 @@ public class JsonReader extends AbstractStructuredReader {
 
   private CharStreamScanner reader;
 
+  private boolean requireQuotedProperties;
+
   private JsonState jsonState;
 
   private Object value;
@@ -48,6 +51,8 @@ public class JsonReader extends AbstractStructuredReader {
 
     super(format);
     this.reader = reader;
+    Boolean unquotedProperties = format.getConfig().get(MarshallingConfig.OPT_UNQUOTED_PROPERTIES);
+    this.requireQuotedProperties = Boolean.FALSE.equals(unquotedProperties);
     this.jsonState = new JsonState();
     next();
   }
@@ -70,8 +75,6 @@ public class JsonReader extends AbstractStructuredReader {
       nextStart(JsonNodeType.ARRAY);
     } else if (c == ']') {
       nextEnd(JsonNodeType.ARRAY);
-    } else if (c == '\"') {
-      nextString(false);
     } else if (c == ',') {
       if (this.commaCount != 0) {
         throw new IllegalStateException();
@@ -80,13 +83,32 @@ public class JsonReader extends AbstractStructuredReader {
       this.reader.next();
       this.commaCount++;
       next();
+    } else if ((this.jsonState.type == JsonNodeType.OBJECT) && (this.state != State.NAME)) {
+      String propertyName;
+      if (c == '\"') {
+        this.reader.next();
+        propertyName = this.reader.readUntil('"', false, '\\');
+      } else {
+        if (this.requireQuotedProperties) {
+          throw new IllegalStateException(
+              "Expected quoted property but found character " + c + " (0x" + Integer.toHexString(c) + ").");
+        }
+        propertyName = this.reader.readUntil(':', false);
+        if (propertyName == null) {
+          throw new IllegalStateException();
+        }
+        propertyName = propertyName.trim();
+      }
+      nextName(propertyName);
+    } else if (c == '\"') {
+      nextString();
     } else if (c == ':') {
       expect(State.NAME);
       this.reader.next();
       this.reader.skipWhile(SPACE_FILTER);
       c = this.reader.forcePeek();
       if (c == '\"') {
-        nextString(true);
+        nextString();
       } else if (c == '{') {
         nextStart(JsonNodeType.OBJECT);
       } else if (c == '[') {
@@ -115,16 +137,12 @@ public class JsonReader extends AbstractStructuredReader {
     }
   }
 
-  private void nextString(boolean mustBeValue) {
+  private void nextString() {
 
     this.reader.next();
+    this.stringValue = true;
     String string = this.reader.readUntil('"', false, '\\');
-    if (!mustBeValue && (this.jsonState.type == JsonNodeType.OBJECT)) {
-      nextName(string);
-    } else {
-      this.stringValue = true;
-      nextValue(string);
-    }
+    nextValue(string);
     this.commaCount = 0;
   }
 

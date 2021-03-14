@@ -2,7 +2,12 @@
  * http://www.apache.org/licenses/LICENSE-2.0 */
 package io.github.mmm.marshall.json;
 
+import org.junit.jupiter.api.Test;
+
+import io.github.mmm.marshall.MarshallingConfig;
+import io.github.mmm.marshall.StructuredReader;
 import io.github.mmm.marshall.StructuredTextFormatProvider;
+import io.github.mmm.marshall.StructuredWriter;
 import io.github.mmm.marshall.test.AbstractJsonFormatTest;
 
 /**
@@ -14,6 +19,31 @@ public class JsonFormatTest extends AbstractJsonFormatTest {
   protected StructuredTextFormatProvider getProvider() {
 
     return new JsonFormatProvider();
+  }
+
+  /**
+   * Test of writing JSON with unquoted properties.
+   */
+  @Test
+  public void testWriteUnquoted() {
+
+    // given
+    StructuredWriter writer = newWriter(MarshallingConfig.DEFAULTS
+        .with(MarshallingConfig.OPT_UNQUOTED_PROPERTIES, Boolean.TRUE).with(MarshallingConfig.OPT_INDENTATION, null));
+    // when
+    writeTestData(writer);
+    // then
+    assertThat(getActualData()).isEqualTo(getExpectedData("", "", false));
+  }
+
+  /**
+   * Test of reading JSON with unquoted properties.
+   */
+  @Test
+  public void testReadUnquoted() {
+
+    StructuredReader reader = newReader(getExpectedData("", "", false));
+    readTestData(reader);
   }
 
 }
