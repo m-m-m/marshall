@@ -36,7 +36,16 @@ public abstract class AbstractStructuredWriter implements StructuredWriter {
     this.format = format;
     this.config = format.getConfig();
     this.writeNullValues = this.config.get(MarshallingConfig.OPT_WRITE_NULL_VALUES).booleanValue();
-    this.indentation = this.config.get(MarshallingConfig.OPT_INDENTATION);
+    this.indentation = normalizeIndentation(this.config.get(MarshallingConfig.OPT_INDENTATION));
+  }
+
+  /**
+   * @param indent the {@link MarshallingConfig#OPT_INDENTATION indentation}.
+   * @return the given {@code indent} or a normalized form (e.g. if {@code null} was given).
+   */
+  protected String normalizeIndentation(String indent) {
+
+    return indent;
   }
 
   @Override

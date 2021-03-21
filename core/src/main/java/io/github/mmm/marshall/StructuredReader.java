@@ -223,20 +223,20 @@ public interface StructuredReader extends AutoCloseable {
       value = readValueAsBigInteger();
     } else if (BigDecimal.class.equals(type)) {
       value = readValueAsBigDecimal();
-      // } else if (Instant.class.equals(type)) {
-      // value = readValueAsInstant();
-      // } else if (LocalDateTime.class.equals(type)) {
-      // value = readValueAsLocalDateTime();
-      // } else if (LocalDate.class.equals(type)) {
-      // value = readValueAsLocalDate();
-      // } else if (LocalTime.class.equals(type)) {
-      // value = readValueAsLocalTime();
-      // } else if (ZonedDateTime.class.equals(type)) {
-      // value = readValueAsZonedDateTime();
-      // } else if (OffsetDateTime.class.equals(type)) {
-      // value = readValueAsOffsetDateTime();
-      // } else if (OffsetTime.class.equals(type)) {
-      // value = readValueAsOffsetTime();
+    } else if (Instant.class.equals(type)) {
+      value = readValueAsInstant();
+    } else if (LocalDateTime.class.equals(type)) {
+      value = readValueAsLocalDateTime();
+    } else if (LocalDate.class.equals(type)) {
+      value = readValueAsLocalDate();
+    } else if (LocalTime.class.equals(type)) {
+      value = readValueAsLocalTime();
+    } else if (ZonedDateTime.class.equals(type)) {
+      value = readValueAsZonedDateTime();
+    } else if (OffsetDateTime.class.equals(type)) {
+      value = readValueAsOffsetDateTime();
+    } else if (OffsetTime.class.equals(type)) {
+      value = readValueAsOffsetTime();
     } else if (Object.class.equals(type)) {
       value = readValue();
     } else {
@@ -362,6 +362,30 @@ public interface StructuredReader extends AutoCloseable {
    *         reached.
    */
   boolean readEnd();
+
+  /**
+   * @return {@code true} if the end of an {@link #readStartObject() object} has been reached.
+   */
+  default boolean readEndObject() {
+
+    if (getState() == State.END_OBJECT) {
+      next();
+      return true;
+    }
+    return false;
+  }
+
+  /**
+   * @return {@code true} if the end of an {@link #readStartObject() object} has been reached.
+   */
+  default boolean readEndArray() {
+
+    if (getState() == State.END_ARRAY) {
+      next();
+      return true;
+    }
+    return false;
+  }
 
   /**
    * @return {@code true} if all data has been read and the end of the stream has been reached, {@code false} otherwise.

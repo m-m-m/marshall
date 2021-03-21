@@ -9,11 +9,12 @@ import io.github.mmm.marshall.AbstractStructuredStringWriter;
 import io.github.mmm.marshall.MarshallingConfig;
 import io.github.mmm.marshall.StructuredFormat;
 import io.github.mmm.marshall.StructuredWriter;
+import io.github.mmm.marshall.spi.StructuredNodeType;
 
 /**
  * Implementation of {@link StructuredWriter} for JSON from scratch.
  *
- * @see JsonFormatImpl
+ * @see JsonFormat
  *
  * @since 1.0.0
  */
@@ -44,16 +45,16 @@ public class JsonWriter extends AbstractStructuredStringWriter {
   @Override
   public void writeStartArray(int size) {
 
-    writeStart(JsonNodeType.ARRAY);
+    writeStart(StructuredNodeType.ARRAY);
   }
 
   @Override
   public void writeStartObject(int size) {
 
-    writeStart(JsonNodeType.OBJECT);
+    writeStart(StructuredNodeType.OBJECT);
   }
 
-  private void writeStart(JsonNodeType type) {
+  private void writeStart(StructuredNodeType type) {
 
     if (this.jsonState.valueCount > 0) {
       write(',');
@@ -149,7 +150,6 @@ public class JsonWriter extends AbstractStructuredStringWriter {
     }
     writeName();
     write(s);
-    this.jsonState.valueCount++;
   }
 
   @Override

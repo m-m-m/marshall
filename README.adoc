@@ -43,6 +43,8 @@ We provide the following implementations:
 ** link:impl/stax/README.adoc[mmm-marshall-stax] (implementation for XML based on StAX)
 ** link:impl/tvm-xml/README.adoc[mmm-marshall-tvm-xml] (implementation for XML using TeaVM and XML API of the browser)
 ** link:impl/protobuf/README.adoc[mmm-marshall-protobuf] (implementation for ProtoBuf/gRPC)
+** link:impl/yaml/README.adoc[mmm-marshall-yaml] (implementation for YAML with flexibility)
+** link:impl/snakeyaml/README.adoc[mmm-marshall-snakeyaml (implementation for YAML based on SnakeYaml)
 
 === Usage
 

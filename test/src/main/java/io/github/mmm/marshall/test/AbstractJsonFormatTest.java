@@ -1,5 +1,8 @@
 package io.github.mmm.marshall.test;
 
+import java.math.BigDecimal;
+import java.math.BigInteger;
+
 import org.junit.jupiter.api.Test;
 
 import io.github.mmm.marshall.JsonFormat;
@@ -9,14 +12,15 @@ import io.github.mmm.marshall.StructuredFormatProvider;
 import io.github.mmm.marshall.StructuredTextFormat;
 
 /**
- * Abstract test of {@link StructuredTextFormat}.
+ * Abstract test of {@link StructuredTextFormat} for {@link StructuredFormat#ID_JSON JSON}.
  */
-public abstract class AbstractJsonFormatTest extends StructuredTextFormatTest {
+public abstract class AbstractJsonFormatTest extends AbstractJsonBasedFormatTest {
 
   /**
    * @return {@code true} for smart indentation, {@code false} otherwise (stupid indentation that also wraps empty
    *         arrays, etc.).
    */
+  @Override
   protected boolean isSmartIndent() {
 
     return true;
@@ -25,7 +29,7 @@ public abstract class AbstractJsonFormatTest extends StructuredTextFormatTest {
   @Override
   protected String getExpectedData(String indent, String newline) {
 
-    return getExpectedData(indent, newline, true);
+    return getExpectedJsonData(indent, newline, true);
   }
 
   /**
@@ -34,7 +38,8 @@ public abstract class AbstractJsonFormatTest extends StructuredTextFormatTest {
    * @param quoteProperties - {@code true} to quote properties, {@code false} otherwise.
    * @return the expected payload data.
    */
-  protected String getExpectedData(String indent, String newline, boolean quoteProperties) {
+  @Override
+  protected String getExpectedJsonData(String indent, String newline, boolean quoteProperties) {
 
     String space = " ";
     if (indent.isEmpty()) {
@@ -73,9 +78,12 @@ public abstract class AbstractJsonFormatTest extends StructuredTextFormatTest {
   }
 
   @Override
-  protected String getExpectedDataForAtomicLong() {
+  protected Object getGenericValue(Object value) {
 
-    return "42";
+    if ((value instanceof BigDecimal) || (value instanceof BigInteger)) {
+      return value.toString();
+    }
+    return super.getGenericValue(value);
   }
 
   /**

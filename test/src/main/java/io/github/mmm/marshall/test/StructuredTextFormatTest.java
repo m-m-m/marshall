@@ -8,7 +8,6 @@ import java.util.Map;
 import org.junit.jupiter.api.Test;
 
 import io.github.mmm.marshall.MarshallingConfig;
-import io.github.mmm.marshall.StructuredFormat;
 import io.github.mmm.marshall.StructuredReader;
 import io.github.mmm.marshall.StructuredReader.State;
 import io.github.mmm.marshall.StructuredTextFormat;
@@ -25,7 +24,7 @@ public abstract class StructuredTextFormatTest extends StructuredFormatTest {
   @Override
   protected String getExpectedData() {
 
-    return getExpectedData(getIndentation(), "\n");
+    return getExpectedData(getIndentation(), getNewline());
   }
 
   /**
@@ -45,9 +44,10 @@ public abstract class StructuredTextFormatTest extends StructuredFormatTest {
   }
 
   /**
+   * @param read - {@code true} for data to read, {@code false} for expected written data.
    * @return the expected raw (unformatted) payload data.
    */
-  protected String getExpectedDataRaw() {
+  protected String getExpectedDataRaw(boolean read) {
 
     return getExpectedData("", "");
   }
@@ -58,6 +58,12 @@ public abstract class StructuredTextFormatTest extends StructuredFormatTest {
    * @return the expected payload data.
    */
   protected abstract String getExpectedData(String indent, String newline);
+
+  @Override
+  protected String getExpectedDataForAtomicLong() {
+
+    return "42";
+  }
 
   @Override
   protected abstract StructuredTextFormatProvider getProvider();
@@ -94,7 +100,7 @@ public abstract class StructuredTextFormatTest extends StructuredFormatTest {
   @Test
   public void testReadWithoutIndentation() {
 
-    StructuredReader reader = newReader(getExpectedDataRaw());
+    StructuredReader reader = newReader(getExpectedDataRaw(true));
     readTestData(reader);
   }
 
@@ -106,7 +112,7 @@ public abstract class StructuredTextFormatTest extends StructuredFormatTest {
 
     StructuredWriter writer = newWriter(MarshallingConfig.NO_INDENTATION);
     writeTestData(writer);
-    assertThat(getActualData()).isEqualTo(getExpectedDataRaw());
+    assertThat(getActualData()).isEqualTo(getExpectedDataRaw(false));
   }
 
   /**
@@ -136,36 +142,36 @@ public abstract class StructuredTextFormatTest extends StructuredFormatTest {
     assertThat(value).isInstanceOf(Map.class);
     Map<String, Object> map = (Map<String, Object>) value;
     assertThat(map.get(P1_NAME)).isEqualTo("bar");
-    Object v7 = P3_VALUE7;
-    Object v8 = P3_VALUE8;
-    Object v9 = P3_VALUE9;
-    if (reader.getFormat().getId().equals(StructuredFormat.ID_JSON)) {
-      v7 = v7.toString();
-      v8 = v8.toString();
-      v9 = v9.toString();
-    }
+    Object v1 = getGenericValue(P3_VALUE1);
+    Object v2 = getGenericValue(P3_VALUE2);
+    Object v3 = getGenericValue(P3_VALUE3);
+    Object v4 = getGenericValue(P3_VALUE4);
+    Object v5 = getGenericValue(P3_VALUE5);
+    Object v7 = getGenericValue(P3_VALUE7);
+    Object v6 = getGenericValue(P3_VALUE6);
+    Object v8 = getGenericValue(P3_VALUE8);
+    Object v9 = getGenericValue(P3_VALUE9);
     List<Object> v10 = new ArrayList<>();
     Map<String, Object> object = new HashMap<>();
     object.put("key", "value");
     v10.add(object);
-    assertThat((List<Object>) map.get("list")).containsExactlyInAnyOrder(i(P3_VALUE1), i(P3_VALUE2), i(P3_VALUE3),
-        l(P3_VALUE4), d(P3_VALUE5), P3_VALUE6, v7, v8, v9, v10);
+    assertThat((List<Object>) map.get("list")).containsExactlyInAnyOrder(v1, v2, v3, v4, v5, v6, v7, v8, v9, v10);
     assertThat((List<Object>) map.get("empty")).isEmpty();
   }
 
-  private Double d(Number n) {
+  /**
+   * @param value the expected value.
+   * @return the expected value or a generic form of it if the value is read in a generic way without type information
+   *         available.
+   */
+  protected Object getGenericValue(Object value) {
 
-    return Double.valueOf(n.toString());
-  }
-
-  private Long l(Number n) {
-
-    return Long.valueOf(n.longValue());
-  }
-
-  private Integer i(Number n) {
-
-    return Integer.valueOf(n.intValue());
+    if ((value instanceof Byte) || (value instanceof Short)) {
+      return Integer.valueOf(((Number) value).intValue());
+    } else if (value instanceof Float) {
+      return Double.valueOf(value.toString());
+    }
+    return value;
   }
 
 }

@@ -182,15 +182,15 @@ public abstract class StructuredFormatTest extends Assertions {
     checkState(reader, State.START_OBJECT);
     assertThat(reader.readStartObject()).isTrue();
     checkState(reader, State.NAME);
-    assertThat(reader.isName(P1_NAME, P1_ID)).isTrue();
+    checkName(reader, P1_NAME, P1_ID);
     checkState(reader, State.VALUE);
     assertThat(reader.readValue(String.class)).isEqualTo(P1_VALUE);
     checkState(reader, State.NAME);
-    assertThat(reader.isName(P2_NAME, P2_ID)).isTrue();
+    checkName(reader, P2_NAME, P2_ID);
     checkState(reader, State.VALUE);
     assertThat(reader.readValueAsInstant()).isEqualTo(P2_VALUE);
     checkState(reader, State.NAME);
-    assertThat(reader.isName(P3_NAME, P3_ID)).isTrue();
+    checkName(reader, P3_NAME, P3_ID);
     checkState(reader, State.START_ARRAY);
     assertThat(reader.readStartArray()).isTrue();
     checkState(reader, State.VALUE);
@@ -206,36 +206,51 @@ public abstract class StructuredFormatTest extends Assertions {
     checkState(reader, State.VALUE);
     assertThat(reader.readValue(Double.class)).isEqualTo(P3_VALUE6);
     checkState(reader, State.VALUE);
-    assertThat(reader.readValue(BigDecimal.class)).isEqualTo(P3_VALUE7);
+    checkBigDecimal(reader.readValue(BigDecimal.class), P3_VALUE7);
     checkState(reader, State.VALUE);
     assertThat(reader.readValue(BigInteger.class)).isEqualTo(P3_VALUE8);
     checkState(reader, State.VALUE);
-    assertThat(reader.readValueAsBigDecimal()).isEqualTo(P3_VALUE9);
+    checkBigDecimal(reader.readValueAsBigDecimal(), P3_VALUE9);
     checkState(reader, State.START_ARRAY);
     assertThat(reader.readStartArray()).isTrue();
     checkState(reader, State.START_OBJECT);
     assertThat(reader.readStartObject()).isTrue();
     checkState(reader, State.NAME);
-    assertThat(reader.isName(P3_VALUE10_ARRAY_P1_NAME, 1)).isTrue();
+    checkName(reader, P3_VALUE10_ARRAY_P1_NAME, 1);
     checkState(reader, State.VALUE);
     assertThat(reader.readValue(String.class)).isEqualTo(P3_VALUE10_ARRAY_P1_VALUE);
     checkState(reader, State.END_OBJECT);
-    assertThat(reader.readEnd()).isTrue();
+    assertThat(reader.readEndObject()).isTrue();
+    assertThat(reader.readEndArray()).isTrue();
     checkState(reader, State.END_ARRAY);
-    assertThat(reader.readEnd()).isTrue();
-    checkState(reader, State.END_ARRAY);
-    assertThat(reader.readEnd()).isTrue();
+    assertThat(reader.readEndArray()).isTrue();
     checkState(reader, State.NAME);
-    assertThat(reader.isName(P4_NAME, P4_ID)).isTrue();
+    checkName(reader, P4_NAME, P4_ID);
     checkState(reader, State.START_ARRAY);
     assertThat(reader.readStartArray()).isTrue();
     checkState(reader, State.END_ARRAY);
-    assertThat(reader.readEnd()).isTrue();
+    assertThat(reader.readEndArray()).isTrue();
     checkState(reader, State.END_OBJECT);
     assertThat(reader.isDone()).isFalse();
-    assertThat(reader.readEnd()).isTrue();
+    assertThat(reader.readEndObject()).isTrue();
     assertThat(reader.getState()).isSameAs(State.DONE);
     assertThat(reader.isDone()).isTrue();
+  }
+
+  protected void checkBigDecimal(BigDecimal actual, BigDecimal expected) {
+
+    assertThat(actual).isEqualTo(expected);
+  }
+
+  protected void checkName(StructuredReader reader, String name, int id) {
+
+    if (reader.isName(name, id, true)) {
+      return;
+    } else if (reader.getFormat().isIdBased()) {
+      assertThat(reader.getId()).as("ID of field" + name).isEqualTo(id);
+    } else {
+      assertThat(reader.getName()).isEqualTo(name);
+    }
   }
 
   protected void checkState(StructuredReader reader, State state) {
@@ -297,6 +312,7 @@ public abstract class StructuredFormatTest extends Assertions {
   public void testReadAtomicLong() {
 
     StructuredReader reader = newReader(getExpectedDataForAtomicLong());
+    checkState(reader, State.VALUE);
     assertThat(reader.readValueAsLong()).isEqualTo(ATOMIC_LONG_VALUE);
     assertThat(reader.getState()).isEqualTo(State.DONE);
   }

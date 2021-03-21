@@ -1,27 +1,31 @@
 /* Copyright (c) The m-m-m Team, Licensed under the Apache License, Version 2.0
  * http://www.apache.org/licenses/LICENSE-2.0 */
-package io.github.mmm.marshall.json.impl;
+package io.github.mmm.marshall.snakeyaml.impl;
 
 import java.io.Reader;
+import java.io.Writer;
 
+import org.yaml.snakeyaml.Yaml;
+
+import io.github.mmm.base.io.AppendableWriter;
 import io.github.mmm.marshall.MarshallingConfig;
 import io.github.mmm.marshall.StructuredFormat;
 import io.github.mmm.marshall.StructuredReader;
 import io.github.mmm.marshall.StructuredTextFormat;
 import io.github.mmm.marshall.StructuredWriter;
-import io.github.mmm.scanner.CharReaderScanner;
-import io.github.mmm.scanner.CharSequenceScanner;
 
 /**
  * Implementation of {@link StructuredFormat} for JSON (JavaScript Object Notation).
  *
  * @since 1.0.0
  */
-public class JsonFormatImpl implements StructuredTextFormat {
+public class SnakeYamlFormat implements StructuredTextFormat {
 
-  private static final JsonFormatImpl DEFAULT = of(MarshallingConfig.DEFAULTS);
+  private static final SnakeYamlFormat DEFAULT = of(MarshallingConfig.DEFAULTS);
 
   private final MarshallingConfig config;
+
+  private final Yaml yaml;
 
   /**
    * The constructor.
@@ -29,10 +33,11 @@ public class JsonFormatImpl implements StructuredTextFormat {
    * @param config the {@link MarshallingConfig}.
    * @see io.github.mmm.marshall.StructuredFormatFactory#create(String, MarshallingConfig)
    */
-  public JsonFormatImpl(MarshallingConfig config) {
+  public SnakeYamlFormat(MarshallingConfig config) {
 
     super();
     this.config = config;
+    this.yaml = new Yaml();
   }
 
   @Override
@@ -44,45 +49,48 @@ public class JsonFormatImpl implements StructuredTextFormat {
   @Override
   public String getId() {
 
-    return ID_JSON;
+    return ID_YAML;
   }
 
   @Override
   public StructuredReader reader(Reader reader) {
 
-    return new JsonReader(new CharReaderScanner(reader), this);
+    Object value = this.yaml.load(reader);
+    return new SnakeYamlReader(value, this);
   }
 
   @Override
   public StructuredReader reader(String data) {
 
-    return new JsonReader(new CharSequenceScanner(data), this);
+    Object value = this.yaml.load(data);
+    return new SnakeYamlReader(value, this);
   }
 
   @Override
-  public StructuredWriter writer(Appendable writer) {
+  public StructuredWriter writer(Appendable appendable) {
 
-    return new JsonWriter(writer, this);
+    Writer writer = AppendableWriter.asWriter(appendable);
+    return new SnakeYamlWriter(writer, this, this.yaml);
   }
 
   /**
-   * @return the default instance of {@link JsonFormatImpl}.
+   * @return the default instance of {@link SnakeYamlFormat}.
    */
-  public static JsonFormatImpl of() {
+  public static SnakeYamlFormat of() {
 
     return DEFAULT;
   }
 
   /**
    * @param config the {@link MarshallingConfig} for the JSON vendor implementation.
-   * @return the new instance of {@link JsonFormatImpl} with the given {@code config}.
+   * @return the new instance of {@link SnakeYamlFormat} with the given {@code config}.
    */
-  public static JsonFormatImpl of(MarshallingConfig config) {
+  public static SnakeYamlFormat of(MarshallingConfig config) {
 
     if (config == null) {
       return DEFAULT;
     }
-    return new JsonFormatImpl(config);
+    return new SnakeYamlFormat(config);
   }
 
 }

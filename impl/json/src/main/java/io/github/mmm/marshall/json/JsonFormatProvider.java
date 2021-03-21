@@ -7,7 +7,7 @@ import io.github.mmm.marshall.StructuredFormat;
 import io.github.mmm.marshall.StructuredFormatProvider;
 import io.github.mmm.marshall.StructuredTextFormat;
 import io.github.mmm.marshall.StructuredTextFormatProvider;
-import io.github.mmm.marshall.json.impl.JsonFormatImpl;
+import io.github.mmm.marshall.json.impl.JsonFormat;
 
 /**
  * Implementation of {@link StructuredFormatProvider} for JSON.
@@ -25,13 +25,13 @@ public class JsonFormatProvider implements StructuredTextFormatProvider {
   @Override
   public StructuredTextFormat create() {
 
-    return JsonFormatImpl.of();
+    return JsonFormat.of();
   }
 
   @Override
   public StructuredTextFormat create(MarshallingConfig config) {
 
-    return JsonFormatImpl.of(config);
+    return JsonFormat.of(config);
   }
 
 }

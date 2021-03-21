@@ -3,6 +3,7 @@
 package io.github.mmm.marshall.standard;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 
@@ -18,7 +19,7 @@ import io.github.mmm.marshall.StructuredWriter;
  * @see StructuredReader#readValue(Class)
  * @see StructuredWriter#writeValue(Object)
  */
-public class ListMarshalling<T> implements Marshalling<List<T>> {
+public class ListMarshalling<T> implements Marshalling<Collection<T>> {
 
   private final Marshalling<T> itemMarshalling;
 
@@ -35,7 +36,7 @@ public class ListMarshalling<T> implements Marshalling<List<T>> {
   }
 
   @Override
-  public void writeObject(StructuredWriter writer, List<T> list) {
+  public void writeObject(StructuredWriter writer, Collection<T> list) {
 
     if (list == null) {
       writer.writeValueAsNull();

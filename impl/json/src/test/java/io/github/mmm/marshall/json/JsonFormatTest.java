@@ -11,7 +11,7 @@ import io.github.mmm.marshall.StructuredWriter;
 import io.github.mmm.marshall.test.AbstractJsonFormatTest;
 
 /**
- * Test of {@link io.github.mmm.marshall.JsonFormat} via {@link JsonFormatProvider}.
+ * Test of {@link io.github.mmm.marshall.json.impl.JsonFormat} via {@link JsonFormatProvider}.
  */
 public class JsonFormatTest extends AbstractJsonFormatTest {
 
@@ -33,7 +33,7 @@ public class JsonFormatTest extends AbstractJsonFormatTest {
     // when
     writeTestData(writer);
     // then
-    assertThat(getActualData()).isEqualTo(getExpectedData("", "", false));
+    assertThat(getActualData()).isEqualTo(getExpectedJsonData("", "", false));
   }
 
   /**
@@ -42,7 +42,7 @@ public class JsonFormatTest extends AbstractJsonFormatTest {
   @Test
   public void testReadUnquoted() {
 
-    StructuredReader reader = newReader(getExpectedData("", "", false));
+    StructuredReader reader = newReader(getExpectedJsonData("", "", false));
     readTestData(reader);
   }
 

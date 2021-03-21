@@ -9,12 +9,13 @@ import io.github.mmm.marshall.AbstractStructuredReader;
 import io.github.mmm.marshall.MarshallingConfig;
 import io.github.mmm.marshall.StructuredFormat;
 import io.github.mmm.marshall.StructuredReader;
+import io.github.mmm.marshall.spi.StructuredNodeType;
 import io.github.mmm.scanner.CharStreamScanner;
 
 /**
  * Implementation of {@link StructuredReader} for JSON from scratch.
  *
- * @see JsonFormatImpl
+ * @see JsonFormat
  *
  * @since 1.0.0
  */
@@ -68,13 +69,13 @@ public class JsonReader extends AbstractStructuredReader {
     }
     char c = this.reader.peek();
     if (c == '{') {
-      nextStart(JsonNodeType.OBJECT);
+      nextStart(StructuredNodeType.OBJECT);
     } else if (c == '}') {
-      nextEnd(JsonNodeType.OBJECT);
+      nextEnd(StructuredNodeType.OBJECT);
     } else if (c == '[') {
-      nextStart(JsonNodeType.ARRAY);
+      nextStart(StructuredNodeType.ARRAY);
     } else if (c == ']') {
-      nextEnd(JsonNodeType.ARRAY);
+      nextEnd(StructuredNodeType.ARRAY);
     } else if (c == ',') {
       if (this.commaCount != 0) {
         throw new IllegalStateException();
@@ -83,7 +84,7 @@ public class JsonReader extends AbstractStructuredReader {
       this.reader.next();
       this.commaCount++;
       next();
-    } else if ((this.jsonState.type == JsonNodeType.OBJECT) && (this.state != State.NAME)) {
+    } else if ((this.jsonState.type == StructuredNodeType.OBJECT) && (this.state != State.NAME)) {
       String propertyName;
       if (c == '\"') {
         this.reader.next();
@@ -110,9 +111,9 @@ public class JsonReader extends AbstractStructuredReader {
       if (c == '\"') {
         nextString();
       } else if (c == '{') {
-        nextStart(JsonNodeType.OBJECT);
+        nextStart(StructuredNodeType.OBJECT);
       } else if (c == '[') {
-        nextStart(JsonNodeType.ARRAY);
+        nextStart(StructuredNodeType.ARRAY);
       } else {
         nextValue(c);
       }
@@ -126,11 +127,11 @@ public class JsonReader extends AbstractStructuredReader {
 
     if (NUMBER_START_FILTER.accept(c)) {
       nextNumber();
-    } else if (this.reader.expect("null")) {
+    } else if (this.reader.expectUnsafe("null")) {
       nextValue(null);
-    } else if (this.reader.expect("true")) {
+    } else if (this.reader.expectUnsafe("true")) {
       nextValue(Boolean.TRUE);
-    } else if (this.reader.expect("false")) {
+    } else if (this.reader.expectUnsafe("false")) {
       nextValue(Boolean.FALSE);
     } else {
       throw new IllegalStateException("Unexpected JSON character '" + c + "'");
@@ -187,9 +188,9 @@ public class JsonReader extends AbstractStructuredReader {
     this.state = State.NAME;
   }
 
-  private void nextStart(JsonNodeType type) {
+  private void nextStart(StructuredNodeType type) {
 
-    if (this.jsonState.type == JsonNodeType.OBJECT) {
+    if (this.jsonState.type == StructuredNodeType.OBJECT) {
       expect(State.NAME);
     }
     this.jsonState = new JsonState(this.jsonState, type);
@@ -198,7 +199,7 @@ public class JsonReader extends AbstractStructuredReader {
     this.commaCount = 0;
   }
 
-  private void nextEnd(JsonNodeType type) {
+  private void nextEnd(StructuredNodeType type) {
 
     if (this.jsonState.type != type) {
       throw new IllegalStateException();

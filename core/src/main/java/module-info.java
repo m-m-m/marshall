@@ -14,6 +14,8 @@ module io.github.mmm.marshall {
 
   exports io.github.mmm.marshall;
 
+  exports io.github.mmm.marshall.spi;
+
   exports io.github.mmm.marshall.standard;
 
   uses io.github.mmm.marshall.StructuredFormatProvider;

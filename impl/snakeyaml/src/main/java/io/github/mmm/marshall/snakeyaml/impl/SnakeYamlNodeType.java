@@ -1,13 +1,13 @@
 /* Copyright (c) The m-m-m Team, Licensed under the Apache License, Version 2.0
  * http://www.apache.org/licenses/LICENSE-2.0 */
-package io.github.mmm.marshall.json.impl;
+package io.github.mmm.marshall.snakeyaml.impl;
 
 import io.github.mmm.marshall.StructuredReader.State;
 
 /**
  *
  */
-public enum JsonNodeType {
+public enum SnakeYamlNodeType {
 
   /** JSON Object: {} */
   OBJECT('{', '}', State.START_OBJECT, State.END_OBJECT),
@@ -23,7 +23,7 @@ public enum JsonNodeType {
 
   private final State end;
 
-  private JsonNodeType(char open, char close, State start, State end) {
+  private SnakeYamlNodeType(char open, char close, State start, State end) {
 
     this.open = open;
     this.close = close;
