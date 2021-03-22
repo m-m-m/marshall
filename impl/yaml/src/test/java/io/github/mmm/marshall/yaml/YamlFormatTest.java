@@ -2,13 +2,18 @@
  * http://www.apache.org/licenses/LICENSE-2.0 */
 package io.github.mmm.marshall.yaml;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.math.BigDecimal;
 import java.math.BigInteger;
 
 import org.assertj.core.data.Offset;
 import org.junit.jupiter.api.Test;
 
+import io.github.mmm.marshall.JsonFormat;
+import io.github.mmm.marshall.StructuredReader;
 import io.github.mmm.marshall.StructuredTextFormatProvider;
+import io.github.mmm.marshall.StructuredWriter;
 import io.github.mmm.marshall.test.AbstractYamlFormatTest;
 
 /**
@@ -40,7 +45,13 @@ public class YamlFormatTest extends AbstractYamlFormatTest {
   }
 
   @Override
-  protected boolean isSmartIndent() {
+  protected boolean isSmartJsonIndent() {
+
+    return true;
+  }
+
+  @Override
+  protected boolean isSmartYamlIndent() {
 
     return false;
   }
@@ -63,11 +74,25 @@ public class YamlFormatTest extends AbstractYamlFormatTest {
     return super.getGenericValue(value);
   }
 
+  /**
+   * Test of {@link StructuredWriter#write(StructuredReader)} to convert YAML to JSON.
+   */
   @Test
-  @Override
-  public void testYamlFormat() {
+  public void testYaml2Json() {
 
-    super.testYamlFormat();
+    // given
+    String yaml = getExpectedData();
+    StructuredReader reader = newReader(yaml);
+    StringBuilder sb = new StringBuilder();
+    StructuredWriter writer = JsonFormat.of().writer(sb);
+    // when
+    writer.write(reader);
+    // then
+    String json = sb.toString();
+    // System.out.println(yaml);
+    // System.out.println("--- was converted to ---");
+    // System.out.println(json);
+    assertThat(json).isEqualTo(getExpectedJsonData("  ", "\n", true));
   }
 
 }

@@ -21,16 +21,15 @@ public abstract class AbstractYamlFormatTest extends AbstractJsonBasedFormatTest
 
   protected String getExpectedYamlData(String indent, String newline) {
 
-    return getExpectedYamlData(indent, newline, "", "'", "", isSmartIndent());
+    return getExpectedYamlData(indent, newline, "", "'", "", isSmartYamlIndent());
   }
 
   protected String getExpectedYamlData(String indent, String newline, String quote) {
 
-    return getExpectedYamlData(indent, newline, quote, quote, quote, isSmartIndent());
+    return getExpectedYamlData(indent, newline, quote, quote, quote, isSmartYamlIndent());
   }
 
-  @Override
-  protected boolean isSmartIndent() {
+  protected boolean isSmartYamlIndent() {
 
     return true;
   }

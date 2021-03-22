@@ -21,7 +21,7 @@ public abstract class AbstractJsonFormatTest extends AbstractJsonBasedFormatTest
    *         arrays, etc.).
    */
   @Override
-  protected boolean isSmartIndent() {
+  protected boolean isSmartJsonIndent() {
 
     return true;
   }
@@ -46,7 +46,7 @@ public abstract class AbstractJsonFormatTest extends AbstractJsonBasedFormatTest
       space = "";
     }
     String emptyArrayIndent = newline + indent;
-    if (isSmartIndent()) {
+    if (isSmartJsonIndent()) {
       emptyArrayIndent = "";
     }
     String quote = "";

@@ -11,7 +11,7 @@ public abstract class AbstractJsonBasedFormatTest extends StructuredTextFormatTe
    * @return {@code true} for smart indentation, {@code false} otherwise (stupid indentation that also wraps empty
    *         arrays, etc.).
    */
-  protected boolean isSmartIndent() {
+  protected boolean isSmartJsonIndent() {
 
     return true;
   }
@@ -35,7 +35,7 @@ public abstract class AbstractJsonBasedFormatTest extends StructuredTextFormatTe
       space = "";
     }
     String emptyArrayIndent = newline + indent;
-    if (isSmartIndent()) {
+    if (isSmartJsonIndent()) {
       emptyArrayIndent = "";
     }
     String quote = "";

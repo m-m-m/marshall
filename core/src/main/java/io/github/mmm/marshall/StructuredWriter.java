@@ -13,6 +13,8 @@ import java.time.OffsetTime;
 import java.time.ZonedDateTime;
 import java.time.temporal.Temporal;
 
+import io.github.mmm.marshall.StructuredReader.State;
+
 /**
  * Interface for a writer to produce a {@link StructuredFormat structured format} such as JSON or XML.
  *
@@ -344,6 +346,67 @@ public interface StructuredWriter extends AutoCloseable {
   default void writeValueAsFloat(Float value) {
 
     writeValueAsNumber(value);
+  }
+
+  /**
+   * Copies the data from the given {@link StructuredReader} to this {@link StructuredWriter}. This also allows to
+   * convert from one {@link StructuredFormat} to another (e.g. YAML to JSON).
+   *
+   * @param reader the {@link StructuredReader} to read the data from and write it to this {@link StructuredWriter}. The
+   *        entire {@link StructuredReader} will be consumed until the {@link State#DONE} is reached. Then this
+   *        {@link StructuredWriter} will be {@link #close() closed}.
+   */
+  default void write(StructuredReader reader) {
+
+    StructuredFormat readerFormat = reader.getFormat();
+    boolean readerIdBased = readerFormat.isIdBased();
+    StructuredFormat writerFormat = getFormat();
+    boolean writerIdBased = writerFormat.isIdBased();
+    int nextId = 0;
+    boolean todo = true;
+    while (todo) {
+      State state = reader.getState();
+      if (state == null) {
+        // protobuf is limited so we need to guess...
+        state = State.START_OBJECT;
+      }
+      if (state == State.START_OBJECT) {
+        reader.readStartObject();
+        writeStartObject();
+        nextId = 0;
+      } else if (state == State.END_OBJECT) {
+        reader.readEndObject();
+        writeEnd();
+      } else if (state == State.START_ARRAY) {
+        reader.readStartArray();
+        writeStartArray();
+      } else if (state == State.END_ARRAY) {
+        reader.readEndArray();
+        writeEnd();
+      } else if (state == State.NAME) {
+        int id = -1;
+        String name = null;
+        if (readerIdBased) {
+          id = reader.readId();
+          if (!writerIdBased) {
+            name = Integer.toString(id);
+          }
+        } else {
+          name = reader.readName();
+          if (writerIdBased) {
+            nextId++;
+            id = nextId;
+          }
+        }
+        writeName(name, id);
+      } else if (state == State.VALUE) {
+        Object value = reader.readValue();
+        writeValue(value);
+      } else if (state == State.DONE) {
+        close();
+        todo = false;
+      }
+    }
   }
 
   @Override
