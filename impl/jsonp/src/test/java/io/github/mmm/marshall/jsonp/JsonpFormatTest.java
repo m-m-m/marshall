@@ -11,7 +11,7 @@ import io.github.mmm.marshall.test.AbstractJsonFormatTest;
 public class JsonpFormatTest extends AbstractJsonFormatTest {
 
   @Override
-  protected boolean isSmartIndent() {
+  protected boolean isSmartJsonIndent() {
 
     return false;
   }
