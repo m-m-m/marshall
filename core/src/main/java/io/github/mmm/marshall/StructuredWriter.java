@@ -349,6 +349,20 @@ public interface StructuredWriter extends AutoCloseable {
   }
 
   /**
+   * Writes a comment at the current position. Implementations that do not support comments (e.g. JSON format does not
+   * allow comments at all) will simply do nothing when this method is called. Otherwise implementations have to take
+   * care that the comment is written at a very next position and in a way that results valid output. Typically when you
+   * have just written a {@link #writeValue(Object) value}, start, or end the call of this method will result in a
+   * comment being written after that and before the next {@link #writeName(String, int) property} or start/end.
+   *
+   * @param comment the comment to write.
+   */
+  default void writeComment(String comment) {
+
+    // nothing by default
+  }
+
+  /**
    * Copies the data from the given {@link StructuredReader} to this {@link StructuredWriter}. This also allows to
    * convert from one {@link StructuredFormat} to another (e.g. YAML to JSON).
    *
@@ -365,6 +379,10 @@ public interface StructuredWriter extends AutoCloseable {
     int nextId = 0;
     boolean todo = true;
     while (todo) {
+      String comment = reader.readComment();
+      if (comment != null) {
+        writeComment(comment);
+      }
       State state = reader.getState();
       if (state == null) {
         // protobuf is limited so we need to guess...

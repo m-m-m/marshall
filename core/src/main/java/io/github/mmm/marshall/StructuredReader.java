@@ -441,6 +441,20 @@ public interface StructuredReader extends AutoCloseable {
     return currentState;
   }
 
+  /**
+   * Reads the comment at the current position. Comments are intentionally not part of the {@link #getState() state} and
+   * can be read at any time. Implementations that support comments shall allow to access a comment from
+   * {@link State#NAME} still in the {@link #next() following} {@link State}. After a comment is read using this method
+   * it will be set to {@code null} until the next comment has been parsed.
+   *
+   * @return the comment at the current position or {@code null} if no comment is present. Will always be {@code null}
+   *         for formats that do not support comments such as JSON or protoBuf.
+   */
+  default String readComment() {
+
+    return null;
+  }
+
   @Override
   void close();
 
