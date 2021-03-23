@@ -28,12 +28,10 @@ public abstract class AbstractStructuredReader implements StructuredReader {
   /** The {@link MarshallingConfig}. */
   protected final MarshallingConfig config;
 
-  /**
-   * The current name.
-   *
-   * @see #readName()
-   */
+  /** @see #readName() */
   protected String name;
+
+  private String comment;
 
   /**
    * The constructor.
@@ -433,6 +431,40 @@ public abstract class AbstractStructuredReader implements StructuredReader {
       array.add(value);
     }
     next();
+  }
+
+  @Override
+  public String readComment() {
+
+    String result = this.comment;
+    if (result != null) {
+      this.comment = null;
+    }
+    return result;
+  }
+
+  /**
+   * @param currentComment the raw {@link #readComment() comment}.
+   * @return the given comment unescaped from XML.
+   * @see AbstractStructuredWriter#escapeXmlComment(String)
+   */
+  protected String unescapeXmlComment(String currentComment) {
+
+    return currentComment.replace(AbstractStructuredWriter.XML_COMMENT_DASHES_ESCAPED,
+        AbstractStructuredWriter.XML_COMMENT_DASHES);
+  }
+
+  /**
+   * @param newComment the new comment to append.
+   * @see #readComment()
+   */
+  protected void addComment(String newComment) {
+
+    if (this.comment == null) {
+      this.comment = newComment;
+    } else {
+      this.comment = this.comment + "\n" + newComment;
+    }
   }
 
   @Override

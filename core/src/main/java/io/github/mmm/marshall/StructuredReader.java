@@ -449,6 +449,7 @@ public interface StructuredReader extends AutoCloseable {
    *
    * @return the comment at the current position or {@code null} if no comment is present. Will always be {@code null}
    *         for formats that do not support comments such as JSON or protoBuf.
+   * @see StructuredFormat#isSupportingComments()
    */
   default String readComment() {
 

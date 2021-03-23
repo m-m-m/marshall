@@ -2,8 +2,6 @@
  * http://www.apache.org/licenses/LICENSE-2.0 */
 package io.github.mmm.marshall.snakeyaml;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import java.math.BigDecimal;
 
 import org.assertj.core.data.Offset;
@@ -42,9 +40,10 @@ public class SnakeYamlFormatTest extends AbstractYamlFormatTest {
 
   @Override
   protected String getExpectedYamlData(String indent, String newline, String quoteString, String quoteInstant,
-      String quoteBigNum, boolean smartIndent) {
+      String quoteBigNum, boolean smartIndent, boolean comments) {
 
-    return super.getExpectedYamlData(indent, newline, quoteString, quoteInstant, quoteBigNum, smartIndent) + newline;
+    return super.getExpectedYamlData(indent, newline, quoteString, quoteInstant, quoteBigNum, smartIndent, comments)
+        + newline;
   }
 
   @Override
@@ -72,6 +71,11 @@ public class SnakeYamlFormatTest extends AbstractYamlFormatTest {
   public void testYamlFormat() {
 
     super.testYamlFormat();
+  }
+
+  protected boolean isSupportingComments() {
+
+    return false;
   }
 
 }

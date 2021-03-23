@@ -133,6 +133,12 @@ public class StaxFormat implements StructuredTextFormat {
     }
   }
 
+  @Override
+  public boolean isSupportingComments() {
+
+    return true;
+  }
+
   /**
    * @return the default instance of {@link StaxFormat}.
    */

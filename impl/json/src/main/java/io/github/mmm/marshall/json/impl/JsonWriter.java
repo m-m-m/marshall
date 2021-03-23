@@ -59,9 +59,7 @@ public class JsonWriter extends AbstractStructuredStringWriter {
     if (this.jsonState.valueCount > 0) {
       write(',');
     }
-    if (this.jsonState.parent != null) {
-      writeIndent();
-    }
+    writeIndent();
     writeName();
     write(type.getOpen());
     this.jsonState = new JsonState(this.jsonState, type);

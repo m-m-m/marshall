@@ -101,6 +101,12 @@ public class TvmXmlFormat implements StructuredTextFormat {
     return new TvmXmlStringWriter(writer, this);
   }
 
+  @Override
+  public boolean isSupportingComments() {
+
+    return true;
+  }
+
   /**
    * @return the default instance of {@link TvmXmlFormat}.
    */

@@ -2,6 +2,8 @@
  * http://www.apache.org/licenses/LICENSE-2.0 */
 package io.github.mmm.marshall.stax;
 
+import org.junit.jupiter.api.Test;
+
 import io.github.mmm.marshall.StructuredTextFormatProvider;
 import io.github.mmm.marshall.test.AbstractXmlFormatTest;
 
@@ -14,6 +16,13 @@ public class StaxFormatTest extends AbstractXmlFormatTest {
   protected StructuredTextFormatProvider getProvider() {
 
     return new StaxFormatProvider();
+  }
+
+  @Test
+  @Override
+  public void testFormatFlags() {
+
+    super.testFormatFlags();
   }
 
 }

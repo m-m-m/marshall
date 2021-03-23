@@ -65,6 +65,12 @@ public class YamlFormat implements StructuredTextFormat {
     return new YamlWriter(writer, this);
   }
 
+  @Override
+  public boolean isSupportingComments() {
+
+    return true;
+  }
+
   /**
    * @return the default instance of {@link YamlFormat}.
    */

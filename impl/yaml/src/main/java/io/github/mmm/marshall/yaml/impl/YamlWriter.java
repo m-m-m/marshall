@@ -26,8 +26,6 @@ public class YamlWriter extends AbstractStructuredStringWriter {
 
   private YamlState yamlState;
 
-  private boolean empty;
-
   /**
    * The constructor.
    *
@@ -38,7 +36,6 @@ public class YamlWriter extends AbstractStructuredStringWriter {
 
     super(out, format);
     this.yamlState = new YamlState();
-    this.empty = true;
   }
 
   @Override
@@ -77,20 +74,17 @@ public class YamlWriter extends AbstractStructuredStringWriter {
 
   private void writeName(boolean spaced) {
 
-    this.yamlState.valueCount++;
     boolean listArray = this.yamlState.isYamlArray();
-    if (!this.empty) {
-      if (!listArray || !this.yamlState.parent.isYamlArray()) {
-        writeIndent();
-      }
+    if (!listArray || !this.yamlState.parent.isYamlArray()) {
+      writeIndent();
     }
+    this.yamlState.valueCount++;
     if (this.name == null) {
       if (listArray) {
         write("- ");
       }
       return;
     }
-    this.empty = false;
     write(this.name);
     if (spaced) {
       write(": ");
@@ -103,7 +97,7 @@ public class YamlWriter extends AbstractStructuredStringWriter {
   @Override
   public void writeEnd() {
 
-    if ((this.yamlState.type != null) && (this.yamlState.parent != null)) {
+    if ((this.yamlState.parent != null) && (this.yamlState.parent != null)) {
       this.indentCount--;
       boolean json = this.yamlState.json;
       if (this.yamlState.valueCount == 0) {
@@ -243,6 +237,23 @@ public class YamlWriter extends AbstractStructuredStringWriter {
   public void writeValueAsByte(Byte value) {
 
     writeValueInternal(value);
+  }
+
+  @Override
+  protected void doWriteComment(String currentComment) {
+
+    write("# ");
+    write(currentComment.replace("\r\n", "\n").replace("\n", "\n# "));
+  }
+
+  @Override
+  public void writeComment(String newComment) {
+
+    if (this.yamlState.parent == null) {
+      doWriteComment(newComment);
+    } else {
+      super.writeComment(newComment);
+    }
   }
 
   @Override

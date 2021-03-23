@@ -36,15 +36,21 @@ public class TvmXmlDocumentReader extends AbstractStructuredStringReader {
   @Override
   public State next() {
 
-    if (this.state == State.DONE) {
-      return State.DONE;
-    } else if (this.state == State.NAME) {
+    if (this.state == State.NAME) {
       this.state = nextState(true);
     } else if ((this.state == State.VALUE) || (this.state == State.END_ARRAY) || (this.state == State.END_OBJECT)) {
-      Node next;
-      do {
+      Node next = null;
+      short nodeType = -1;
+      while (nodeType != Node.ELEMENT_NODE) {
         next = this.node.getNextSibling();
-      } while ((next != null) && (next.getNodeType() != Node.ELEMENT_NODE));
+        if (next == null) {
+          break;
+        }
+        nodeType = next.getNodeType();
+        if (nodeType == Node.COMMENT_NODE) {
+          addComment(next.getTextContent());
+        }
+      }
       if (next == null) {
         this.node = next;
       } else {
@@ -55,6 +61,11 @@ public class TvmXmlDocumentReader extends AbstractStructuredStringReader {
       } else {
         this.state = nextState(false);
       }
+    } else if ((this.state == State.START_ARRAY) || (this.state == State.START_OBJECT)) {
+      this.node = this.node.getFirstChild();
+      this.state = nextState(true);
+    } else if (this.state == State.DONE) {
+      return State.DONE;
     }
     return this.state;
   }

@@ -93,7 +93,9 @@ public abstract class AbstractJsonFormatTest extends AbstractJsonBasedFormatTest
   public void testJsonFormat() {
 
     StructuredFormatProvider provider = StructuredFormatFactory.get().getProvider(StructuredFormat.ID_JSON);
-    assertThat(provider.create()).isSameAs(getProvider().create()).isSameAs(JsonFormat.of());
+    StructuredFormat format = provider.create();
+    assertThat(format).isSameAs(getProvider().create()).isSameAs(JsonFormat.of());
+    assertThat(format.isSupportingComments()).isFalse();
   }
 
 }

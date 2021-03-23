@@ -356,6 +356,7 @@ public interface StructuredWriter extends AutoCloseable {
    * comment being written after that and before the next {@link #writeName(String, int) property} or start/end.
    *
    * @param comment the comment to write.
+   * @see StructuredFormat#isSupportingComments()
    */
   default void writeComment(String comment) {
 

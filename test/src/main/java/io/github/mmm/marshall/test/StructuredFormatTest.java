@@ -23,7 +23,11 @@ public abstract class StructuredFormatTest extends Assertions {
 
   protected static final Long ATOMIC_LONG_VALUE = Long.valueOf(42);
 
+  protected static final String COMMENT_HEADER = "header comment";
+
   protected static final int P1_ID = 1;
+
+  protected static final String COMMENT_P1 = "foo starts here\n--- second line of comment.";
 
   protected static final String P1_NAME = "foo";
 
@@ -56,6 +60,8 @@ public abstract class StructuredFormatTest extends Assertions {
   protected static final BigInteger P3_VALUE8 = new BigInteger("1234567890123456789012345678901234567890");
 
   protected static final BigDecimal P3_VALUE9 = new BigDecimal("1.10");
+
+  protected static final String COMMENT_P3_VALUE10 = "an object inside an array within an array";
 
   protected static final int P3_VALUE10_ARRAY_P1_ID = 1;
 
@@ -132,7 +138,9 @@ public abstract class StructuredFormatTest extends Assertions {
    */
   protected void writeTestData(StructuredWriter writer) {
 
+    writer.writeComment(COMMENT_HEADER);
     writer.writeStartObject();
+    writer.writeComment(COMMENT_P1);
     writer.writeName(P1_NAME, P1_ID);
     writer.writeValue(P1_VALUE);
     writer.writeName(P2_NAME, P2_ID);
@@ -150,6 +158,7 @@ public abstract class StructuredFormatTest extends Assertions {
     writer.writeValueAsBigDecimal(P3_VALUE9);
     writer.writeStartArray();
     writer.writeStartObject();
+    writer.writeComment(COMMENT_P3_VALUE10);
     writer.writeName(P3_VALUE10_ARRAY_P1_NAME, P3_VALUE10_ARRAY_P1_ID);
     writer.writeValueAsString(P3_VALUE10_ARRAY_P1_VALUE);
     writer.writeEnd();

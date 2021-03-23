@@ -110,9 +110,11 @@ public class StaxReader extends AbstractStructuredStringReader {
         } else if (uri.equals(StructuredFormat.NS_URI_OBJECT)) {
           return State.END_OBJECT;
         } else {
-          error("Unexpected namespace URI " + uri);
+          throw error("Unexpected namespace URI " + uri);
         }
-        break;
+      case XMLStreamConstants.COMMENT:
+        addComment(unescapeXmlComment(this.xml.getText()));
+        return null;
       case XMLStreamConstants.END_DOCUMENT:
         return State.DONE;
     }

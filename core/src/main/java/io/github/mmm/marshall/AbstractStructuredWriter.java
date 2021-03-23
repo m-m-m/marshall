@@ -7,6 +7,10 @@ package io.github.mmm.marshall;
  */
 public abstract class AbstractStructuredWriter implements StructuredWriter {
 
+  static final String XML_COMMENT_DASHES = "--";
+
+  static final String XML_COMMENT_DASHES_ESCAPED = "\\-_-/";
+
   private final StructuredFormat format;
 
   /** The {@link MarshallingConfig}. */
@@ -18,11 +22,7 @@ public abstract class AbstractStructuredWriter implements StructuredWriter {
   /** @see MarshallingConfig#OPT_INDENTATION */
   protected final String indentation;
 
-  /**
-   * The current name.
-   *
-   * @see #writeName(String)
-   */
+  /** @see #writeName(String) */
   protected String name;
 
   /**
@@ -46,6 +46,15 @@ public abstract class AbstractStructuredWriter implements StructuredWriter {
   protected String normalizeIndentation(String indent) {
 
     return indent;
+  }
+
+  /**
+   * @param currentComment the {@link #writeComment(String) comment}.
+   * @return the given comment escaped for XML.
+   */
+  protected String escapeXmlComment(String currentComment) {
+
+    return currentComment.replace(XML_COMMENT_DASHES, XML_COMMENT_DASHES_ESCAPED);
   }
 
   @Override

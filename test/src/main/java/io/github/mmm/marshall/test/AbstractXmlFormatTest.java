@@ -16,8 +16,11 @@ public abstract class AbstractXmlFormatTest extends StructuredTextFormatTest {
   @Override
   protected String getExpectedData(String indent, String newline) {
 
+    boolean comments = getProvider().create().isSupportingComments();
     return "<?xml version=\"1.0\" ?>" + newline //
+        + (comments ? "<!-- header comment -->" + newline : "") //
         + "<o:json xmlns:a=\"array\" xmlns:o=\"object\">" + newline //
+        + (comments ? indent + "<!-- foo starts here\n\\-_-/- second line of comment. -->" + newline : "") //
         + indent + "<foo s=\"bar\"/>" + newline //
         + indent + "<instant s=\"1999-12-31T23:59:59.999999Z\"/>" + newline //
         + indent + "<a:list>" + newline //
@@ -32,6 +35,8 @@ public abstract class AbstractXmlFormatTest extends StructuredTextFormatTest {
         + indent + indent + "<i n=\"1.10\"/>" + newline //
         + indent + indent + "<a:i>" + newline //
         + indent + indent + indent + "<o:i>" + newline //
+        + (comments ? indent + indent + indent + indent + "<!-- an object inside an array within an array -->" + newline
+            : "") //
         + indent + indent + indent + indent + "<key s=\"value\"/>" + newline //
         + indent + indent + indent + "</o:i>" + newline //
         + indent + indent + "</a:i>" + newline //
@@ -51,10 +56,12 @@ public abstract class AbstractXmlFormatTest extends StructuredTextFormatTest {
    * Test with {@link StructuredFormat#ID_XML} and {@link XmlFormat#of()}.
    */
   @Test
-  public void testJsonFormat() {
+  public void testXmlFormat() {
 
     StructuredFormatProvider provider = StructuredFormatFactory.get().getProvider(StructuredFormat.ID_XML);
-    assertThat(provider.create()).isSameAs(getProvider().create()).isSameAs(XmlFormat.of());
+    StructuredFormat format = provider.create();
+    assertThat(format).isSameAs(getProvider().create()).isSameAs(XmlFormat.of());
+    assertThat(format.isSupportingComments()).isTrue();
   }
 
 }

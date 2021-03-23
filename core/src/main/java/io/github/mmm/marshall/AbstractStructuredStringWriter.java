@@ -17,6 +17,11 @@ public abstract class AbstractStructuredStringWriter extends AbstractStructuredW
   /** The current indentation count. */
   protected int indentCount;
 
+  /** @see #writeComment(String) */
+  private String comment;
+
+  private boolean newlineWritten;
+
   /**
    * The constructor.
    *
@@ -34,6 +39,11 @@ public abstract class AbstractStructuredStringWriter extends AbstractStructuredW
    */
   protected void writeIndent() {
 
+    if ((this.comment != null) && getFormat().isSupportingComments()) {
+      writeIndent(this.indentCount);
+      doWriteComment(this.comment);
+      this.comment = null;
+    }
     writeIndent(this.indentCount);
   }
 
@@ -42,13 +52,17 @@ public abstract class AbstractStructuredStringWriter extends AbstractStructuredW
    *
    * @param count the number of indentations to write.
    */
-  protected void writeIndent(int count) {
+  private void writeIndent(int count) {
 
     if (this.indentation == null) {
       return;
     }
     try {
-      this.out.append('\n');
+      if (this.newlineWritten) {
+        this.out.append('\n');
+      } else {
+        this.newlineWritten = true;
+      }
       for (int i = count; i > 0; i--) {
         this.out.append(this.indentation);
       }
@@ -82,6 +96,26 @@ public abstract class AbstractStructuredStringWriter extends AbstractStructuredW
   }
 
   @Override
+  public void writeComment(String newComment) {
+
+    if (newComment == null) {
+      return;
+    }
+    if (this.comment == null) {
+      this.comment = newComment;
+    } else {
+      this.comment = this.comment + "\n" + newComment;
+    }
+  }
+
+  /**
+   * @param currentComment the comment to write physically at the current position.
+   */
+  protected void doWriteComment(String currentComment) {
+
+  }
+
+  @Override
   public void close() {
 
     if (this.out == null) {
@@ -95,6 +129,12 @@ public abstract class AbstractStructuredStringWriter extends AbstractStructuredW
       }
     }
     this.out = null;
+  }
+
+  @Override
+  public String toString() {
+
+    return this.out.toString();
   }
 
 }

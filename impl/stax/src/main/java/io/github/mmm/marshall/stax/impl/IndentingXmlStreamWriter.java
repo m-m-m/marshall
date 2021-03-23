@@ -179,6 +179,7 @@ public class IndentingXmlStreamWriter implements XMLStreamWriter {
   @Override
   public void writeComment(String data) throws XMLStreamException {
 
+    writeIndent(this.indentCount);
     this.xml.writeComment(data);
     this.chars = false;
   }

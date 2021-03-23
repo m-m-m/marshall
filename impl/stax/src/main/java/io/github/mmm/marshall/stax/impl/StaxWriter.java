@@ -43,20 +43,6 @@ public class StaxWriter extends AbstractStructuredWriter {
   }
 
   @Override
-  public void close() {
-
-    try {
-      if (this.xml != null) {
-        this.xml.writeEndDocument();
-        this.xml.close();
-        this.xml = null;
-      }
-    } catch (XMLStreamException e) {
-      throw new IllegalStateException(e);
-    }
-  }
-
-  @Override
   public void writeStartArray(int size) {
 
     try {
@@ -151,6 +137,33 @@ public class StaxWriter extends AbstractStructuredWriter {
         this.xml.writeAttribute(attribute, value);
       }
       this.name = null;
+    } catch (XMLStreamException e) {
+      throw new IllegalStateException(e);
+    }
+  }
+
+  @Override
+  public void writeComment(String comment) {
+
+    if (comment == null) {
+      return;
+    }
+    try {
+      this.xml.writeComment(" " + escapeXmlComment(comment) + " ");
+    } catch (XMLStreamException e) {
+      throw new IllegalStateException(e);
+    }
+  }
+
+  @Override
+  public void close() {
+
+    try {
+      if (this.xml != null) {
+        this.xml.writeEndDocument();
+        this.xml.close();
+        this.xml = null;
+      }
     } catch (XMLStreamException e) {
       throw new IllegalStateException(e);
     }

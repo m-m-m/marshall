@@ -125,6 +125,14 @@ public class TvmXmlStringWriter extends AbstractStructuredStringWriter {
     }
   }
 
+  @Override
+  protected void doWriteComment(String currentComment) {
+
+    write("<!-- ");
+    write(escapeXmlComment(currentComment));
+    write(" -->");
+  }
+
   private String escapeAttributeValue(String value) {
 
     return value.replace("&", "&amp;").replace("<", "&lt;").replace("\"", "&quot;");

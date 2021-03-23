@@ -112,4 +112,14 @@ public interface StructuredFormat {
     return false;
   }
 
+  /**
+   * @return {@code true} if this format supports comments, {@code false} otherwise.
+   * @see StructuredWriter#writeComment(String)
+   * @see StructuredReader#readComment()
+   */
+  default boolean isSupportingComments() {
+
+    return false;
+  }
+
 }

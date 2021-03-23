@@ -2,8 +2,6 @@
  * http://www.apache.org/licenses/LICENSE-2.0 */
 package io.github.mmm.marshall.yaml;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import java.math.BigDecimal;
 import java.math.BigInteger;
 

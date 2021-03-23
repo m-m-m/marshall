@@ -71,6 +71,9 @@ public class YamlReader extends AbstractStructuredValueReader {
   @Override
   public State next() {
 
+    if (this.state != State.NAME) {
+      readComment(); // clear comment to avoid appending unrelated comments
+    }
     this.singleChar = 0;
     if (this.nextColumn != -1) {
       if (this.nextColumn > this.yamlState.column) {
@@ -158,7 +161,9 @@ public class YamlReader extends AbstractStructuredValueReader {
         return;
       case '#': // comment
         this.reader.next();
-        skipLine();
+        addComment(this.reader.readLine(true));
+        this.line++;
+        this.lineStartPosition = this.reader.getPosition();
         nextToken();
         return;
       case '-':
