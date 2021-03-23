@@ -12,7 +12,7 @@ module io.github.mmm.marshall.protobuf {
 
   requires transitive io.github.mmm.marshall;
 
-  requires transitive protobuf.java;
+  requires transitive com.google.protobuf;
 
   exports io.github.mmm.marshall.protobuf;
 
