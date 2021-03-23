@@ -2,7 +2,7 @@
  * http://www.apache.org/licenses/LICENSE-2.0 */
 package io.github.mmm.marshall.snakeyaml.impl;
 
-import io.github.mmm.marshall.AbstractStructuredReader;
+import io.github.mmm.marshall.AbstractStructuredValueReader;
 import io.github.mmm.marshall.StructuredFormat;
 import io.github.mmm.marshall.StructuredReader;
 import io.github.mmm.marshall.snakeyaml.impl.state.SnakeYamlState;
@@ -14,7 +14,7 @@ import io.github.mmm.marshall.snakeyaml.impl.state.SnakeYamlState;
  *
  * @since 1.0.0
  */
-public class SnakeYamlReader extends AbstractStructuredReader {
+public class SnakeYamlReader extends AbstractStructuredValueReader {
 
   private SnakeYamlState yamlState;
 
@@ -72,44 +72,6 @@ public class SnakeYamlReader extends AbstractStructuredReader {
     Object v = this.yamlState.getValue();
     next();
     return v;
-  }
-
-  @Override
-  public String readValueAsString() {
-
-    Object v = readValue();
-    if (v == null) {
-      return null;
-    }
-    return v.toString();
-  }
-
-  @Override
-  public Boolean readValueAsBoolean() {
-
-    Object v = readValue();
-    if (v == null) {
-      return null;
-    } else if (v instanceof Boolean) {
-      return (Boolean) v;
-    } else {
-      throw new IllegalArgumentException("Value of type " + v.getClass().getName() + " can not be read as boolean!");
-    }
-  }
-
-  @Override
-  protected String readValueAsNumberString() {
-
-    Object v = readValue();
-    if (v == null) {
-      return null;
-    } else if (v instanceof String) {
-      return (String) v;
-    } else if (v instanceof Number) {
-      return v.toString();
-    } else {
-      throw new IllegalArgumentException("Value of type " + v.getClass().getName() + " can not be read as number!");
-    }
   }
 
   @Override

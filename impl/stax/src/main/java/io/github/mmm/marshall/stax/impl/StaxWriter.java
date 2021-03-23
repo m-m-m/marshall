@@ -113,7 +113,7 @@ public class StaxWriter extends AbstractStructuredWriter {
   @Override
   public void writeValueAsString(String value) {
 
-    writeValue(value, StructuredFormat.ART_STRING_VALUE);
+    writeValue(value, StructuredFormat.ATR_STRING_VALUE);
   }
 
   @Override
@@ -122,7 +122,7 @@ public class StaxWriter extends AbstractStructuredWriter {
     if (value == null) {
       writeValueAsNull();
     } else {
-      writeValue(value.toString(), StructuredFormat.ART_BOOLEAN_VALUE);
+      writeValue(value.toString(), StructuredFormat.ATR_BOOLEAN_VALUE);
     }
   }
 
@@ -132,7 +132,7 @@ public class StaxWriter extends AbstractStructuredWriter {
     if (value == null) {
       writeValueAsNull();
     } else {
-      writeValue(value.toString(), StructuredFormat.ART_NUMBER_VALUE);
+      writeValue(value.toString(), StructuredFormat.ATR_NUMBER_VALUE);
     }
   }
 

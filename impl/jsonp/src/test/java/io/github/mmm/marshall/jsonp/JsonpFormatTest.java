@@ -2,6 +2,8 @@
  * http://www.apache.org/licenses/LICENSE-2.0 */
 package io.github.mmm.marshall.jsonp;
 
+import org.junit.jupiter.api.Test;
+
 import io.github.mmm.marshall.StructuredTextFormatProvider;
 import io.github.mmm.marshall.test.AbstractJsonFormatTest;
 
@@ -38,6 +40,13 @@ public class JsonpFormatTest extends AbstractJsonFormatTest {
   protected StructuredTextFormatProvider getProvider() {
 
     return new JsonpFormatProvider();
+  }
+
+  @Test
+  @Override
+  public void testFormatFlags() {
+
+    super.testFormatFlags();
   }
 
 }

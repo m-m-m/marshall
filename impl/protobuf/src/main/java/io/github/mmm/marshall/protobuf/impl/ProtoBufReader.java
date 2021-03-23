@@ -8,6 +8,7 @@ import com.google.protobuf.CodedInputStream;
 import com.google.protobuf.WireFormat;
 
 import io.github.mmm.base.exception.RuntimeIoException;
+import io.github.mmm.base.number.NumberType;
 import io.github.mmm.marshall.AbstractStructuredReader;
 import io.github.mmm.marshall.StructuredFormat;
 import io.github.mmm.marshall.StructuredReader;
@@ -164,21 +165,21 @@ public class ProtoBufReader extends AbstractStructuredReader {
       case WireFormat.WIRETYPE_VARINT:
         return readValueAsLong();
       default:
-        throw new IllegalStateException("Unknown wire type: " + this.type);
+        throw error("Unknown wire type: " + this.type);
     }
   }
 
-  private void expect(int wireType) {
+  private void expectType(int wireType) {
 
     if ((this.type != wireType) && (this.type != -1)) {
-      throw new IllegalStateException("Expected wire type is " + wireType + " but actual type is " + this.type);
+      error("Expected wire type is " + wireType + " but actual type is " + this.type);
     }
   }
 
   @Override
   public String readValueAsString() {
 
-    expect(WireFormat.WIRETYPE_LENGTH_DELIMITED);
+    expectType(WireFormat.WIRETYPE_LENGTH_DELIMITED);
     try {
       return valueCompleted(this.in.readString());
     } catch (IOException e) {
@@ -189,8 +190,11 @@ public class ProtoBufReader extends AbstractStructuredReader {
   @Override
   public Boolean readValueAsBoolean() {
 
-    expect(WireFormat.WIRETYPE_VARINT);
     try {
+      if (this.type == WireFormat.WIRETYPE_LENGTH_DELIMITED) {
+        return valueCompleted(parseBoolean(this.in.readString()));
+      }
+      expectType(WireFormat.WIRETYPE_VARINT);
       return valueCompleted(Boolean.valueOf(this.in.readBool()));
     } catch (IOException e) {
       throw new RuntimeIoException(e);
@@ -200,7 +204,7 @@ public class ProtoBufReader extends AbstractStructuredReader {
   @Override
   public Byte readValueAsByte() {
 
-    expect(WireFormat.WIRETYPE_VARINT);
+    expectType(WireFormat.WIRETYPE_VARINT);
     try {
       return valueCompleted(Byte.valueOf((byte) this.in.readSInt32()));
     } catch (IOException e) {
@@ -211,7 +215,7 @@ public class ProtoBufReader extends AbstractStructuredReader {
   @Override
   public Short readValueAsShort() {
 
-    expect(WireFormat.WIRETYPE_VARINT);
+    expectType(WireFormat.WIRETYPE_VARINT);
     try {
       return valueCompleted(Short.valueOf((short) this.in.readSInt32()));
     } catch (IOException e) {
@@ -222,7 +226,7 @@ public class ProtoBufReader extends AbstractStructuredReader {
   @Override
   public Integer readValueAsInteger() {
 
-    expect(WireFormat.WIRETYPE_VARINT);
+    expectType(WireFormat.WIRETYPE_VARINT);
     try {
       return valueCompleted(Integer.valueOf(this.in.readSInt32()));
     } catch (IOException e) {
@@ -233,7 +237,7 @@ public class ProtoBufReader extends AbstractStructuredReader {
   @Override
   public Long readValueAsLong() {
 
-    expect(WireFormat.WIRETYPE_VARINT);
+    expectType(WireFormat.WIRETYPE_VARINT);
     try {
       return valueCompleted(Long.valueOf(this.in.readSInt64()));
     } catch (IOException e) {
@@ -244,7 +248,7 @@ public class ProtoBufReader extends AbstractStructuredReader {
   @Override
   public Float readValueAsFloat() {
 
-    expect(WireFormat.WIRETYPE_FIXED32);
+    expectType(WireFormat.WIRETYPE_FIXED32);
     try {
       return valueCompleted(Float.valueOf(this.in.readFloat()));
     } catch (IOException e) {
@@ -255,11 +259,26 @@ public class ProtoBufReader extends AbstractStructuredReader {
   @Override
   public Double readValueAsDouble() {
 
-    expect(WireFormat.WIRETYPE_FIXED64);
+    expectType(WireFormat.WIRETYPE_FIXED64);
     try {
       return valueCompleted(Double.valueOf(this.in.readDouble()));
     } catch (IOException e) {
       throw new RuntimeIoException(e);
+    }
+  }
+
+  @Override
+  protected <N extends Number> N readValueAsNumber(NumberType<N> numberType) {
+
+    // for BigInteger or BigDecimal
+    String value = readValueAsString();
+    if (value == null) {
+      return null;
+    }
+    try {
+      return numberType.valueOf(value);
+    } catch (RuntimeException e) {
+      throw error(value, numberType.getType(), e);
     }
   }
 

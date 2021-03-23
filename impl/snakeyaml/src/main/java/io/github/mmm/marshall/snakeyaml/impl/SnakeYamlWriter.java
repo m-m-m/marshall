@@ -23,10 +23,6 @@ import io.github.mmm.marshall.snakeyaml.impl.state.SnakeYamlRootState;
  */
 public class SnakeYamlWriter extends AbstractStructuredWriter {
 
-  private static final long JS_NUMBER_MAX = (2L << 52) - 1;
-
-  private static final long JS_NUMBER_MIN = -JS_NUMBER_MAX;
-
   private final Yaml yaml;
 
   private SnakeYamlParentState jsonState;
@@ -38,6 +34,7 @@ public class SnakeYamlWriter extends AbstractStructuredWriter {
    *
    * @param out the {@link Writer} to write the data to.
    * @param format the {@link #getFormat() format}.
+   * @param yaml the {@link Yaml} instance.
    */
   public SnakeYamlWriter(Writer out, StructuredFormat format, Yaml yaml) {
 

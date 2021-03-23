@@ -2,14 +2,11 @@
  * http://www.apache.org/licenses/LICENSE-2.0 */
 package io.github.mmm.marshall.tvm.xml.impl;
 
-import java.math.BigDecimal;
-import java.math.BigInteger;
-
 import org.teavm.jso.dom.xml.Attr;
 import org.teavm.jso.dom.xml.NamedNodeMap;
 import org.teavm.jso.dom.xml.Node;
 
-import io.github.mmm.marshall.AbstractStructuredReader;
+import io.github.mmm.marshall.AbstractStructuredStringReader;
 import io.github.mmm.marshall.StructuredFormat;
 import io.github.mmm.marshall.StructuredReader;
 
@@ -18,7 +15,7 @@ import io.github.mmm.marshall.StructuredReader;
  *
  * @since 1.0.0
  */
-public class TvmXmlDocumentReader extends AbstractStructuredReader {
+public class TvmXmlDocumentReader extends AbstractStructuredStringReader {
 
   private Node node;
 
@@ -42,7 +39,7 @@ public class TvmXmlDocumentReader extends AbstractStructuredReader {
     if (this.state == State.DONE) {
       return State.DONE;
     } else if (this.state == State.NAME) {
-      this.state = nextValue(true);
+      this.state = nextState(true);
     } else if ((this.state == State.VALUE) || (this.state == State.END_ARRAY) || (this.state == State.END_OBJECT)) {
       Node next;
       do {
@@ -56,20 +53,20 @@ public class TvmXmlDocumentReader extends AbstractStructuredReader {
       if (this.node == null) {
         this.state = State.DONE;
       } else {
-        this.state = nextValue(false);
+        this.state = nextState(false);
       }
     }
     return this.state;
   }
 
-  private State nextValue(boolean start) {
+  private State nextState(boolean start) {
 
     String uri = this.node.getNamespaceURI();
     if (uri == null) {
       if (start) {
         return State.VALUE;
       } else {
-        throw invalidXml();
+        throw error("Expected start value!");
       }
     } else if (uri.equals(StructuredFormat.NS_URI_ARRAY)) {
       if (start) {
@@ -84,14 +81,8 @@ public class TvmXmlDocumentReader extends AbstractStructuredReader {
         return State.END_OBJECT;
       }
     } else {
-      throw invalidXml();
+      throw error("Unexpected namespace URI " + uri);
     }
-  }
-
-  private void endValue() {
-
-    expect(State.VALUE);
-    next();
   }
 
   @Override
@@ -107,105 +98,54 @@ public class TvmXmlDocumentReader extends AbstractStructuredReader {
   @Override
   public Object readValue() {
 
+    expect(State.VALUE);
     Object value;
     Attr attribute = null;
-    if (this.state == State.VALUE) {
-      NamedNodeMap<Attr> attributes = this.node.getAttributes();
-      if (attributes.getLength() == 0) {
-        value = null;
-      } else {
-        attribute = attributes.getNamedItem(StructuredFormat.ART_STRING_VALUE);
-        if (attribute == null) {
-          attribute = attributes.getNamedItem(StructuredFormat.ART_BOOLEAN_VALUE);
-          if (attribute == null) {
-            attribute = attributes.getNamedItem(StructuredFormat.ART_NUMBER_VALUE);
-            if (attribute == null) {
-              throw invalidXml();
-            }
-            value = parseNumber(attribute.getValue());
-          } else {
-            value = parseBoolean(attribute.getValue());
-          }
-        } else {
-          value = attribute.getValue();
-        }
-      }
-      endValue();
+    NamedNodeMap<Attr> attributes = this.node.getAttributes();
+    if (attributes.getLength() == 0) {
+      value = null;
     } else {
-      expect(State.VALUE);
-      throw invalidXml();
+      attribute = attributes.getNamedItem(StructuredFormat.ATR_STRING_VALUE);
+      if (attribute == null) {
+        attribute = attributes.getNamedItem(StructuredFormat.ATR_BOOLEAN_VALUE);
+        if (attribute == null) {
+          attribute = attributes.getNamedItem(StructuredFormat.ATR_NUMBER_VALUE);
+          if (attribute == null) {
+            throw error("Unexpected attribute " + attributes.get(0));
+          }
+          value = parseNumber(attribute.getValue());
+        } else {
+          value = parseBoolean(attribute.getValue());
+        }
+      } else {
+        value = attribute.getValue();
+      }
     }
+    next();
     return value;
   }
 
   @Override
   protected String readValueAsNumberString() {
 
-    return readValue(StructuredFormat.ART_NUMBER_VALUE);
-  }
-
-  @Override
-  public String readValueAsString() {
-
-    return readValue(StructuredFormat.ART_STRING_VALUE);
-  }
-
-  @Override
-  public Boolean readValueAsBoolean() {
-
-    String value = readValue(StructuredFormat.ART_BOOLEAN_VALUE);
-    return parseBoolean(value);
-  }
-
-  private Boolean parseBoolean(String value) {
-
-    if (value == null) {
-      return null;
-    } else if ("true".equalsIgnoreCase(value)) {
-      return Boolean.TRUE;
-    } else if ("false".equalsIgnoreCase(value)) {
-      return Boolean.FALSE;
-    } else {
-      throw handleValueParseError(value, Boolean.class, null);
-    }
-  }
-
-  private Number parseNumber(String string) {
-
-    boolean decimal = (string.indexOf('.') >= 0);
-    if (decimal) {
-      return new BigDecimal(string);
-    } else {
-      BigInteger integer = new BigInteger(string);
-      int bitLength = integer.bitLength();
-      if (bitLength > 63) {
-        return integer;
-      } else if (bitLength < 31) {
-        return Integer.valueOf(integer.intValue());
-      } else {
-        return Long.valueOf(integer.longValue());
-      }
-    }
-  }
-
-  private String readValue(String attribute) {
-
     expect(State.VALUE);
     NamedNodeMap<Attr> attributes = this.node.getAttributes();
-    String value = null;
+    Attr attr = null;
     if (attributes.getLength() > 0) {
-      Attr attr = attributes.getNamedItem(attribute);
+      attr = attributes.getNamedItem(StructuredFormat.ATR_NUMBER_VALUE);
       if (attr == null) {
-        if (attribute == StructuredFormat.ART_NUMBER_VALUE) {
-          attr = attributes.getNamedItem(StructuredFormat.ART_STRING_VALUE);
-        }
+        attr = attributes.getNamedItem(StructuredFormat.ATR_STRING_VALUE);
         if (attr == null) {
-          throw invalidXml();
+          // fallback, actually an error (Boolean can not be a number)
+          return readValueAsString();
         }
       }
-      value = attr.getValue();
     }
-    endValue();
+    if (attr == null) {
+      throw error("Missing value attribute!");
+    }
+    String value = attr.getValue();
+    next();
     return value;
   }
 
@@ -213,15 +153,10 @@ public class TvmXmlDocumentReader extends AbstractStructuredReader {
   public boolean isStringValue() {
 
     if (this.state == State.VALUE) {
-      Attr stringAttr = this.node.getAttributes().getNamedItem(StructuredFormat.ART_STRING_VALUE);
+      Attr stringAttr = this.node.getAttributes().getNamedItem(StructuredFormat.ATR_STRING_VALUE);
       return (stringAttr != null);
     }
     return false;
-  }
-
-  private RuntimeException invalidXml() {
-
-    throw new IllegalStateException("Invalid XML!");
   }
 
   @Override

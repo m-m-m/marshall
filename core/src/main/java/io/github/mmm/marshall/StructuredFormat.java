@@ -46,13 +46,13 @@ public interface StructuredFormat {
   String TAG_ITEM = "i";
 
   /** The (XML) attribute for a string value. */
-  String ART_STRING_VALUE = "s";
+  String ATR_STRING_VALUE = "s";
 
   /** The (XML) attribute for a boolean value. */
-  String ART_BOOLEAN_VALUE = "b";
+  String ATR_BOOLEAN_VALUE = "b";
 
   /** The (XML) attribute for a numeric value. */
-  String ART_NUMBER_VALUE = "n";
+  String ATR_NUMBER_VALUE = "n";
 
   /**
    * @return the name of this format. E.g. {@link #ID_JSON JSON}, {@link #ID_XML XML}, {@link #ID_YAML YAML}, or

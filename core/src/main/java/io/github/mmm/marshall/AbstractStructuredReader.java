@@ -16,6 +16,8 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
+import io.github.mmm.base.number.NumberType;
+
 /**
  * Abstract base implementation of {@link StructuredReader}.
  */
@@ -112,15 +114,6 @@ public abstract class AbstractStructuredReader implements StructuredReader {
   }
 
   /**
-   * @see #readValueAsString()
-   * @return the value as {@link String} but assuring it as number.
-   */
-  protected String readValueAsNumberString() {
-
-    return readValueAsString();
-  }
-
-  /**
    * Verifies that the {@link #getState() current state} is the same as the given states.
    *
    * @param expected first accepted state.
@@ -128,7 +121,7 @@ public abstract class AbstractStructuredReader implements StructuredReader {
   protected void expect(State expected) {
 
     if ((this.state != null) && (this.state != expected)) {
-      throw new IllegalStateException("Expecting event " + expected + " but found " + this.state + ".");
+      error("Expecting event " + expected + " but found " + this.state + ".");
     }
   }
 
@@ -141,8 +134,7 @@ public abstract class AbstractStructuredReader implements StructuredReader {
   protected void expect(State expected, State expected2) {
 
     if ((this.state != expected) && (this.state != expected2)) {
-      throw new IllegalStateException(
-          "Expecting event " + expected + " or " + expected2 + " but found " + this.state + ".");
+      error("Expecting event " + expected + " or " + expected2 + " but found " + this.state + ".");
     }
   }
 
@@ -156,8 +148,7 @@ public abstract class AbstractStructuredReader implements StructuredReader {
   protected void expect(State expected, State expected2, State expected3) {
 
     if ((this.state != expected) && (this.state != expected2) && (this.state != expected3)) {
-      throw new IllegalStateException(
-          "Expecting event " + expected + ", " + expected2 + ",  or " + expected3 + " but found " + this.state + ".");
+      error("Expecting event " + expected + ", " + expected2 + ",  or " + expected3 + " but found " + this.state + ".");
     }
   }
 
@@ -169,135 +160,132 @@ public abstract class AbstractStructuredReader implements StructuredReader {
   protected void expectNot(State unexpected) {
 
     if (this.state == unexpected) {
-      throw new IllegalStateException("Unexpected event " + unexpected + ".");
+      error("Unexpected event " + unexpected + ".");
     }
-  }
-
-  /**
-   * @param value the value that was read.
-   * @param typeClass the expected type.
-   * @param e a potential error that occurred or {@code null} if no cause.
-   * @return nothing. Will always throw {@link IllegalStateException}. However to signal the compiler that the program
-   *         flow will exit with the call of this function you may prefix it with "{@code throw}".
-   */
-  protected RuntimeException handleValueParseError(String value, Class<?> typeClass, Throwable e) {
-
-    String message = "Failed to parse value '" + value + "' as " + typeClass.getSimpleName();
-    if (this.name != null) {
-      message = message + " for property " + this.name;
-    }
-    throw new IllegalStateException(message, e);
   }
 
   @Override
-  public Integer readValueAsInteger() {
+  public String readValueAsString() {
 
-    String value = readValueAsNumberString();
-    if (value == null) {
+    Object v = readValue();
+    if (v == null) {
       return null;
     }
-    try {
-      return Integer.valueOf(value);
-    } catch (NumberFormatException e) {
-      throw handleValueParseError(value, Integer.class, e);
+    return v.toString();
+  }
+
+  @Override
+  public Boolean readValueAsBoolean() {
+
+    Object v = readValue();
+    if (v == null) {
+      return null;
+    } else if (v instanceof Boolean) {
+      return (Boolean) v;
+    } else if (v instanceof String) {
+      return parseBoolean((String) v);
+    } else {
+      throw error(v, Boolean.class);
     }
   }
 
   @Override
   public Long readValueAsLong() {
 
-    String value = readValueAsNumberString();
-    if (value == null) {
-      return null;
-    }
-    try {
-      return Long.valueOf(value);
-    } catch (NumberFormatException e) {
-      throw handleValueParseError(value, Long.class, e);
-    }
+    return readValueAsNumber(NumberType.LONG);
   }
 
   @Override
-  public Double readValueAsDouble() {
+  public Integer readValueAsInteger() {
 
-    String value = readValueAsNumberString();
-    if (value == null) {
-      return null;
-    }
-    try {
-      return Double.valueOf(value);
-    } catch (NumberFormatException e) {
-      throw handleValueParseError(value, Double.class, e);
-    }
-  }
-
-  @Override
-  public Float readValueAsFloat() {
-
-    String value = readValueAsNumberString();
-    if (value == null) {
-      return null;
-    }
-    try {
-      return Float.valueOf(value);
-    } catch (NumberFormatException e) {
-      throw handleValueParseError(value, Float.class, e);
-    }
+    return readValueAsNumber(NumberType.INTEGER);
   }
 
   @Override
   public Short readValueAsShort() {
 
-    String value = readValueAsNumberString();
-    if (value == null) {
-      return null;
-    }
-    try {
-      return Short.valueOf(value);
-    } catch (NumberFormatException e) {
-      throw handleValueParseError(value, Short.class, e);
-    }
+    return readValueAsNumber(NumberType.SHORT);
   }
 
   @Override
   public Byte readValueAsByte() {
 
-    String value = readValueAsNumberString();
-    if (value == null) {
-      return null;
-    }
-    try {
-      return Byte.valueOf(value);
-    } catch (NumberFormatException e) {
-      throw handleValueParseError(value, Byte.class, e);
-    }
+    return readValueAsNumber(NumberType.BYTE);
+  }
+
+  @Override
+  public Double readValueAsDouble() {
+
+    return readValueAsNumber(NumberType.DOUBLE);
+  }
+
+  @Override
+  public Float readValueAsFloat() {
+
+    return readValueAsNumber(NumberType.FLOAT);
   }
 
   @Override
   public BigInteger readValueAsBigInteger() {
 
-    String value = readValueAsNumberString();
-    if (value == null) {
-      return null;
-    }
-    try {
-      return new BigInteger(value);
-    } catch (NumberFormatException e) {
-      throw handleValueParseError(value, BigInteger.class, e);
-    }
+    return readValueAsNumber(NumberType.BIG_INTEGER);
   }
 
   @Override
   public BigDecimal readValueAsBigDecimal() {
 
-    String value = readValueAsNumberString();
-    if (value == null) {
-      return null;
+    return readValueAsNumber(NumberType.BIG_DECIMAL);
+  }
+
+  /**
+   * @param <N> type of the number to read.
+   * @param type the {@link NumberType} to read.
+   * @return the read and parsed number value. May be {@code null}.
+   */
+  protected abstract <N extends Number> N readValueAsNumber(NumberType<N> type);
+
+  /**
+   * @param string the number as {@link String}.
+   * @return the parsed {@link Number}.
+   */
+  protected Number parseNumber(String string) {
+
+    boolean decimal = (string.indexOf('.') >= 0);
+    if (decimal) {
+      BigDecimal bd = new BigDecimal(string);
+      if (string.endsWith("0")) {
+        return bd; // preserve leading zeros
+      }
+      return NumberType.simplify(bd, NumberType.FLOAT);
+    } else {
+      BigInteger integer = new BigInteger(string);
+      int bitLength = integer.bitLength();
+      if (bitLength > 63) {
+        return integer;
+      } else if (bitLength < 31) {
+        return Integer.valueOf(integer.intValue());
+      } else {
+        return Long.valueOf(integer.longValue());
+      }
     }
-    try {
-      return new BigDecimal(value);
-    } catch (NumberFormatException e) {
-      throw handleValueParseError(value, BigDecimal.class, e);
+  }
+
+  /**
+   * @param string the boolean value as {@link String}.
+   * @return the parsed {@link Boolean}.
+   */
+  protected Boolean parseBoolean(String string) {
+
+    if (string == null) {
+      return null;
+    } else if ("true".equalsIgnoreCase(string)) {
+      return Boolean.TRUE;
+    } else if ("false".equalsIgnoreCase(string)) {
+      return Boolean.FALSE;
+    } else if (string.isEmpty()) {
+      return null;
+    } else {
+      throw error(string, Boolean.class, null);
     }
   }
 
@@ -311,7 +299,7 @@ public abstract class AbstractStructuredReader implements StructuredReader {
     try {
       return Instant.parse(value);
     } catch (RuntimeException e) {
-      throw handleValueParseError(value, Instant.class, e);
+      throw error(value, Instant.class, e);
     }
   }
 
@@ -325,7 +313,7 @@ public abstract class AbstractStructuredReader implements StructuredReader {
     try {
       return LocalDate.parse(value);
     } catch (RuntimeException e) {
-      throw handleValueParseError(value, LocalDate.class, e);
+      throw error(value, LocalDate.class, e);
     }
   }
 
@@ -339,7 +327,7 @@ public abstract class AbstractStructuredReader implements StructuredReader {
     try {
       return LocalDateTime.parse(value);
     } catch (RuntimeException e) {
-      throw handleValueParseError(value, LocalDateTime.class, e);
+      throw error(value, LocalDateTime.class, e);
     }
   }
 
@@ -353,7 +341,7 @@ public abstract class AbstractStructuredReader implements StructuredReader {
     try {
       return LocalTime.parse(value);
     } catch (RuntimeException e) {
-      throw handleValueParseError(value, LocalTime.class, e);
+      throw error(value, LocalTime.class, e);
     }
   }
 
@@ -367,7 +355,7 @@ public abstract class AbstractStructuredReader implements StructuredReader {
     try {
       return ZonedDateTime.parse(value);
     } catch (RuntimeException e) {
-      throw handleValueParseError(value, ZonedDateTime.class, e);
+      throw error(value, ZonedDateTime.class, e);
     }
   }
 
@@ -381,7 +369,7 @@ public abstract class AbstractStructuredReader implements StructuredReader {
     try {
       return OffsetDateTime.parse(value);
     } catch (RuntimeException e) {
-      throw handleValueParseError(value, OffsetDateTime.class, e);
+      throw error(value, OffsetDateTime.class, e);
     }
   }
 
@@ -395,7 +383,7 @@ public abstract class AbstractStructuredReader implements StructuredReader {
     try {
       return OffsetTime.parse(value);
     } catch (RuntimeException e) {
-      throw handleValueParseError(value, OffsetDateTime.class, e);
+      throw error(value, OffsetDateTime.class, e);
     }
   }
 
@@ -475,6 +463,65 @@ public abstract class AbstractStructuredReader implements StructuredReader {
         next();
       }
     }
+  }
+
+  /**
+   * @param message the error message.
+   * @return nothing, just to ensure exit you may throw result of this method.
+   */
+  protected RuntimeException error(String message) {
+
+    return error(message, (Throwable) null);
+  }
+
+  /**
+   * @param message the error message.
+   * @param cause the optional {@link Throwable} causing this error.
+   * @return nothing, just to ensure exit you may throw result of this method.
+   */
+  protected RuntimeException error(String message, Throwable cause) {
+
+    if (this.name != null) {
+      message = message + "(at property '" + this.name + "')";
+    }
+    throw new IllegalStateException(message, cause);
+  }
+
+  /**
+   * @param value the value that was read.
+   * @param typeClass the expected type.
+   * @return nothing. Will always throw {@link IllegalStateException}. However to signal the compiler that the program
+   *         flow will exit with the call of this function you may prefix it with "{@code throw}".
+   */
+  protected RuntimeException error(Object value, Class<?> typeClass) {
+
+    return error(value, typeClass, null);
+  }
+
+  /**
+   * @param value the value that was read.
+   * @param typeClass the expected type.
+   * @param cause a potential error that occurred or {@code null} if no cause.
+   * @return nothing. Will always throw {@link IllegalStateException}. However to signal the compiler that the program
+   *         flow will exit with the call of this function you may prefix it with "{@code throw}".
+   */
+  protected RuntimeException error(Object value, Class<?> typeClass, Throwable cause) {
+
+    StringBuilder message = new StringBuilder("Failed to parse ");
+    if (value == null) {
+      message.append("null");
+    } else {
+      message.append("'");
+      message.append(value);
+      message.append("'");
+      if (!(value instanceof String)) {
+        message.append(" of type ");
+        message.append(value.getClass().getSimpleName());
+      }
+    }
+    message.append(" as ");
+    message.append(typeClass.getSimpleName());
+    return error(message.toString(), cause);
   }
 
 }

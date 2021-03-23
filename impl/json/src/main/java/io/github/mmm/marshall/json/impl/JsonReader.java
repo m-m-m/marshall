@@ -5,7 +5,7 @@ package io.github.mmm.marshall.json.impl;
 import java.io.Reader;
 
 import io.github.mmm.base.filter.CharFilter;
-import io.github.mmm.marshall.AbstractStructuredReader;
+import io.github.mmm.marshall.AbstractStructuredValueReader;
 import io.github.mmm.marshall.MarshallingConfig;
 import io.github.mmm.marshall.StructuredFormat;
 import io.github.mmm.marshall.StructuredReader;
@@ -19,7 +19,7 @@ import io.github.mmm.scanner.CharStreamScanner;
  *
  * @since 1.0.0
  */
-public class JsonReader extends AbstractStructuredReader {
+public class JsonReader extends AbstractStructuredValueReader {
 
   private static final CharFilter NUMBER_START_FILTER = c -> ((c >= '0') && (c <= '9')) || (c == '+') || (c == '-')
       || (c == '.');
@@ -225,44 +225,6 @@ public class JsonReader extends AbstractStructuredReader {
     this.value = null;
     next();
     return v;
-  }
-
-  @Override
-  public String readValueAsString() {
-
-    Object v = readValue();
-    if (v == null) {
-      return null;
-    }
-    return v.toString();
-  }
-
-  @Override
-  public Boolean readValueAsBoolean() {
-
-    Object v = readValue();
-    if (v == null) {
-      return null;
-    } else if (v instanceof Boolean) {
-      return (Boolean) v;
-    } else {
-      throw new IllegalArgumentException("Value of type " + v.getClass().getName() + " can not be read as boolean!");
-    }
-  }
-
-  @Override
-  protected String readValueAsNumberString() {
-
-    Object v = readValue();
-    if (v == null) {
-      return null;
-    } else if (v instanceof String) {
-      return (String) v;
-    } else if (v instanceof Number) {
-      return v.toString();
-    } else {
-      throw new IllegalArgumentException("Value of type " + v.getClass().getName() + " can not be read as number!");
-    }
   }
 
   @Override

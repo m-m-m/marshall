@@ -2,15 +2,12 @@
  * http://www.apache.org/licenses/LICENSE-2.0 */
 package io.github.mmm.marshall.stax.impl;
 
-import java.math.BigDecimal;
-import java.math.BigInteger;
-
+import javax.xml.stream.Location;
 import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
-import io.github.mmm.base.number.NumberType;
-import io.github.mmm.marshall.AbstractStructuredReader;
+import io.github.mmm.marshall.AbstractStructuredStringReader;
 import io.github.mmm.marshall.StructuredFormat;
 import io.github.mmm.marshall.StructuredReader;
 
@@ -19,7 +16,7 @@ import io.github.mmm.marshall.StructuredReader;
  *
  * @since 1.0.0
  */
-public class StaxReader extends AbstractStructuredReader {
+public class StaxReader extends AbstractStructuredStringReader {
 
   private XMLStreamReader xml;
 
@@ -38,7 +35,7 @@ public class StaxReader extends AbstractStructuredReader {
     try {
       int e = xml.nextTag();
       if (e != XMLStreamConstants.START_ELEMENT) {
-        invalidXml();
+        error("Expected StAX event " + XMLStreamConstants.START_ELEMENT + " (START_ELEMENT) but found event" + e);
       }
       this.state = State.NAME;
       next();
@@ -83,7 +80,7 @@ public class StaxReader extends AbstractStructuredReader {
     } else if (uri.equals(StructuredFormat.NS_URI_OBJECT)) {
       return State.START_OBJECT;
     } else {
-      throw invalidXml();
+      throw error("Enexpected namespace URI " + uri);
     }
   }
 
@@ -97,7 +94,7 @@ public class StaxReader extends AbstractStructuredReader {
         this.arrayStack <<= 1;
         if (isArray) {
           if (!tagName.equals(StructuredFormat.TAG_ITEM)) {
-            invalidXml();
+            error("Unexpected tag " + tagName);
           }
           return nextValue();
         }
@@ -113,7 +110,7 @@ public class StaxReader extends AbstractStructuredReader {
         } else if (uri.equals(StructuredFormat.NS_URI_OBJECT)) {
           return State.END_OBJECT;
         } else {
-          invalidXml();
+          error("Unexpected namespace URI " + uri);
         }
         break;
       case XMLStreamConstants.END_DOCUMENT:
@@ -122,109 +119,45 @@ public class StaxReader extends AbstractStructuredReader {
     return null;
   }
 
-  private void endValue() {
-
-    expect(State.VALUE);
-    next();
-  }
-
   @Override
   public Object readValue() {
 
+    expect(State.VALUE);
     Object value;
-    if (this.state == State.VALUE) {
-      if (this.xml.getAttributeCount() == 0) {
-        value = null;
-      } else {
-        value = this.xml.getAttributeValue(null, StructuredFormat.ART_STRING_VALUE);
-        if (value == null) {
-          String string = this.xml.getAttributeValue(null, StructuredFormat.ART_BOOLEAN_VALUE);
+    if (this.xml.getAttributeCount() == 0) {
+      value = null;
+    } else {
+      value = this.xml.getAttributeValue(null, StructuredFormat.ATR_STRING_VALUE);
+      if (value == null) {
+        String string = this.xml.getAttributeValue(null, StructuredFormat.ATR_BOOLEAN_VALUE);
+        if (string == null) {
+          string = this.xml.getAttributeValue(null, StructuredFormat.ATR_NUMBER_VALUE);
           if (string == null) {
-            string = this.xml.getAttributeValue(null, StructuredFormat.ART_NUMBER_VALUE);
-            if (string == null) {
-              invalidXml();
-            }
-            value = parseNumber(string);
-          } else {
-            value = parseBoolean(string);
+            error("Missing value attribute!");
           }
+          value = parseNumber(string);
+        } else {
+          value = parseBoolean(string);
         }
       }
-      endValue();
-    } else {
-      expect(State.VALUE);
-      throw invalidXml();
     }
+    next();
     return value;
   }
 
   @Override
   protected String readValueAsNumberString() {
 
-    return readValue(StructuredFormat.ART_NUMBER_VALUE);
-  }
-
-  @Override
-  public String readValueAsString() {
-
-    return readValue(StructuredFormat.ART_STRING_VALUE);
-  }
-
-  @Override
-  public Boolean readValueAsBoolean() {
-
-    String value = readValue(StructuredFormat.ART_BOOLEAN_VALUE);
-    return parseBoolean(value);
-  }
-
-  private Boolean parseBoolean(String value) {
-
-    if (value == null) {
-      return null;
-    } else if ("true".equalsIgnoreCase(value)) {
-      return Boolean.TRUE;
-    } else if ("false".equalsIgnoreCase(value)) {
-      return Boolean.FALSE;
-    } else {
-      throw handleValueParseError(value, Boolean.class, null);
-    }
-  }
-
-  private Number parseNumber(String string) {
-
-    boolean decimal = (string.indexOf('.') >= 0);
-    if (decimal) {
-      BigDecimal bd = new BigDecimal(string);
-      if (string.endsWith("0")) {
-        return bd; // preserve leading zeros
-      }
-      return NumberType.simplify(bd, NumberType.FLOAT);
-    } else {
-      BigInteger integer = new BigInteger(string);
-      int bitLength = integer.bitLength();
-      if (bitLength > 63) {
-        return integer;
-      } else if (bitLength < 31) {
-        return Integer.valueOf(integer.intValue());
-      } else {
-        return Long.valueOf(integer.longValue());
-      }
-    }
-  }
-
-  private String readValue(String attribute) {
-
     expect(State.VALUE);
-    String value = this.xml.getAttributeValue(null, attribute);
-    if ((value == null) && (this.xml.getAttributeCount() > 0)) {
-      if (attribute == StructuredFormat.ART_NUMBER_VALUE) {
-        value = this.xml.getAttributeValue(null, StructuredFormat.ART_STRING_VALUE);
-      }
+    String value = this.xml.getAttributeValue(null, StructuredFormat.ATR_NUMBER_VALUE);
+    if (value == null) {
+      value = this.xml.getAttributeValue(null, StructuredFormat.ATR_STRING_VALUE);
       if (value == null) {
-        invalidXml();
+        // fallback, actually an error (Boolean can not be a number)
+        return readValueAsString();
       }
     }
-    endValue();
+    next();
     return value;
   }
 
@@ -232,15 +165,21 @@ public class StaxReader extends AbstractStructuredReader {
   public boolean isStringValue() {
 
     if (this.state == State.VALUE) {
-      String value = this.xml.getAttributeValue(null, StructuredFormat.ART_STRING_VALUE);
+      String value = this.xml.getAttributeValue(null, StructuredFormat.ATR_STRING_VALUE);
       return (value != null);
     }
     return false;
   }
 
-  private RuntimeException invalidXml() {
+  @Override
+  protected RuntimeException error(String message, Throwable cause) {
 
-    throw new IllegalStateException("Invalid XML!");
+    Location location = this.xml.getLocation();
+    if (location != null) {
+      message = "XML invalid at line " + location.getLineNumber() + " and column " + location.getColumnNumber() + ": "
+          + message;
+    }
+    return super.error(message, cause);
   }
 
   @Override

@@ -2,8 +2,6 @@
  * http://www.apache.org/licenses/LICENSE-2.0 */
 package io.github.mmm.marshall.jsonp.impl;
 
-import java.math.BigDecimal;
-
 import javax.json.stream.JsonParser;
 import javax.json.stream.JsonParser.Event;
 
@@ -36,13 +34,6 @@ public class JsonpReader extends AbstractStructuredReader {
     super(format);
     this.json = json;
     next();
-  }
-
-  private void expect(Event expected) {
-
-    if (this.event != expected) {
-      throw new IllegalStateException("Expecting event '" + expected + "' but found '" + this.event + "'.");
-    }
   }
 
   @Override
@@ -93,105 +84,43 @@ public class JsonpReader extends AbstractStructuredReader {
   @Override
   public Object readValue() {
 
+    expect(State.VALUE);
+    Object value;
     if (this.event == Event.VALUE_NULL) {
-      next();
-      return null;
+      value = null;
     } else if (this.event == Event.VALUE_TRUE) {
-      next();
-      return Boolean.TRUE;
+      value = Boolean.TRUE;
     } else if (this.event == Event.VALUE_FALSE) {
-      next();
-      return Boolean.FALSE;
+      value = Boolean.FALSE;
     } else if (this.event == Event.VALUE_NUMBER) {
-      Number value = NumberType.simplify(this.json.getBigDecimal(), NumberType.INTEGER);
-      next();
-      return value;
+      value = NumberType.simplify(this.json.getBigDecimal(), NumberType.INTEGER);
     } else if (this.event == Event.VALUE_STRING) {
-      String value = this.json.getString();
-      next();
-      return value;
+      value = this.json.getString();
     } else {
-      expect(State.VALUE);
       throw new IllegalStateException();
     }
-  }
-
-  @Override
-  public String readValueAsString() {
-
-    if (this.event == Event.VALUE_NULL) {
-      return null;
-    }
-    String string = this.json.getString();
-    next();
-    return string;
-  }
-
-  @Override
-  public Boolean readValueAsBoolean() {
-
-    Event e = this.event;
-    next();
-    if (e == Event.VALUE_NULL) {
-      return null;
-    } else if (e == Event.VALUE_TRUE) {
-      return Boolean.TRUE;
-    } else if (e == Event.VALUE_FALSE) {
-      return Boolean.FALSE;
-    }
-    throw new IllegalStateException("Property " + this.name + " is no boolean value: " + this.json.getString());
-  }
-
-  @Override
-  protected String readValueAsNumberString() {
-
-    if (this.event == Event.VALUE_NULL) {
-      next();
-      return null;
-    }
-    if ((this.event == Event.VALUE_TRUE) || (this.event == Event.VALUE_FALSE)) {
-      throw new IllegalStateException("Expecting number but found boolean.");
-    }
-    String string = this.json.getString();
-    next();
-    return string;
-  }
-
-  @Override
-  public Integer readValueAsInteger() {
-
-    if (this.event == Event.VALUE_NULL) {
-      next();
-      return null;
-    }
-    expect(Event.VALUE_NUMBER);
-    Integer value = Integer.valueOf(this.json.getInt());
     next();
     return value;
   }
 
+  @SuppressWarnings("unchecked")
   @Override
-  public Long readValueAsLong() {
+  protected <N extends Number> N readValueAsNumber(NumberType<N> type) {
 
+    N result;
     if (this.event == Event.VALUE_NULL) {
-      next();
-      return null;
+      result = null;
+    } else if ((this.event == Event.VALUE_TRUE) || (this.event == Event.VALUE_FALSE)) {
+      throw error("Expecting number but found boolean.");
+    } else if (type == NumberType.INTEGER) {
+      result = (N) Integer.valueOf(this.json.getInt());
+    } else if (type == NumberType.LONG) {
+      result = (N) Long.valueOf(this.json.getLong());
+    } else {
+      result = type.valueOf(this.json.getString());
     }
-    Long value = Long.valueOf(this.json.getString());
     next();
-    return value;
-  }
-
-  @Override
-  public BigDecimal readValueAsBigDecimal() {
-
-    if (this.event == Event.VALUE_NULL) {
-      next();
-      return null;
-    }
-    BigDecimal value = new BigDecimal(this.json.getString());
-    next();
-    return value;
+    return result;
   }
 
   @Override
