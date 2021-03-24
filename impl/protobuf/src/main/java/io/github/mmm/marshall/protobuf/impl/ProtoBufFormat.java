@@ -13,6 +13,7 @@ import io.github.mmm.marshall.StructuredBinaryFormat;
 import io.github.mmm.marshall.StructuredFormat;
 import io.github.mmm.marshall.StructuredReader;
 import io.github.mmm.marshall.StructuredWriter;
+import io.github.mmm.marshall.size.StructuredFormatSizeComputor;
 
 /**
  * Implementation of {@link StructuredFormat} for ProtoBuf/gRPC.
@@ -53,6 +54,12 @@ public class ProtoBufFormat implements StructuredBinaryFormat {
   public boolean isIdBased() {
 
     return true;
+  }
+
+  @Override
+  public StructuredFormatSizeComputor getSizeComputor() {
+
+    return ProtoBufSizeComputor.get();
   }
 
   @Override
