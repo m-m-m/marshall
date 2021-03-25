@@ -53,6 +53,7 @@ Maven Dependency:
 <dependency>
   <groupId>io.github.m-m-m</groupId>
   <artifactId>mmm-marshall</artifactId>
+  <!-- <version>${mmmVersion}</version> -->
 </dependency>
 ```
 Gradle Dependency:

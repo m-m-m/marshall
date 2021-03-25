@@ -30,9 +30,9 @@ Maven Dependency:
 <dependency>
   <groupId>io.github.m-m-m</groupId>
   <artifactId>mmm-marshall-protobuf</artifactId>
+  <!-- <version>${mmmVersion}</version> -->
 </dependency>
 ```
-
 Gradle Dependency:
 ```
 implementation 'io.github.m-m-m:mmm-marshall-protobuf:${mmmVersion}'
