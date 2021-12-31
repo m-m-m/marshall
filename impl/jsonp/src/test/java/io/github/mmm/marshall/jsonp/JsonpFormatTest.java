@@ -27,7 +27,7 @@ public class JsonpFormatTest extends AbstractJsonFormatTest {
   @Override
   protected String getNewline() {
 
-    return System.lineSeparator();
+    return "\n";
   }
 
   @Override
