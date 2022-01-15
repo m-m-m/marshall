@@ -12,7 +12,7 @@
   <version>${revision}</version>
   <packaging>pom</packaging>
   <name>${project.artifactId}</name>
-  <description>Simple adapter for marshalling and unmarshalling data to structured formats such as JSON or XML.</description>
+  <description>Simple but powerful library for marshalling and unmarshalling data to structured formats such as JSON or XML.</description>
 
   <properties>
     <mmm.repository>marshal</mmm.repository>
