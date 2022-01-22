@@ -21,7 +21,7 @@ import io.github.mmm.scanner.CharStreamScanner;
  */
 public class YamlReader extends AbstractStructuredValueReader {
 
-  private static final CharFilter NOT_NEWLINE_FILTER = CharFilter.NEWLINE_FILTER.negate();
+  private static final CharFilter NOT_NEWLINE_FILTER = CharFilter.NEWLINE.negate();
 
   private static final CharFilter SPACE_FILTER = c -> (c == ' ') || (c == '\t');
 
@@ -266,14 +266,14 @@ public class YamlReader extends AbstractStructuredValueReader {
 
     while (true) {
       char c = this.reader.forcePeek();
-      if (!CharFilter.NEWLINE_FILTER.accept(c)) {
+      if (!CharFilter.NEWLINE.accept(c)) {
         return;
       }
       this.reader.next();
       this.line++;
       this.lineStartPosition = this.reader.getPosition();
       char n = this.reader.forcePeek();
-      if (!CharFilter.NEWLINE_FILTER.accept(n)) {
+      if (!CharFilter.NEWLINE.accept(n)) {
         return;
       }
       if (c != n) {
