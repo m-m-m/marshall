@@ -118,7 +118,7 @@ public class YamlReader extends AbstractStructuredValueReader {
 
     this.stringValue = false;
     this.reader.skipWhile(SPACE_FILTER);
-    char c = this.reader.forcePeek();
+    char c = this.reader.peek();
     switch (c) {
       case '\n':
       case '\r':
@@ -227,7 +227,7 @@ public class YamlReader extends AbstractStructuredValueReader {
     } else {
       string = this.reader.readUntil(VALUE_FILTER, true);
     }
-    char next = this.reader.forcePeek();
+    char next = this.reader.peek();
     if (next == ':') {
       this.reader.next();
       if (this.yamlState.type == null) {
@@ -265,14 +265,14 @@ public class YamlReader extends AbstractStructuredValueReader {
   private void skipNewlines() {
 
     while (true) {
-      char c = this.reader.forcePeek();
+      char c = this.reader.peek();
       if (!CharFilter.NEWLINE.accept(c)) {
         return;
       }
       this.reader.next();
       this.line++;
       this.lineStartPosition = this.reader.getPosition();
-      char n = this.reader.forcePeek();
+      char n = this.reader.peek();
       if (!CharFilter.NEWLINE.accept(n)) {
         return;
       }

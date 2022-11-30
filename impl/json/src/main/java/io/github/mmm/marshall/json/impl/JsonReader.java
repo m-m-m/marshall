@@ -107,7 +107,7 @@ public class JsonReader extends AbstractStructuredValueReader {
       expect(State.NAME);
       this.reader.next();
       this.reader.skipWhile(SPACE_FILTER);
-      c = this.reader.forcePeek();
+      c = this.reader.peek();
       if (c == '\"') {
         nextString();
       } else if (c == '{') {
