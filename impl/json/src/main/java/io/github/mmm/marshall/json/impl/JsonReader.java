@@ -127,14 +127,15 @@ public class JsonReader extends AbstractStructuredValueReader {
 
     if (NUMBER_START_FILTER.accept(c)) {
       nextNumber();
-    } else if (this.reader.expectStrict("null")) {
+    } else if (this.reader.expect("null")) {
       nextValue(null);
-    } else if (this.reader.expectStrict("true")) {
-      nextValue(Boolean.TRUE);
-    } else if (this.reader.expectStrict("false")) {
-      nextValue(Boolean.FALSE);
     } else {
-      throw new IllegalStateException("Unexpected JSON character '" + c + "'");
+      Boolean b = this.reader.readBoolean();
+      if (b != null) {
+        nextValue(b);
+      } else {
+        throw new IllegalStateException("Unexpected JSON character '" + c + "'");
+      }
     }
   }
 

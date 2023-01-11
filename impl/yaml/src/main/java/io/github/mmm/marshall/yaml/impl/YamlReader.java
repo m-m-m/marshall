@@ -170,7 +170,7 @@ public class YamlReader extends AbstractStructuredValueReader {
         if (this.yamlState.json) {
           break;
         }
-        if (this.reader.expectStrict("- ")) { // inline-array
+        if (this.reader.expect("- ")) { // inline-array
           this.yamlArrayValue = true;
           int column = getColumn();
           int columnDelta = column - this.yamlState.column;
@@ -188,7 +188,7 @@ public class YamlReader extends AbstractStructuredValueReader {
             this.nextColumn = column;
           }
           return;
-        } else if (this.reader.expectStrict("---")) { // block
+        } else if (this.reader.expect("---")) { // block
           skipLine();
           if (this.line > 1) {
             this.end = true;
