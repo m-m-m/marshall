@@ -27,6 +27,12 @@ public interface StructuredFormat {
   /** {@link StructuredFormatProvider#getId() Name} of <a href="https://grpc.io/">gRPC/protobuf format</a>. */
   String ID_PROTOBUF = "application/x-protobuf";
 
+  /**
+   * {@link StructuredFormatProvider#getId() Name} of
+   * <a href="https://github.com/m-m-m/marshall/blob/master/impl/mrpc/">mRPC format</a>.
+   */
+  String ID_MRPC = "application/x-mrpc";
+
   /** The (XML) namespace prefix for an object. */
   String NS_PREFIX_OBJECT = "o";
 

@@ -1,0 +1,70 @@
+image:https://m-m-m.github.io/logo.svg[logo,width="150",link="https://m-m-m.github.io"]
+
+image:https://img.shields.io/github/license/m-m-m/marshall.svg?label=License["Apache License, Version 2.0",link=https://github.com/m-m-m/marshall/blob/master/LICENSE]
+image:https://github.com/m-m-m/marshall/actions/workflows/build.yml/badge.svg["Build Status",link="https://github.com/m-m-m/marshall/actions/workflows/build.yml"]
+
+== mmm-marshall-mrpc
+
+image:https://img.shields.io/maven-central/v/io.github.m-m-m/mmm-marshall-mrpc.svg?label=Maven%20Central["Maven Central",link=https://search.maven.org/search?q=g:io.github.m-m-m]
+image:https://javadoc.io/badge2/io.github.m-m-m/mmm-marshall-mrpc/javadoc.svg["mmm-marshall-mrpc JavaDoc", link=https://javadoc.io/doc/io.github.m-m-m/mmm-marshall-mrpc]
+
+The module `io.github.mmm.marshall.mrpc` (artifactId `mmm-marshall-mrpc`) provides the implementation to marshall (serialize) and unmarshall (deserialize) data from/to mRPC.
+The m-m-m remote-procedure-call format is a proprietary fork of protobuf to resolve some link:../protobuf/README.adoc[design flaws of gRPC]:
+
+* Properly distinguish between strings, objects, and arrays
+* Do not encode length of objects or arrays redundantly to avoid waste of buffer allocation during marshalling
+* Advanced property identification to ensure polymorphic and generic data-structures (beans) without maintenance costs or communication conflicts.
+
+To be more precise the differences to protobuf are:
+
+* *Objects:*
+We explicitly represent objects as type `3` (start group) and instead of encoding their length at the beginning, we terminate them with the byte `4` (group end).
+* *Arrays:*
+We explicitly represent arrays as type `6` (currently undefined in protobuf). Also we end an array with the byte `4` (group end). Values inside an array are encoded as following:
+** We write a tag that has the number of values having the same type as field-id and the type of these values as type. This is followed by the according number of values encoded via protobuf standard.
+** To encode a `null` value we simply write a `0` byte as "tag". Note: We could have used the last remaining type `7` for `null` so we could group multiple `null` values more efficiently. But as `null` values are more a historical edge-case we did not want to waste the last available type (3 bits give the values `0-7`) but keep that reserved for future extensions.
+* *Strings:*
+They remain exactly as specified in protobuf. However, as a result of the other changes, type `2` (length delimited) explicitly identifies Strings.
+
+As a result we have created a protocol that is lightning fast like protobuf/gRPC but flexible and structured like JSON so we get the best of both worlds.
+
+=== Example
+Let us complete this with an example and assume we would use field-ids in the following JSON:
+```
+{"1":150,"2":"testing","3":[0,1,2,"testing",{},null],"4":{"1":42}}
+```
+Now we can exactly transform this to `mRPC`:
+```
+{  1v s150. 2s "testing".............. 3[ 3v 0  1  2  1s "testing".............. {  }  NL ]  4{ 1i 42 }  }
+03 08 ac 02 12 07 74 65 73 74 69 6e 67 1e 18 00 02 04 0a 07 74 65 73 74 69 6e 67 03 04 00 04 23 08 54 04 04
+```
+
+=== Why should I use a proprietary format like mRPC?
+
+The idea of `mmm-marshall` and `mmm-rpc` is that you can add support for multiple marshalling formats by just adding a maven dependency.
+Therefore, you can provide formats like `JSON` for interoperability and additionally support `mRPC`.
+For internal service communication between apps using `mmm-marshall` where you want to boost performance, you can use `mRPC` while external serivces or other services implemented with different technologies can still use `JSON`.
+As all formats can be served from the same code-base without any extra development effort, you can even support multiple marshalling formats for the same service(s).
+This way clients can chose what they prefer and if they also use  `mmm-marshall` (and `mmm-rpc`), you can change this via configuration.
+So unlike to decide between `JSON` or `gRPC` with the impact that you have to rewirte tons of your code when changing this choice, you can have the best of these worlds with the minimal maintenance effort.
+
+=== Usage
+
+Maven Dependency:
+```xml
+<dependency>
+  <groupId>io.github.m-m-m</groupId>
+  <artifactId>mmm-marshall-mrpc</artifactId>
+  <!-- <version>${mmmVersion}</version> -->
+</dependency>
+```
+Gradle Dependency:
+```
+implementation 'io.github.m-m-m:mmm-marshall-mrpc:${mmmVersion}'
+```
+For `${mmmVersion}` please fill in the latest version that you can find in the badge above.
+
+Module Dependency:
+```java
+  requires static io.github.mmm.marshall.mrpc;
+```

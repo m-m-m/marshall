@@ -18,6 +18,7 @@
     <module>stax</module>
     <module>tvm-xml</module>
     <module>protobuf</module>
+    <module>mrpc</module>
     <module>yaml</module>
     <module>snakeyaml</module>
   </modules>
