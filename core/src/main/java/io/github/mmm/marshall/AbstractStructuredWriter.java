@@ -5,16 +5,11 @@ package io.github.mmm.marshall;
 /**
  * Abstract base implementation of {@link StructuredWriter}.
  */
-public abstract class AbstractStructuredWriter implements StructuredWriter {
+public abstract class AbstractStructuredWriter extends AbstractStructuredProcessor implements StructuredWriter {
 
   static final String XML_COMMENT_DASHES = "--";
 
   static final String XML_COMMENT_DASHES_ESCAPED = "\\-_-/";
-
-  private final StructuredFormat format;
-
-  /** The {@link MarshallingConfig}. */
-  protected final MarshallingConfig config;
 
   /** @see #writeValueAsNull() */
   protected final boolean writeNullValues;
@@ -32,9 +27,7 @@ public abstract class AbstractStructuredWriter implements StructuredWriter {
    */
   public AbstractStructuredWriter(StructuredFormat format) {
 
-    super();
-    this.format = format;
-    this.config = format.getConfig();
+    super(format);
     this.writeNullValues = this.config.get(MarshallingConfig.OPT_WRITE_NULL_VALUES).booleanValue();
     this.indentation = normalizeIndentation(this.config.get(MarshallingConfig.OPT_INDENTATION));
   }
@@ -58,12 +51,6 @@ public abstract class AbstractStructuredWriter implements StructuredWriter {
   }
 
   @Override
-  public StructuredFormat getFormat() {
-
-    return this.format;
-  }
-
-  @Override
   public void writeName(String newName, int newId) {
 
     if (this.name != null) {
@@ -71,6 +58,20 @@ public abstract class AbstractStructuredWriter implements StructuredWriter {
           + " has not been processed! Forgot to call writeStartObject()?");
     }
     this.name = newName;
+  }
+
+  @Override
+  public void writeValueAsEnum(Enum<?> value) {
+
+    if (value == null) {
+      writeValueAsNull();
+      return;
+    }
+    if (this.enumFormat == EnumFormat.ORDINAL) {
+      writeValueAsInteger(Integer.valueOf(value.ordinal()));
+    } else {
+      writeValueAsString(this.enumFormat.toString(value));
+    }
   }
 
 }

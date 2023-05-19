@@ -22,7 +22,7 @@ import io.github.mmm.base.exception.ObjectMismatchException;
  *
  * @since 1.0.0
  */
-public interface StructuredReader extends AutoCloseable {
+public interface StructuredReader extends StructuredProcessor {
 
   /**
    * @return the name of the current property or element. Consumes to the {@link #next() next} {@link #getState()
@@ -199,6 +199,7 @@ public interface StructuredReader extends AutoCloseable {
    * @param type {@link Class} reflecting the value to read.
    * @return the unmarsahlled value. May be {@code null}.
    */
+  @SuppressWarnings({ "unchecked", "rawtypes" })
   default <V> V readValue(Class<V> type) {
 
     Objects.requireNonNull(type, "type");
@@ -237,6 +238,8 @@ public interface StructuredReader extends AutoCloseable {
       value = readValueAsOffsetDateTime();
     } else if (OffsetTime.class.equals(type)) {
       value = readValueAsOffsetTime();
+    } else if (type.isEnum()) {
+      value = readValueAsEnum((Class<Enum>) type);
     } else if (Object.class.equals(type)) {
       value = readValue();
     } else {
@@ -256,6 +259,13 @@ public interface StructuredReader extends AutoCloseable {
    * @see #readValue(Class)
    */
   Boolean readValueAsBoolean();
+
+  /**
+   * @param <E> type of the {@link Enum}.
+   * @param enumType the {@link Class} reflecting the {@link Enum}.
+   * @return {@link #readValue(Class)}
+   */
+  <E extends Enum<E>> E readValueAsEnum(Class<E> enumType);
 
   /**
    * @return reads the value as {@link Integer}.
@@ -455,15 +465,6 @@ public interface StructuredReader extends AutoCloseable {
 
     return null;
   }
-
-  @Override
-  void close();
-
-  /**
-   * @return the owning {@link StructuredFormat} that {@link StructuredFormat#reader(java.io.InputStream) created} this
-   *         writer.
-   */
-  StructuredFormat getFormat();
 
   /**
    * Enum with the possible states of a {@link StructuredReader}.

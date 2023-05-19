@@ -29,6 +29,9 @@ public class MashallingDatatypes {
     if (type == null) {
       return false;
     }
+    if (type.isEnum()) {
+      return true;
+    }
     return TYPES.contains(type.getName());
   }
 
