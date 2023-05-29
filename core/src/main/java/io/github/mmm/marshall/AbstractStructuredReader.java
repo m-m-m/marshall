@@ -28,7 +28,12 @@ public abstract class AbstractStructuredReader extends AbstractStructuredProcess
   /** @see #readName() */
   protected String name;
 
+  /** @see #getState() */
+  protected State state;
+
   private String comment;
+
+  private boolean done;
 
   /**
    * The constructor.
@@ -45,13 +50,6 @@ public abstract class AbstractStructuredReader extends AbstractStructuredProcess
 
     return this.name;
   }
-
-  /**
-   * @see #getState()
-   */
-  protected State state;
-
-  private boolean done;
 
   @Override
   public State getState() {
