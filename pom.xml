@@ -16,6 +16,7 @@
 
   <properties>
     <mmm.repository>marshal</mmm.repository>
+    <mojo.flatten.plugin.version>1.3.0</mojo.flatten.plugin.version>
   </properties>
 
   <modules>
