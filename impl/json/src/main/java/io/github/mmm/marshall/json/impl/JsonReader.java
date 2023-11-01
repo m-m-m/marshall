@@ -5,7 +5,7 @@ package io.github.mmm.marshall.json.impl;
 import java.io.Reader;
 
 import io.github.mmm.base.filter.CharFilter;
-import io.github.mmm.marshall.AbstractStructuredValueReader;
+import io.github.mmm.marshall.AbstractStructuredScannerReader;
 import io.github.mmm.marshall.MarshallingConfig;
 import io.github.mmm.marshall.StructuredFormat;
 import io.github.mmm.marshall.StructuredReader;
@@ -19,7 +19,7 @@ import io.github.mmm.scanner.CharStreamScanner;
  *
  * @since 1.0.0
  */
-public class JsonReader extends AbstractStructuredValueReader {
+public class JsonReader extends AbstractStructuredScannerReader {
 
   private static final CharFilter NUMBER_START_FILTER = c -> ((c >= '0') && (c <= '9')) || (c == '+') || (c == '-')
       || (c == '.');
@@ -28,8 +28,6 @@ public class JsonReader extends AbstractStructuredValueReader {
       || (c == '.') || (c == 'e');
 
   private static final CharFilter SPACE_FILTER = c -> (c == ' ') || (c == '\t') || (c == '\n') || (c == '\r');
-
-  private CharStreamScanner reader;
 
   private boolean requireQuotedProperties;
 
@@ -45,13 +43,12 @@ public class JsonReader extends AbstractStructuredValueReader {
   /**
    * The constructor.
    *
-   * @param reader the {@link Reader} with the JSON to parse.
+   * @param scanner the {@link Reader} with the JSON to parse.
    * @param format the {@link #getFormat() format}.
    */
-  public JsonReader(CharStreamScanner reader, StructuredFormat format) {
+  public JsonReader(CharStreamScanner scanner, StructuredFormat format) {
 
-    super(format);
-    this.reader = reader;
+    super(scanner, format);
     Boolean unquotedProperties = format.getConfig().get(MarshallingConfig.OPT_UNQUOTED_PROPERTIES);
     this.requireQuotedProperties = Boolean.FALSE.equals(unquotedProperties);
     this.jsonState = new JsonState();
@@ -91,8 +88,7 @@ public class JsonReader extends AbstractStructuredValueReader {
         propertyName = this.reader.readUntil('"', false, '\\');
       } else {
         if (this.requireQuotedProperties) {
-          throw new IllegalStateException(
-              "Expected quoted property but found character " + c + " (0x" + Integer.toHexString(c) + ").");
+          error("Expected quoted property but found character " + c + " (0x" + Integer.toHexString(c) + ").");
         }
         propertyName = this.reader.readUntil(':', false);
         if (propertyName == null) {
@@ -134,7 +130,7 @@ public class JsonReader extends AbstractStructuredValueReader {
       if (b != null) {
         nextValue(b);
       } else {
-        throw new IllegalStateException("Unexpected JSON character '" + c + "'");
+        error("Unexpected JSON character '" + c + "'");
       }
     }
   }
@@ -178,7 +174,7 @@ public class JsonReader extends AbstractStructuredValueReader {
       }
       nextValue(number);
     } catch (NumberFormatException e) {
-      throw new IllegalArgumentException("Invalid number: " + numberString);
+      error("Invalid number: " + numberString, e);
     }
   }
 
@@ -234,11 +230,8 @@ public class JsonReader extends AbstractStructuredValueReader {
     if (this.jsonState == null) {
       return;
     }
-    // if (this.readerState.parent != null) {
-    // throw new IllegalStateException("Not at end!");
-    // }
+    super.close();
     this.jsonState = null;
-    this.reader = null;
   }
 
   @Override

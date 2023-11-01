@@ -12,6 +12,8 @@ module io.github.mmm.marshall {
 
   requires transitive io.github.mmm.base;
 
+  requires static io.github.mmm.scanner;
+
   exports io.github.mmm.marshall;
 
   exports io.github.mmm.marshall.size;

@@ -182,8 +182,7 @@ public abstract class AbstractStructuredReader extends AbstractStructuredProcess
       String stringValue = readValueAsString();
       E e = mapping.fromString(stringValue);
       if ((e == null) && (stringValue != null)) {
-        throw new IllegalArgumentException(
-            "The string value '" + stringValue + "' is not an enum of type " + enumType.getName());
+        throw error("The string value '" + stringValue + "' is not an enum of type " + enumType.getName());
       }
       return e;
     } else {
@@ -193,8 +192,7 @@ public abstract class AbstractStructuredReader extends AbstractStructuredProcess
       }
       E e = mapping.fromOrdinal(ordinalValue);
       if ((e == null) && (ordinalValue != null)) {
-        throw new IllegalArgumentException(
-            "The integer value '" + ordinalValue + "' is not an ordinal of enum type " + enumType.getName());
+        throw error("The integer value '" + ordinalValue + "' is not an ordinal of enum type " + enumType.getName());
       }
       return e;
     }
@@ -415,7 +413,7 @@ public abstract class AbstractStructuredReader extends AbstractStructuredProcess
         value = map;
       } else {
         expect(State.VALUE, State.START_ARRAY, State.START_OBJECT);
-        throw new IllegalStateException();
+        throw errorIllegalState();
       }
     }
     return value;
@@ -503,11 +501,19 @@ public abstract class AbstractStructuredReader extends AbstractStructuredProcess
           case NAME:
             break;
           case DONE:
-            throw new IllegalStateException();
+            errorIllegalState();
         }
         next();
       }
     }
+  }
+
+  /**
+   * @return nothing, just to ensure exit you may throw result of this method.
+   */
+  protected RuntimeException errorIllegalState() {
+
+    return error("Illegal state");
   }
 
   /**
@@ -526,10 +532,19 @@ public abstract class AbstractStructuredReader extends AbstractStructuredProcess
    */
   protected RuntimeException error(String message, Throwable cause) {
 
-    if (this.name != null) {
-      message = message + "(at property '" + this.name + "')";
+    throw new IllegalStateException(appendContextDetails(message), cause);
+  }
+
+  /**
+   * @param message the message to report (e.g. error or warning).
+   * @return the given {@code message} with contextual details appended (e.g. the line number in the content to parse).
+   */
+  protected String appendContextDetails(String message) {
+
+    if (this.name == null) {
+      return message;
     }
-    throw new IllegalStateException(message, cause);
+    return message + "(at property '" + this.name + "')";
   }
 
   /**
