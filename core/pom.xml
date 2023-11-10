@@ -17,5 +17,10 @@
       <groupId>${project.groupId}</groupId>
       <artifactId>mmm-base</artifactId>
     </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>mmm-scanner</artifactId>
+      <optional>true</optional>
+    </dependency>
   </dependencies>
 </project>

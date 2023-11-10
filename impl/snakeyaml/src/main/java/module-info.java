@@ -12,7 +12,7 @@ module io.github.mmm.marshall.snakeyaml {
 
   requires transitive io.github.mmm.marshall;
 
-  requires transitive org.yaml.snakeyaml;
+  requires org.yaml.snakeyaml;
 
   exports io.github.mmm.marshall.snakeyaml;
 

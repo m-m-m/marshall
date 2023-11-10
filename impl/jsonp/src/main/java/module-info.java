@@ -12,9 +12,6 @@ module io.github.mmm.marshall.jsonp {
 
   requires transitive io.github.mmm.marshall;
 
-  // JPMS buggy, transitive dependency not working
-  requires transitive io.github.mmm.base;
-
   requires transitive java.json;
 
   exports io.github.mmm.marshall.jsonp;

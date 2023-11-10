@@ -20,7 +20,7 @@ import io.github.mmm.marshall.StructuredReader.State;
  *
  * @since 1.0.0
  */
-public interface StructuredWriter extends AutoCloseable {
+public interface StructuredWriter extends StructuredProcessor {
 
   /**
    * Writes the start of an array or collection. After the call of this method for each element of the array or
@@ -109,6 +109,8 @@ public interface StructuredWriter extends AutoCloseable {
       writeValueAsBoolean((Boolean) value);
     } else if (value instanceof Number) {
       writeValueAsNumber((Number) value);
+    } else if (value instanceof Enum) {
+      writeValueAsEnum((Enum<?>) value);
     } else if (value instanceof Temporal) {
       if (value instanceof Instant) {
         writeValueAsInstant(((Instant) value));
@@ -172,6 +174,12 @@ public interface StructuredWriter extends AutoCloseable {
    * @see #writeValue(Object)
    */
   void writeValueAsNull();
+
+  /**
+   * @param value the {@link Enum} value to write.
+   * @see #writeValue(Object)
+   */
+  void writeValueAsEnum(Enum<?> value);
 
   /**
    * @param value the value to write.
@@ -427,14 +435,5 @@ public interface StructuredWriter extends AutoCloseable {
       }
     }
   }
-
-  @Override
-  void close();
-
-  /**
-   * @return the owning {@link StructuredFormat} that {@link StructuredFormat#writer(java.io.OutputStream) created} this
-   *         writer.
-   */
-  StructuredFormat getFormat();
 
 }

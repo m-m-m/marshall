@@ -11,9 +11,9 @@ module io.github.mmm.marshall.tvm.xml {
 
   requires transitive io.github.mmm.marshall;
 
-  requires transitive org.teavm.jso;
+  requires org.teavm.jso;
 
-  requires transitive org.teavm.jso.apis;
+  requires org.teavm.jso.apis;
 
   exports io.github.mmm.marshall.tvm.xml;
 

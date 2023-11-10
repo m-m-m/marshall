@@ -17,21 +17,23 @@ import java.util.HashMap;
 import java.util.Map;
 
 import io.github.mmm.base.number.NumberType;
+import io.github.mmm.marshall.impl.EnumMapping;
+import io.github.mmm.marshall.impl.EnumMappings;
 
 /**
  * Abstract base implementation of {@link StructuredReader}.
  */
-public abstract class AbstractStructuredReader implements StructuredReader {
-
-  private final StructuredFormat format;
-
-  /** The {@link MarshallingConfig}. */
-  protected final MarshallingConfig config;
+public abstract class AbstractStructuredReader extends AbstractStructuredProcessor implements StructuredReader {
 
   /** @see #readName() */
   protected String name;
 
+  /** @see #getState() */
+  protected State state;
+
   private String comment;
+
+  private boolean done;
 
   /**
    * The constructor.
@@ -40,15 +42,7 @@ public abstract class AbstractStructuredReader implements StructuredReader {
    */
   public AbstractStructuredReader(StructuredFormat format) {
 
-    super();
-    this.format = format;
-    this.config = format.getConfig();
-  }
-
-  @Override
-  public StructuredFormat getFormat() {
-
-    return this.format;
+    super(format);
   }
 
   @Override
@@ -56,13 +50,6 @@ public abstract class AbstractStructuredReader implements StructuredReader {
 
     return this.name;
   }
-
-  /**
-   * @see #getState()
-   */
-  protected State state;
-
-  private boolean done;
 
   @Override
   public State getState() {
@@ -184,6 +171,30 @@ public abstract class AbstractStructuredReader implements StructuredReader {
       return parseBoolean((String) v);
     } else {
       throw error(v, Boolean.class);
+    }
+  }
+
+  @Override
+  public <E extends Enum<E>> E readValueAsEnum(Class<E> enumType) {
+
+    EnumMapping<E> mapping = EnumMappings.get().getMapping(enumType);
+    if (isStringValue()) {
+      String stringValue = readValueAsString();
+      E e = mapping.fromString(stringValue);
+      if ((e == null) && (stringValue != null)) {
+        throw error("The string value '" + stringValue + "' is not an enum of type " + enumType.getName());
+      }
+      return e;
+    } else {
+      Integer ordinalValue = readValueAsInteger();
+      if (ordinalValue == null) {
+        return null;
+      }
+      E e = mapping.fromOrdinal(ordinalValue);
+      if ((e == null) && (ordinalValue != null)) {
+        throw error("The integer value '" + ordinalValue + "' is not an ordinal of enum type " + enumType.getName());
+      }
+      return e;
     }
   }
 
@@ -402,7 +413,7 @@ public abstract class AbstractStructuredReader implements StructuredReader {
         value = map;
       } else {
         expect(State.VALUE, State.START_ARRAY, State.START_OBJECT);
-        throw new IllegalStateException();
+        throw errorIllegalState();
       }
     }
     return value;
@@ -490,11 +501,19 @@ public abstract class AbstractStructuredReader implements StructuredReader {
           case NAME:
             break;
           case DONE:
-            throw new IllegalStateException();
+            errorIllegalState();
         }
         next();
       }
     }
+  }
+
+  /**
+   * @return nothing, just to ensure exit you may throw result of this method.
+   */
+  protected RuntimeException errorIllegalState() {
+
+    return error("Illegal state");
   }
 
   /**
@@ -513,10 +532,19 @@ public abstract class AbstractStructuredReader implements StructuredReader {
    */
   protected RuntimeException error(String message, Throwable cause) {
 
-    if (this.name != null) {
-      message = message + "(at property '" + this.name + "')";
+    throw new IllegalStateException(appendContextDetails(message), cause);
+  }
+
+  /**
+   * @param message the message to report (e.g. error or warning).
+   * @return the given {@code message} with contextual details appended (e.g. the line number in the content to parse).
+   */
+  protected String appendContextDetails(String message) {
+
+    if (this.name == null) {
+      return message;
     }
-    throw new IllegalStateException(message, cause);
+    return message + "(at property '" + this.name + "')";
   }
 
   /**

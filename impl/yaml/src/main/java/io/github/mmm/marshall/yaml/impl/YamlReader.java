@@ -6,7 +6,7 @@ import java.io.Reader;
 
 import io.github.mmm.base.filter.CharFilter;
 import io.github.mmm.base.filter.ListCharFilter;
-import io.github.mmm.marshall.AbstractStructuredValueReader;
+import io.github.mmm.marshall.AbstractStructuredScannerReader;
 import io.github.mmm.marshall.StructuredFormat;
 import io.github.mmm.marshall.StructuredReader;
 import io.github.mmm.marshall.spi.StructuredNodeType;
@@ -19,15 +19,13 @@ import io.github.mmm.scanner.CharStreamScanner;
  *
  * @since 1.0.0
  */
-public class YamlReader extends AbstractStructuredValueReader {
+public class YamlReader extends AbstractStructuredScannerReader {
 
   private static final CharFilter NOT_NEWLINE_FILTER = CharFilter.NEWLINE.negate();
 
   private static final CharFilter SPACE_FILTER = c -> (c == ' ') || (c == '\t');
 
   private static final CharFilter VALUE_FILTER = new ListCharFilter(':', ',', '{', '[', '&', '\n', '\r');
-
-  private CharStreamScanner reader;
 
   private YamlState yamlState;
 
@@ -60,8 +58,7 @@ public class YamlReader extends AbstractStructuredValueReader {
    */
   public YamlReader(CharStreamScanner reader, StructuredFormat format) {
 
-    super(format);
-    this.reader = reader;
+    super(reader, format);
     this.yamlState = new YamlState();
     this.expectedState = YamlExpectedType.ANY_VALUE;
     this.nextColumn = -1;
@@ -439,11 +436,8 @@ public class YamlReader extends AbstractStructuredValueReader {
     if (this.yamlState == null) {
       return;
     }
-    // if (this.readerState.parent != null) {
-    // throw new IllegalStateException("Not at end!");
-    // }
     this.yamlState = null;
-    this.reader = null;
+    super.close();
   }
 
   @Override

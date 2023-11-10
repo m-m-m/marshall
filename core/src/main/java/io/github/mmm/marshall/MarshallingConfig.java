@@ -42,6 +42,12 @@ public final class MarshallingConfig extends ConfigMap {
    */
   public static final ConfigOption<Boolean> OPT_UNQUOTED_PROPERTIES = new ConfigOption<>("unquoted-properties", null);
 
+  /**
+   * {@link ConfigOption} to configure how {@link Enum} values are mapped. By default the {@link Enum#ordinal() ordinal}
+   * is written while reading supports both ordinal and {@link Enum#toString() to-string}.
+   */
+  public static final ConfigOption<EnumFormat> OPT_ENUM_FORMAT = new ConfigOption<>("enum-format", EnumFormat.ORDINAL);
+
   /** Immutable instance of {@link MarshallingConfig} with the default values. */
   public static final MarshallingConfig DEFAULTS = new MarshallingConfig(Collections.emptyMap());
 

@@ -19,7 +19,7 @@ module io.github.mmm.marshall.mrpc {
 
   requires transitive io.github.mmm.marshall;
 
-  requires transitive com.google.protobuf;
+  requires com.google.protobuf;
 
   exports io.github.mmm.marshall.mrpc;
 
