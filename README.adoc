@@ -111,9 +111,10 @@ Person person = new Person();
 person.setName("John Doe");
 person.satAge(42);
 StringBuilder sb = new StringBuilder();
-StructuredWriter writer = JsonFormat.of().writer(sb);
+StructuredWriter writer = StandardFormat.json().writer(sb);
 marshall(writer, person);
-System.out.println(sb.toString());
+String json = sb.toString();
+System.out.println(json);
 ```
 
 This will print the following output:
@@ -124,7 +125,7 @@ This will print the following output:
 }
 ```
 
-The interesting fact is that you can exchange `JsonFormat.of()` with something else to get a different format without changing your implementation of `marshal`. So you can also use `XmlFormat.of()` to produce XML or you can generate YAML or even gRPC/ProtoBuf.
+The interesting fact is that you can exchange `StandardFormat.json()` with something else to get a different format without changing your implementation of `marshal`. So you can also use `StandardFormat.xml()` to produce XML or you can generate YAML or even gRPC/ProtoBuf.
 
 To unmarshall a `Person` you can do something like this:
 
@@ -149,6 +150,14 @@ public void unmarshall(StructuredReader reader, Person person) {
     }
   }
 }
+```
+
+Now you could use it like this:
+```java
+Person person = new Person();
+StructuredReader reader = StandardFormat.json().reader(json);
+unmarshall(reader, person);
+System.out.println(person.getName() + ":" + person.getAge());
 ```
 
 == Schemas
