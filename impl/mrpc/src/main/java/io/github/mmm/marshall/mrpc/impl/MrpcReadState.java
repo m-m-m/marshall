@@ -2,6 +2,7 @@
  * http://www.apache.org/licenses/LICENSE-2.0 */
 package io.github.mmm.marshall.mrpc.impl;
 
+import io.github.mmm.marshall.id.StructuredIdMapping;
 import io.github.mmm.marshall.spi.StructuredNodeType;
 
 /**
@@ -11,20 +12,22 @@ import io.github.mmm.marshall.spi.StructuredNodeType;
  */
 public class MrpcReadState {
 
-  final MrpcReadState parent;
-
   final StructuredNodeType type;
+
+  StructuredIdMapping idMapping;
+
+  final MrpcReadState parent;
 
   MrpcReadState() {
 
     this(null, null);
   }
 
-  MrpcReadState(MrpcReadState parent, StructuredNodeType type) {
+  MrpcReadState(StructuredNodeType type, MrpcReadState parent) {
 
     super();
-    this.parent = parent;
     this.type = type;
+    this.parent = parent;
   }
 
 }

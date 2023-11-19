@@ -11,19 +11,17 @@ import io.github.mmm.marshall.MarshallableObject;
 import io.github.mmm.marshall.MarshallingConfig;
 import io.github.mmm.marshall.StructuredFormat;
 import io.github.mmm.marshall.StructuredReader;
-import io.github.mmm.marshall.StructuredTextFormat;
 import io.github.mmm.marshall.StructuredWriter;
+import io.github.mmm.marshall.spi.AbstractStructuredTextFormat;
 
 /**
  * Implementation of {@link StructuredFormat} for XML using TeaVM.
  *
  * @since 1.0.0
  */
-public class TvmXmlFormat implements StructuredTextFormat {
+public class TvmXmlFormat extends AbstractStructuredTextFormat {
 
   private static final TvmXmlFormat DEFAULT = new TvmXmlFormat(MarshallingConfig.DEFAULTS);
-
-  private final MarshallingConfig config;
 
   /**
    * The constructor.
@@ -32,14 +30,7 @@ public class TvmXmlFormat implements StructuredTextFormat {
    */
   public TvmXmlFormat(MarshallingConfig config) {
 
-    super();
-    this.config = config;
-  }
-
-  @Override
-  public MarshallingConfig getConfig() {
-
-    return this.config;
+    super(config);
   }
 
   @Override
@@ -61,7 +52,7 @@ public class TvmXmlFormat implements StructuredTextFormat {
     if (data instanceof Document) {
       return new TvmXmlDocumentReader(((Document) data).getDocumentElement(), this);
     }
-    return StructuredTextFormat.super.reader(data);
+    return super.reader(data);
   }
 
   @Override

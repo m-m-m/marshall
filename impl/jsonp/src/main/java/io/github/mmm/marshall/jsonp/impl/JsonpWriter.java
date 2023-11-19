@@ -2,15 +2,20 @@
  * http://www.apache.org/licenses/LICENSE-2.0 */
 package io.github.mmm.marshall.jsonp.impl;
 
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 
 import javax.json.stream.JsonGenerator;
 
-import io.github.mmm.marshall.AbstractStructuredWriter;
 import io.github.mmm.marshall.MarshallingConfig;
 import io.github.mmm.marshall.StructuredFormat;
+import io.github.mmm.marshall.StructuredState;
 import io.github.mmm.marshall.StructuredWriter;
+import io.github.mmm.marshall.id.StructuredIdMappingObject;
+import io.github.mmm.marshall.spi.AbstractStructuredWriter;
+import io.github.mmm.marshall.spi.StructuredNodeDefault;
+import io.github.mmm.marshall.spi.StructuredNodeType;
 
 /**
  * Implementation of {@link StructuredWriter} for JSON using {@link JsonGenerator}.
@@ -19,7 +24,7 @@ import io.github.mmm.marshall.StructuredWriter;
  *
  * @since 1.0.0
  */
-public class JsonpWriter extends AbstractStructuredWriter {
+public class JsonpWriter extends AbstractStructuredWriter<StructuredNodeDefault> {
 
   private static final long JS_NUMBER_MAX = (2L << 52) - 1;
 
@@ -41,29 +46,33 @@ public class JsonpWriter extends AbstractStructuredWriter {
   }
 
   @Override
-  public void writeStartArray(int size) {
+  protected StructuredNodeDefault newNode(StructuredNodeType type, StructuredIdMappingObject object) {
 
-    if (this.name == null) {
-      this.json.writeStartArray();
+    return new StructuredNodeDefault(this.node, type);
+  }
+
+  @Override
+  protected void doWriteStart(StructuredNodeType type, StructuredIdMappingObject object) {
+
+    if (type == StructuredNodeType.ARRAY) {
+      if (this.name == null) {
+        this.json.writeStartArray();
+      } else {
+        this.json.writeStartArray(this.name);
+        this.name = null;
+      }
     } else {
-      this.json.writeStartArray(this.name);
-      this.name = null;
+      if (this.name == null) {
+        this.json.writeStartObject();
+      } else {
+        this.json.writeStartObject(this.name);
+        this.name = null;
+      }
     }
   }
 
   @Override
-  public void writeStartObject(int size) {
-
-    if (this.name == null) {
-      this.json.writeStartObject();
-    } else {
-      this.json.writeStartObject(this.name);
-      this.name = null;
-    }
-  }
-
-  @Override
-  public void writeEnd() {
+  protected void doWriteEnd(StructuredNodeType type) {
 
     this.json.writeEnd();
   }
@@ -73,10 +82,12 @@ public class JsonpWriter extends AbstractStructuredWriter {
 
     if (this.name == null) {
       this.json.writeNull();
+      setState(StructuredState.VALUE);
     } else {
       if (this.writeNullValues) {
         this.json.writeNull(this.name);
         this.name = null;
+        setState(StructuredState.VALUE);
       }
     }
   }
@@ -88,25 +99,24 @@ public class JsonpWriter extends AbstractStructuredWriter {
       writeValueAsNull();
     } else if (this.name == null) {
       this.json.write(value);
+      setState(StructuredState.VALUE);
     } else {
       this.json.write(this.name, value);
       this.name = null;
+      setState(StructuredState.VALUE);
     }
   }
 
   @Override
-  public void writeValueAsBoolean(Boolean value) {
+  public void writeValueAsBoolean(boolean value) {
 
-    if (value == null) {
-      writeValueAsNull();
+    if (this.name == null) {
+      this.json.write(value);
     } else {
-      if (this.name == null) {
-        this.json.write(value.booleanValue());
-      } else {
-        this.json.write(this.name, value.booleanValue());
-        this.name = null;
-      }
+      this.json.write(this.name, value);
+      this.name = null;
     }
+    setState(StructuredState.VALUE);
   }
 
   @Override
@@ -130,85 +140,57 @@ public class JsonpWriter extends AbstractStructuredWriter {
   }
 
   @Override
-  public void writeValueAsLong(Long value) {
+  public void writeValueAsLong(long value) {
 
-    if (value == null) {
-      writeValueAsNull();
-    } else {
-      long l = value.longValue();
-      if ((l >= JS_NUMBER_MIN) && (l <= JS_NUMBER_MAX)) {
-        if (this.name == null) {
-          this.json.write(l);
-        } else {
-          this.json.write(this.name, l);
-          this.name = null;
-        }
+    // TODO make this feature configurable
+    if ((value >= JS_NUMBER_MIN) && (value <= JS_NUMBER_MAX)) {
+      if (this.name == null) {
+        this.json.write(value);
       } else {
-        writeValueAsString(value.toString());
+        this.json.write(this.name, value);
+        this.name = null;
       }
-    }
-  }
-
-  @Override
-  public void writeValueAsInteger(Integer value) {
-
-    if (value == null) {
-      writeValueAsNull();
-    } else if (this.name == null) {
-      this.json.write(value.intValue());
+      setState(StructuredState.VALUE);
     } else {
-      this.json.write(this.name, value.intValue());
-      this.name = null;
+      writeValueAsString(Long.toString(value));
     }
   }
 
   @Override
-  public void writeValueAsDouble(Double value) {
+  public void writeValueAsInteger(int value) {
 
-    if (value == null) {
-      writeValueAsNull();
-    } else if (this.name == null) {
-      this.json.write(value.doubleValue());
+    if (this.name == null) {
+      this.json.write(value);
+      setState(StructuredState.VALUE);
     } else {
-      this.json.write(this.name, value.doubleValue());
+      this.json.write(this.name, value);
       this.name = null;
+      setState(StructuredState.VALUE);
     }
   }
 
   @Override
-  public void writeValueAsFloat(Float value) {
+  public void writeValueAsDouble(double value) {
 
+    if (this.name == null) {
+      this.json.write(value);
+      setState(StructuredState.VALUE);
+    } else {
+      this.json.write(this.name, value);
+      this.name = null;
+      setState(StructuredState.VALUE);
+    }
+  }
+
+  @Override
+  public void writeValueAsFloat(float value) {
+
+    // TODO why???
     writeValueAsDouble(Double.parseDouble(Float.toString(value)));
   }
 
   @Override
-  public void writeValueAsShort(Short value) {
-
-    if (value == null) {
-      writeValueAsNull();
-    } else if (this.name == null) {
-      this.json.write(value.intValue());
-    } else {
-      this.json.write(this.name, value.intValue());
-      this.name = null;
-    }
-  }
-
-  @Override
-  public void writeValueAsByte(Byte value) {
-
-    if (value == null) {
-      writeValueAsNull();
-    } else if (this.name == null) {
-      this.json.write(value.intValue());
-    } else {
-      this.json.write(this.name, value.intValue());
-      this.name = null;
-    }
-  }
-
-  @Override
-  public void close() {
+  protected void doClose() throws IOException {
 
     this.json.close();
   }

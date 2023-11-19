@@ -46,7 +46,8 @@ Therefore, you can provide formats like `JSON` for interoperability and addition
 For internal service communication between apps using `mmm-marshall` where you want to boost performance, you can use `mRPC` while external serivces or other services implemented with different technologies can still use `JSON`.
 As all formats can be served from the same code-base without any extra development effort, you can even support multiple marshalling formats for the same service(s).
 This way clients can chose what they prefer and if they also use  `mmm-marshall` (and `mmm-rpc`), you can change this via configuration.
-So unlike to decide between `JSON` or `gRPC` with the impact that you have to rewirte tons of your code when changing this choice, you can have the best of these worlds with the minimal maintenance effort.
+So unlike to decide between `JSON` or `gRPC` with the impact that you have to rewrite tons of your code when changing this choice,
+you can have the best of these worlds with the minimal maintenance effort.
 
 === Usage
 

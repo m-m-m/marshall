@@ -10,23 +10,45 @@ image:https://javadoc.io/badge2/io.github.m-m-m/mmm-marshall-protobuf/javadoc.sv
 
 The module `io.github.mmm.marshall.protobuf` (artifactId `mmm-marshall-protobuf`) provides the implementation to marshall (serialize) and unmarshall (deserialize) data from/to ProtoBuf/gRPC.
 
-Due to the nature of ProtoBuf there are special apsects and limitations to be aware of:
+Due to the nature of ProtoBuf there are special aspects and limitations to be aware of:
 
-* In general you also need unique IDs for properties. In case you omitt them (partially or at all) we do our best to generate them for you. However, to ensure stable IDs and payloads you should really hardwire your IDs. This can be rather tricky to do for polymorphic data-models - especially with multi-inheritance.
-* We do our best and try to solve all the problems with https://github.com/m-m-m/bean[mmm-bean] so you can easily define a stable mapping inside your beans even with multi-inheritance.
+* ProtoBuf is an link:../README.adoc#id-based-format[ID based format].
 * Limitations for unmarshalling data from ProtoBuf:
-** By design (flaw) of ProtoBuf it is impossible to distinguish between a string value or the start of an object or array. It is all represented by the same type as you can see https://developers.google.com/protocol-buffers/docs/encoding#structure[here]. See also https://groups.google.com/g/protobuf/c/UKpsthqAmjw[here] for dicsussion.
-** Therefore `getState()` may return `null` or `START_OBJECT` even though it may actually be `START_ARRAY`. Also `require(State)` has to be handled with care.
-** If your structure is completely static, you can easily read and parse your data without issues. However, for generic structures this can be a problem.
+** By design (flaw) of ProtoBuf it is impossible to distinguish between a string value or the start of an object or array.
+It is all represented by the same type as you can see https://developers.google.com/protocol-buffers/docs/encoding#structure[here].
+See also https://groups.google.com/g/protobuf/c/UKpsthqAmjw[here] for discussion.
+** Our main goal is not to provide a 100% accurate gRPC/protobuf implementation but to provide compatibility and interoperability and to offer the protobuf format as an efficient and compact format option for `mmm-marshall`.
+** Therefore we encode objects via groups (start/end group wire-format types) even though this has been deprecated and protobuf officially recommends to use length encoded values (that can not be distinguished from strings).
+** If you do not like this and prefer or have to use length encoded objects, you can disable groups and enforce length encoded objects via a configuration variable (`config.with(ProtoBufFormatProvider.VAR_USE_GROUPS, Boolean.FALSE)`).
+** Arrays are written as repeatable values what is the most natural mapping following the protobuf standard.
+However, this implies that `StructuredRader.getState()` will return `VALUE` even if you had written an array at this position and would expect `START_ARRAY` instead.
+You can still read the array as `readStartArray()` will return `true` but your unmarshalling code needs to know if an array or a single value is expected and cannot determine this from the state.
+** Further, protobuf does not support a reasonable representation of nested arrays (an array inside of an array).
+Therefore either avoid this or you have to live with the fact that then your results will not be portable and simply will not work with anything else but this library.
+Technically we use the reserved wire-type `6` to indicate the start of an array (inside an array) and also end it with end group.
+The array values are still written as properties. In nested array they always use the fixed property ID `1`.
+** Also note that `structuredReader.getState()` will return `StructuredState.NULL` as initial state as it is technically impossible to know if the payload is an object, an atomic value or a top-level array (encoded like nested arrays).
+** If your structure is completely static, you can easily read and parse your data without issues.
+However, for generic structures this can be a problem.
 ** As a result `readValue(true)` as well as `readObject` and `readArray` may not always work as expected.
-** Also `skipValue` does not work properly for a single value in an array as it is technically impossible to know what the value actually is and where it ends.
+** At the current state integer values (`long`, `int`, `short`, `byte`) are always encoded signed (zig-zag).
+If you like the library we offer here but want to communicate with an protobuf based service that uses unsigned integer encoding feel free to create a feature request as issue or pull-request anytime.
+
 * Considerations for marshalling data to ProtoBuf:
-* When marshalling your data to protobuf, it is required to write the size of an object or array in bytes before it is written.
-For simpliticy we automatically write to buffers if the size is unknown to auto-calculate this for your.
-However, if you want best performance and minimize wasting resources you should calculate the size of your data and provide it to `writeStartObject(int)` and `writeStartArray(int)` methods.
-Unfortunately this limits the idea of `mmm-marshall` to allow the abstraction of the underlying format for the developer. If you write small messages the overhead should not matter.
-To avoid all these limitations and flaws we have invented link:../mrpc/README.adoc[mRPC].
-When using it, you need to be aware that you loose all the benefits of the ProtoBuf ecosystem and cross-language support.
+** When marshalling your data to protobuf using length encoded objects instead of groups, it is technically required to write the size of an object in bytes before it is written.
+We started creating an API to compute the size yourself and to pass it to the writer in `writeStartArray` and `writeStartObject`.
+However, this caused ugly flaws of our APIs (see https://github.com/m-m-m/marshall/issues/4[#4]) and made it very complex to implement your marshalling code.
+In order to compute the size of an object, you need to compute the size of all its properties.
+The properties themselves can again have objects or arrays as their value.
+As the size computation also causes some overhead and the size of something needs to be retrieved to write its size but also to compute the size of all parent objects and arrays containing it, we had to write really tricky caching of that information.
+** To make it short, we have decided to get away from this flaws and for simplicity we automatically write to a buffer and auto-calculate the sizes for your on the fly.
+We have perfectly optimized this code but if you want to avoid any such buffering (requiring the payload of an object to be temporary in memory), you should stay with using groups or simply choose a different marshalling format.
+* Conclusion: We support gRPC/protobuf here for completeness and compatibility but not as a first class citizen.
+We believe that optimizing the skipping of unknown properties or the cancellation of messages due to timeouts is not the core priority of a protocol - at least for 99% of RPC users.
+However, if this is really your priority and your core use-case, `mmm-marshall` is not for your.
+We think that users who are lovers of gRPC and strive for the ultimate performance will not consider our framework at all.
+They will keep sticking with boilerplate and ugly generated code but therefore squeeze the last bits and CPU cycles out of what is possible.
+* However, if you prefer flexibility and supporting multiple formats without the burden to write marshalling code for every supported format redundantly, then this library will serve you well.
 
 === Usage
 

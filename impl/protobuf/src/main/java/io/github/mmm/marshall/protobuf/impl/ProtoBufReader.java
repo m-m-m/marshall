@@ -3,15 +3,21 @@
 package io.github.mmm.marshall.protobuf.impl;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.util.Objects;
 
 import com.google.protobuf.CodedInputStream;
 import com.google.protobuf.WireFormat;
 
 import io.github.mmm.base.exception.RuntimeIoException;
 import io.github.mmm.base.number.NumberType;
-import io.github.mmm.marshall.AbstractStructuredReader;
-import io.github.mmm.marshall.StructuredFormat;
 import io.github.mmm.marshall.StructuredReader;
+import io.github.mmm.marshall.StructuredState;
+import io.github.mmm.marshall.id.StructuredIdMapping;
+import io.github.mmm.marshall.id.StructuredIdMappingObject;
+import io.github.mmm.marshall.protobuf.ProtoBufFormatProvider;
+import io.github.mmm.marshall.spi.AbstractStructuredBinaryReader;
+import io.github.mmm.marshall.spi.StructuredNodeType;
 
 /**
  * Implementation of {@link StructuredReader} for gRPC/ProtoBuf.
@@ -20,108 +26,33 @@ import io.github.mmm.marshall.StructuredReader;
  *
  * @since 1.0.0
  */
-public class ProtoBufReader extends AbstractStructuredReader {
+public class ProtoBufReader extends AbstractStructuredBinaryReader<ProtoBufNode> {
+
+  private final boolean useGroups;
 
   private CodedInputStream in;
 
-  private ProtoBufState grpcState;
+  private InputStream is;
 
   private int tag;
 
-  private int type;
-
   private int id;
+
+  private int wireType;
 
   /**
    * The constructor.
    *
-   * @param in the {@link CodedInputStream} with the ProtoBuf content to parse.
+   * @param is the {@link InputStream} with the ProtoBuf content to parse.
    * @param format the {@link #getFormat() format}.
    */
-  public ProtoBufReader(CodedInputStream in, StructuredFormat format) {
+  public ProtoBufReader(InputStream is, ProtoBufFormat format) {
 
     super(format);
-    this.in = in;
-    this.type = -1;
-    this.state = null;
-    this.grpcState = new ProtoBufState();
-  }
-
-  @Override
-  public State next() {
-
-    try {
-      if (this.state == State.NAME) {
-        if (this.type == WireFormat.WIRETYPE_LENGTH_DELIMITED) {
-          // TODO: how can we differentiate between string (value), start_array, start_object ???
-          // ProtoBuf sucks and is flawed!
-          this.state = State.START_OBJECT;
-        } else {
-          this.state = State.VALUE;
-        }
-      } else {
-        clearTag();
-        int position = this.in.getTotalBytesRead();
-        if (position >= this.grpcState.end) {
-          assert (position == this.grpcState.end);
-          this.state = this.grpcState.getEnd();
-          this.grpcState = this.grpcState.parent;
-        } else if (this.grpcState.state == State.START_ARRAY) {
-          this.state = State.VALUE;
-        } else {
-          this.tag = this.in.readTag();
-          if (this.tag == 0) {
-            this.state = State.DONE;
-          } else {
-            this.type = WireFormat.getTagWireType(this.tag);
-            this.id = WireFormat.getTagFieldNumber(this.tag);
-            this.state = State.NAME;
-          }
-        }
-      }
-      return this.state;
-    } catch (IOException e) {
-      throw new RuntimeIoException(e);
-    }
-  }
-
-  @Override
-  public boolean readStartObject() {
-
-    if ((this.state == State.START_OBJECT) || (this.state == null)
-        || ((this.state == State.VALUE) && (this.grpcState.state == State.START_ARRAY))) {
-      try {
-        int len = this.in.readRawVarint32();
-        this.grpcState = this.grpcState.startObject(this.in.getTotalBytesRead() + len);
-        next();
-        return true;
-      } catch (IOException e) {
-        throw new RuntimeIoException(e);
-      }
-    }
-    return false;
-  }
-
-  @Override
-  public boolean readStartArray() {
-
-    if ((this.type == WireFormat.WIRETYPE_LENGTH_DELIMITED) || (this.type == -1)) {
-      try {
-        int len = this.in.readRawVarint32();
-        this.grpcState = this.grpcState.startArray(this.in.getTotalBytesRead() + len);
-        next();
-        return true;
-      } catch (IOException e) {
-        throw new RuntimeIoException(e);
-      }
-    }
-    return false;
-  }
-
-  @Override
-  public String getName() {
-
-    throw new UnsupportedOperationException();
+    this.useGroups = format.getConfig().getBoolean(ProtoBufFormatProvider.VAR_USE_GROUPS);
+    this.is = is;
+    this.in = CodedInputStream.newInstance(is);
+    this.wireType = -1;
   }
 
   @Override
@@ -130,32 +61,227 @@ public class ProtoBufReader extends AbstractStructuredReader {
     return this.id;
   }
 
-  private <V> V valueCompleted(V value) {
+  @Override
+  protected ProtoBufNode newNode(StructuredNodeType type, StructuredIdMappingObject object) {
 
-    clearTag();
-    this.state = State.VALUE;
-    next();
-    return value;
+    ProtoBufNode newNode = new ProtoBufNode(this.node, type, null);
+    newNode.end = Integer.MAX_VALUE;
+    return newNode;
+  }
+
+  @Override
+  protected StructuredState next(boolean skip) {
+
+    StructuredState state = getState();
+    if ((state == StructuredState.NULL) && (this.node.parent == null)) {
+      if (skip) {
+        state = setState(StructuredState.DONE);
+      }
+      return state;
+    }
+    try {
+      int skipCount = skip ? 1 : 0;
+      boolean todo;
+      do {
+        todo = false;
+        if (state == StructuredState.NAME) {
+          if (this.wireType == ProtoBufFormat.TYPE_START_OBJECT) {
+            state = start(StructuredNodeType.OBJECT);
+          } else if (this.wireType == ProtoBufFormat.TYPE_START_ARRAY) {
+            state = start(StructuredNodeType.ARRAY);
+            // } else if (!this.useGroups && (this.wireType == WireFormat.WIRETYPE_LENGTH_DELIMITED)) {
+            // state = setState(StructuredState.START_OBJECT); // could also be string
+          } else {
+            state = setState(StructuredState.VALUE);
+          }
+        } else if (state == StructuredState.START_ARRAY && (this.wireType != ProtoBufFormat.TYPE_START_ARRAY)) {
+          state = setState(StructuredState.VALUE);
+        } else {
+          if (state == StructuredState.VALUE) {
+            if ((this.tag != 0) && !this.in.isAtEnd()) {
+              this.in.skipField(this.tag);
+            }
+            // if (this.node.type == StructuredNodeType.OBJECT) {
+            // state = setState(StructuredState.NAME); // avoid transition error
+            // }
+          }
+          clearTag();
+          state = readTag(skipCount > 0);
+        }
+        if (skipCount > 0) {
+          skipCount += state.getDepthDelta();
+          if (skipCount == 0) {
+            todo = true;
+          }
+        }
+      } while ((skipCount > 0) || todo);
+    } catch (IOException e) {
+      throw new RuntimeIoException(e);
+    }
+    return state;
+  }
+
+  private StructuredState readTag(boolean skip) throws IOException {
+
+    StructuredState state = getState();
+    if (!this.useGroups && (this.node.type == StructuredNodeType.OBJECT)
+        && (this.encodeRootObject || (this.node.parent != null))) {
+      int position = this.in.getTotalBytesRead();
+      if (position >= this.node.end) {
+        if (position != this.node.end) {
+          throw new IllegalStateException("TODO: size mismatch");
+        }
+        state = setState(this.node.type.getEnd());
+        this.node = this.node.parent;
+        return state;
+      }
+    }
+    if (this.in.isAtEnd()) {
+      this.tag = 0;
+    } else {
+      this.tag = this.in.readTag();
+    }
+    if (this.tag == 0) {
+      state = end(null);
+    } else {
+      this.wireType = WireFormat.getTagWireType(this.tag);
+      this.id = WireFormat.getTagFieldNumber(this.tag);
+      if (!skip) {
+        this.name = this.node.getIdMapping().name(this.id);
+      }
+      if (this.wireType == ProtoBufFormat.TYPE_END) {
+        assert (this.id == this.node.id) : this.id + "!=" + this.node.id; // TODO is this assertion correct?
+        state = end(null);
+      } else if (this.node.type == StructuredNodeType.ARRAY) {
+        if (this.wireType == ProtoBufFormat.TYPE_START_OBJECT) {
+          state = start(StructuredNodeType.OBJECT);
+        } else if (this.wireType == ProtoBufFormat.TYPE_START_ARRAY) {
+          state = start(StructuredNodeType.ARRAY);
+        } else {
+          if (this.node.explicit) {
+            state = setState(StructuredState.VALUE);
+          } else {
+            if (this.node.id == this.id) {
+              state = setState(StructuredState.VALUE);
+            } else if (this.node.id != this.id) {
+              state = end(StructuredNodeType.ARRAY);
+            }
+          }
+        }
+      } else if (this.node.type == StructuredNodeType.OBJECT) {
+        if (state != StructuredState.NAME) { // otherwise we have just skipped value
+          state = setState(StructuredState.NAME);
+        }
+      }
+    }
+    return state;
   }
 
   private void clearTag() {
 
     this.tag = 0;
     this.id = 0;
-    this.type = -1;
+    this.wireType = -1;
+    this.name = null;
+  }
+
+  @Override
+  public boolean readStartObject(StructuredIdMappingObject object) {
+
+    try {
+      int end = Integer.MAX_VALUE;
+      StructuredState state = getState();
+      if (state == StructuredState.START_OBJECT) {
+        // OK
+      } else if ((state == StructuredState.NULL) && (this.node.parent == null)) {
+        // OK
+        if (this.useGroups && this.encodeRootObject) {
+          readTag(true);
+          require(StructuredState.START_OBJECT);
+        }
+        this.node = new ProtoBufNode(this.node, StructuredNodeType.OBJECT, null, end);
+      } else if ((state == StructuredState.VALUE) && !this.useGroups
+          && (this.wireType == WireFormat.WIRETYPE_LENGTH_DELIMITED)) {
+        // OK we assumed a string value but now see that we have an object since we do not use groups
+        if (this.node.type == StructuredNodeType.OBJECT) {
+          setState(StructuredState.NAME); // only to prevent transition validation error
+        }
+        start(StructuredNodeType.OBJECT);
+      } else {
+        return false;
+      }
+      if (!this.useGroups && (this.encodeRootObject || this.node.parent != null)) {
+        int len = this.in.readRawVarint32();
+        end = this.in.getTotalBytesRead() + len;
+      }
+      StructuredIdMapping idMapping = this.idMappingProvider.getMapping(object);
+      Objects.requireNonNull(idMapping);
+      this.node.idMapping = idMapping;
+      next(false);
+    } catch (IOException e) {
+      throw new RuntimeIoException(e);
+    }
+    return true;
+  }
+
+  @Override
+  public boolean readStartArray() {
+
+    StructuredState state = getState();
+    if (state == StructuredState.VALUE) {
+      if (this.node.type == StructuredNodeType.ARRAY) {
+        throw new IllegalStateException("TODO nested arrays currently not supported!");
+      }
+      this.node = new ProtoBufNode(this.node, StructuredNodeType.ARRAY, null);
+      assert (this.id > 0);
+      this.node.id = this.id; // we read arrays as repeatable fields - mixed order of IDs is not supported
+      return true;
+    } else if (state == StructuredState.START_ARRAY) {
+      next(false);
+      return true;
+    } else if (state == StructuredState.START_OBJECT) {
+      // here we could handle nested arrays by e.g. adding a (proprietary code or wire-type)
+    } else if (state == StructuredState.NULL) {
+      // here we can support root array, however this could only work via some virtual tag ID or by completely handling
+      // as special case in every readValue method...
+    }
+    return false;
+  }
+
+  @Override
+  protected StructuredState start(StructuredNodeType type) {
+
+    StructuredState state = super.start(type);
+    this.node.id = this.id;
+    if (type == StructuredNodeType.ARRAY) {
+      this.node.explicit = (this.wireType == ProtoBufFormat.TYPE_START_ARRAY);
+    } else {
+      this.node.explicit = (this.wireType == ProtoBufFormat.TYPE_START_OBJECT);
+    }
+    return state;
+  }
+
+  private <V> V valueCompleted(V value) {
+
+    clearTag();
+    if (getState() != StructuredState.VALUE) {
+      setState(StructuredState.VALUE);
+    }
+    next();
+    return value;
   }
 
   @Override
   public boolean isStringValue() {
 
-    return this.type == WireFormat.WIRETYPE_LENGTH_DELIMITED;
+    return (getState() == StructuredState.VALUE) && (this.wireType == WireFormat.WIRETYPE_LENGTH_DELIMITED);
   }
 
   @Override
   public Object readValue() {
 
-    expect(State.VALUE);
-    switch (this.type) {
+    require(StructuredState.VALUE);
+    switch (this.wireType) {
       case WireFormat.WIRETYPE_LENGTH_DELIMITED:
         return readValueAsString();
       case WireFormat.WIRETYPE_FIXED32:
@@ -165,14 +291,14 @@ public class ProtoBufReader extends AbstractStructuredReader {
       case WireFormat.WIRETYPE_VARINT:
         return readValueAsLong();
       default:
-        throw error("Unknown wire type: " + this.type);
+        throw error("Unknown wire type: " + this.wireType);
     }
   }
 
-  private void expectType(int wireType) {
+  private void expectType(int type) {
 
-    if ((this.type != wireType) && (this.type != -1)) {
-      error("Expected wire type is " + wireType + " but actual type is " + this.type);
+    if ((this.wireType != type) && (this.wireType != -1)) {
+      error("Expected wire type " + type + " but actual type was " + this.wireType);
     }
   }
 
@@ -191,7 +317,7 @@ public class ProtoBufReader extends AbstractStructuredReader {
   public Boolean readValueAsBoolean() {
 
     try {
-      if (this.type == WireFormat.WIRETYPE_LENGTH_DELIMITED) {
+      if (this.wireType == WireFormat.WIRETYPE_LENGTH_DELIMITED) {
         return valueCompleted(parseBoolean(this.in.readString()));
       }
       expectType(WireFormat.WIRETYPE_VARINT);
@@ -285,25 +411,27 @@ public class ProtoBufReader extends AbstractStructuredReader {
   @Override
   public void skipValue() {
 
-    try {
-      if (this.state == null) {
-        this.in.skipMessage();
-        this.state = State.DONE;
-      } else if ((this.grpcState.state != State.START_ARRAY) && (this.tag != 0)) {
-        this.in.skipField(this.tag);
-        this.state = State.VALUE;
-        next();
-      } else {
-        this.in.skipRawBytes(this.grpcState.end);
+    StructuredState state = getState();
+    if (state == StructuredState.NULL) {
+      setState(StructuredState.DONE);
+    } else if ((state == StructuredState.VALUE) && (this.node.type == StructuredNodeType.OBJECT)) {
+      int currentId = this.id;
+      while ((currentId == this.id) && !state.isEnd()) {
+        if (state == StructuredState.NAME) {
+          state = next(false);
+        }
+        state = next(state != StructuredState.VALUE);
       }
-    } catch (IOException e) {
-      throw new RuntimeIoException(e);
+    } else {
+      super.skipValue();
     }
   }
 
   @Override
-  public void close() {
+  protected void doClose() throws IOException {
 
+    this.is.close();
+    this.is = null;
     this.in = null;
   }
 

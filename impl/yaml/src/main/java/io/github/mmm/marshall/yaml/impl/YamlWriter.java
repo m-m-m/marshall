@@ -8,7 +8,9 @@ import java.math.BigInteger;
 import io.github.mmm.marshall.AbstractStructuredStringWriter;
 import io.github.mmm.marshall.MarshallingConfig;
 import io.github.mmm.marshall.StructuredFormat;
+import io.github.mmm.marshall.StructuredState;
 import io.github.mmm.marshall.StructuredWriter;
+import io.github.mmm.marshall.id.StructuredIdMappingObject;
 import io.github.mmm.marshall.spi.StructuredNodeType;
 
 /**
@@ -18,13 +20,11 @@ import io.github.mmm.marshall.spi.StructuredNodeType;
  *
  * @since 1.0.0
  */
-public class YamlWriter extends AbstractStructuredStringWriter {
+public class YamlWriter extends AbstractStructuredStringWriter<YamlNode> {
 
   private static final long JS_NUMBER_MAX = (2L << 52) - 1;
 
   private static final long JS_NUMBER_MIN = -JS_NUMBER_MAX;
-
-  private YamlState yamlState;
 
   /**
    * The constructor.
@@ -35,50 +35,67 @@ public class YamlWriter extends AbstractStructuredStringWriter {
   public YamlWriter(Appendable out, StructuredFormat format) {
 
     super(out, format);
-    this.yamlState = new YamlState();
+  }
+
+  @Override
+  protected YamlNode newNode(StructuredNodeType type, StructuredIdMappingObject object) {
+
+    boolean json = (type == StructuredNodeType.OBJECT) && (this.node.type == StructuredNodeType.ARRAY);
+    if (type != null) {
+      writeName(json);
+      if ((type == StructuredNodeType.ARRAY) || ((this.node.parent == null) && !json)) {
+        // in YAML we do not indent array items: "- item" on the same indent
+        // as the indentCount is auto-incremented by parent class we decrement it here to neutralize
+        this.indentCount--;
+      }
+    }
+    if (json) {
+      write(type.getOpen());
+    }
+    return new YamlNode(this.node, type, json);
+  }
+
+  @Override
+  protected void doWriteStart(StructuredNodeType type, StructuredIdMappingObject object) {
+
+  }
+
+  @Override
+  protected void doWriteEnd(StructuredNodeType type) {
+
+    this.indentCount--;
+    boolean json = this.node.json;
+    if (this.node.elementCount == 0) {
+      if (!json) {
+        write(' ');
+        write(this.node.type.getOpen());
+      }
+      json = true;
+    }
+    if (json) {
+      if (this.node.elementCount > 0) {
+        writeIndent();
+      }
+      write(this.node.type.getClose());
+    }
   }
 
   @Override
   protected String normalizeIndentation(String indent) {
 
     if ((indent == null) || (indent.isEmpty())) {
-      return MarshallingConfig.OPT_INDENTATION.getDefaultValue();
+      return MarshallingConfig.VAR_INDENTATION.getDefaultValue();
     }
     return super.normalizeIndentation(indent);
   }
 
-  @Override
-  public void writeStartArray(int size) {
-
-    writeStart(StructuredNodeType.ARRAY);
-  }
-
-  @Override
-  public void writeStartObject(int size) {
-
-    writeStart(StructuredNodeType.OBJECT);
-  }
-
-  private void writeStart(StructuredNodeType type) {
-
-    boolean json = (type == StructuredNodeType.OBJECT) && (this.yamlState.type == StructuredNodeType.ARRAY);
-    writeName(json);
-    if ((type == StructuredNodeType.OBJECT) && (this.yamlState.parent != null)) {
-      this.indentCount++;
-    }
-    this.yamlState = new YamlState(this.yamlState, type, json);
-    if (json) {
-      write(type.getOpen());
-    }
-  }
-
   private void writeName(boolean spaced) {
 
-    boolean listArray = this.yamlState.isYamlArray();
-    if (!listArray || !this.yamlState.parent.isYamlArray()) {
+    boolean listArray = this.node.isYamlArray();
+    if (!listArray || !this.node.parent.isYamlArray()) {
       writeIndent();
     }
-    this.yamlState.valueCount++;
+    this.node.elementCount++;
     if (this.name == null) {
       if (listArray) {
         write("- ");
@@ -95,31 +112,6 @@ public class YamlWriter extends AbstractStructuredStringWriter {
   }
 
   @Override
-  public void writeEnd() {
-
-    if ((this.yamlState.parent != null) && (this.yamlState.parent != null)) {
-      this.indentCount--;
-      boolean json = this.yamlState.json;
-      if (this.yamlState.valueCount == 0) {
-        if (!json) {
-          write(' ');
-          write(this.yamlState.type.getOpen());
-        }
-        json = true;
-      }
-      if (json) {
-        if (this.yamlState.valueCount > 0) {
-          writeIndent();
-        }
-        write(this.yamlState.type.getClose());
-      }
-      this.yamlState = this.yamlState.parent;
-    } else {
-      throw new IllegalStateException();
-    }
-  }
-
-  @Override
   public void writeValueAsNull() {
 
     writeValueInternal("null");
@@ -129,7 +121,7 @@ public class YamlWriter extends AbstractStructuredStringWriter {
   public void writeValueAsString(String value) {
 
     if ((value != null) && !value.isEmpty()) {
-      if (this.yamlState.json) {
+      if (this.node.json) {
         value = '"' + value.replace("\"", "\\\"") + '"';
       } else {
         // https://yaml.org/spec/current.html#id2534365
@@ -140,9 +132,9 @@ public class YamlWriter extends AbstractStructuredStringWriter {
   }
 
   @Override
-  public void writeValueAsBoolean(Boolean value) {
+  public void writeValueAsBoolean(boolean value) {
 
-    writeValueInternal(value);
+    writeValueInternal(Boolean.toString(value));
   }
 
   private void writeValueInternal(Object value) {
@@ -158,6 +150,7 @@ public class YamlWriter extends AbstractStructuredStringWriter {
     }
     writeName(true);
     write(s);
+    setState(StructuredState.VALUE);
   }
 
   @Override
@@ -195,75 +188,61 @@ public class YamlWriter extends AbstractStructuredStringWriter {
   }
 
   @Override
-  public void writeValueAsLong(Long value) {
+  public void writeValueAsLong(long value) {
 
-    if (value == null) {
-      writeValueAsNull();
+    String string = Long.toString(value);
+    if ((value >= JS_NUMBER_MIN) && (value <= JS_NUMBER_MAX)) {
+      writeValueInternal(string);
     } else {
-      long l = value.longValue();
-      if ((l >= JS_NUMBER_MIN) && (l <= JS_NUMBER_MAX)) {
-        writeValueInternal(value);
-      } else {
-        writeValueAsString(value.toString());
-      }
+      writeValueAsString(string);
     }
   }
 
   @Override
-  public void writeValueAsInteger(Integer value) {
+  public void writeValueAsInteger(int value) {
 
-    writeValueInternal(value);
+    writeValueInternal(Integer.toString(value));
   }
 
   @Override
-  public void writeValueAsDouble(Double value) {
+  public void writeValueAsDouble(double value) {
 
-    writeValueInternal(value);
+    writeValueInternal(Double.toString(value));
   }
 
   @Override
-  public void writeValueAsFloat(Float value) {
+  public void writeValueAsFloat(float value) {
 
+    // TODO why do we do this???
     writeValueAsDouble(Double.parseDouble(Float.toString(value)));
-  }
-
-  @Override
-  public void writeValueAsShort(Short value) {
-
-    writeValueInternal(value);
-  }
-
-  @Override
-  public void writeValueAsByte(Byte value) {
-
-    writeValueInternal(value);
   }
 
   @Override
   protected void doWriteComment(String currentComment) {
 
     write("# ");
-    write(currentComment.replace("\r\n", "\n").replace("\n", "\n# "));
+    if (currentComment.indexOf('\n') >= 0) {
+      currentComment = currentComment.replace("\r\n", "\n"); // normalize CRLF (Windows EOL)
+      StringBuilder sb = new StringBuilder(3 + (this.indentCount * this.indentation.length()));
+      sb.append('\n');
+      for (int i = this.indentCount; i > 0; i--) {
+        sb.append(this.indentation);
+      }
+      sb.append("# ");
+      String replacement = sb.toString();
+      currentComment = currentComment.replace("\n", replacement);
+    }
+    write(currentComment);
   }
 
   @Override
   public void writeComment(String newComment) {
 
-    if (this.yamlState.parent == null) {
+    if (this.node.parent == null) {
       doWriteComment(newComment);
     } else {
       super.writeComment(newComment);
     }
-  }
-
-  @Override
-  public void close() {
-
-    if (this.yamlState == null) {
-      return;
-    }
-    assert (this.yamlState.parent == null);
-    this.yamlState = null;
   }
 
 }

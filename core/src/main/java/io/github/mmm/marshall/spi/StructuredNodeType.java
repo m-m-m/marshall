@@ -2,7 +2,7 @@
  * http://www.apache.org/licenses/LICENSE-2.0 */
 package io.github.mmm.marshall.spi;
 
-import io.github.mmm.marshall.StructuredReader.State;
+import io.github.mmm.marshall.StructuredState;
 
 /**
  * Type of a node for JSON or YAML.
@@ -13,20 +13,20 @@ import io.github.mmm.marshall.StructuredReader.State;
 public enum StructuredNodeType {
 
   /** JSON Object: {} */
-  OBJECT('{', '}', State.START_OBJECT, State.END_OBJECT),
+  OBJECT('{', '}', StructuredState.START_OBJECT, StructuredState.END_OBJECT),
 
   /** JSON Array: [] */
-  ARRAY('[', ']', State.START_ARRAY, State.END_ARRAY);
+  ARRAY('[', ']', StructuredState.START_ARRAY, StructuredState.END_ARRAY);
 
   private final char open;
 
   private final char close;
 
-  private final State start;
+  private final StructuredState start;
 
-  private final State end;
+  private final StructuredState end;
 
-  private StructuredNodeType(char open, char close, State start, State end) {
+  private StructuredNodeType(char open, char close, StructuredState start, StructuredState end) {
 
     this.open = open;
     this.close = close;
@@ -51,17 +51,17 @@ public enum StructuredNodeType {
   }
 
   /**
-   * @return the {@link State} to {@link State#isStart() start} this type.
+   * @return the {@link StructuredState} to {@link StructuredState#isStart() start} this type.
    */
-  public State getStart() {
+  public StructuredState getStart() {
 
     return this.start;
   }
 
   /**
-   * @return the {@link State} to {@link State#isEnd end} this type.
+   * @return the {@link StructuredState} to {@link StructuredState#isEnd end} this type.
    */
-  public State getEnd() {
+  public StructuredState getEnd() {
 
     return this.end;
   }

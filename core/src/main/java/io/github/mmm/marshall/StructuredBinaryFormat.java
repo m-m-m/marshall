@@ -1,7 +1,6 @@
+/* Copyright (c) The m-m-m Team, Licensed under the Apache License, Version 2.0
+ * http://www.apache.org/licenses/LICENSE-2.0 */
 package io.github.mmm.marshall;
-
-import io.github.mmm.marshall.size.StructuredFormatSizeComputor;
-import io.github.mmm.marshall.size.StructuredFormatSizeComputorNone;
 
 /**
  * {@link StructuredFormat} that is {@link #isBinary() binary}.
@@ -14,16 +13,6 @@ public interface StructuredBinaryFormat extends StructuredFormat {
   default boolean isBinary() {
 
     return true;
-  }
-
-  /**
-   * @return the {@link StructuredFormatSizeComputor} used to pre-calculate the message size.
-   * @see StructuredWriter#writeStartObject(int)
-   * @see StructuredWriter#writeStartArray(int)
-   */
-  default StructuredFormatSizeComputor getSizeComputor() {
-
-    return StructuredFormatSizeComputorNone.get();
   }
 
 }

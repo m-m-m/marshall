@@ -2,21 +2,27 @@
  * http://www.apache.org/licenses/LICENSE-2.0 */
 package io.github.mmm.marshall.stax.impl;
 
+import java.io.IOException;
+
 import javax.xml.stream.Location;
 import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
-import io.github.mmm.marshall.AbstractStructuredStringReader;
 import io.github.mmm.marshall.StructuredFormat;
 import io.github.mmm.marshall.StructuredReader;
+import io.github.mmm.marshall.StructuredState;
+import io.github.mmm.marshall.id.StructuredIdMappingObject;
+import io.github.mmm.marshall.spi.AbstractStructuredStringReader;
+import io.github.mmm.marshall.spi.StructuredNodeDefault;
+import io.github.mmm.marshall.spi.StructuredNodeType;
 
 /**
  * Implementation of {@link StructuredReader} for XML using {@link XMLStreamReader}.
  *
  * @since 1.0.0
  */
-public class StaxReader extends AbstractStructuredStringReader {
+public class StaxReader extends AbstractStructuredStringReader<StructuredNodeDefault> {
 
   private XMLStreamReader xml;
 
@@ -37,7 +43,6 @@ public class StaxReader extends AbstractStructuredStringReader {
       if (e != XMLStreamConstants.START_ELEMENT) {
         error("Expected StAX event " + XMLStreamConstants.START_ELEMENT + " (START_ELEMENT) but found event" + e);
       }
-      this.state = State.NAME;
       next();
     } catch (XMLStreamException e) {
       throw new IllegalStateException(e);
@@ -45,46 +50,71 @@ public class StaxReader extends AbstractStructuredStringReader {
   }
 
   @Override
-  public State next() {
+  protected StructuredNodeDefault newNode(StructuredNodeType type, StructuredIdMappingObject object) {
 
-    if (this.state == State.DONE) {
-      return State.DONE;
-    } else if (this.state == State.NAME) {
-      this.state = nextValue();
-    } else {
-      try {
-        if (this.xml.hasNext()) {
-          State e = null;
-          while (e == null) {
-            e = convertEvent(this.xml.next());
-          }
-          this.state = e;
-        } else {
-          this.state = State.DONE;
-        }
-      } catch (XMLStreamException e) {
-        throw new IllegalStateException(e);
-      }
-    }
-    return this.state;
+    return null;
   }
 
-  private State nextValue() {
+  @Override
+  protected StructuredState next(boolean skip) {
+
+    int skipCount = skip ? 1 : 0;
+    StructuredState state = getState();
+    if (state == StructuredState.DONE) {
+      return StructuredState.DONE;
+    }
+    try {
+      boolean todo;
+      do {
+        todo = false;
+        if ((state == StructuredState.NAME) || (state == StructuredState.NULL)) {
+          state = nextValue();
+        } else {
+          if (this.xml.hasNext()) {
+            StructuredState e = null;
+            while (e == null) {
+              e = convertEvent(this.xml.next());
+            }
+            state = e;
+          } else {
+            state = StructuredState.DONE;
+            break;
+          }
+        }
+        if (skipCount > 0) {
+          if (state.isStart()) {
+            skipCount++;
+          } else if (state.isEnd()) {
+            skipCount--;
+            if (skipCount == 0) {
+              todo = true;
+            }
+          }
+        }
+        setState(state);
+      } while ((skipCount > 0) || todo);
+    } catch (XMLStreamException e) {
+      throw new IllegalStateException(e);
+    }
+    return state;
+  }
+
+  private StructuredState nextValue() {
 
     String uri = this.xml.getNamespaceURI();
     if (uri == null) {
-      return State.VALUE;
+      return StructuredState.VALUE;
     } else if (uri.equals(StructuredFormat.NS_URI_ARRAY)) {
       this.arrayStack++;
-      return State.START_ARRAY;
+      return StructuredState.START_ARRAY;
     } else if (uri.equals(StructuredFormat.NS_URI_OBJECT)) {
-      return State.START_OBJECT;
+      return StructuredState.START_OBJECT;
     } else {
       throw error("Enexpected namespace URI " + uri);
     }
   }
 
-  private State convertEvent(int e) {
+  private StructuredState convertEvent(int e) {
 
     String uri;
     switch (e) {
@@ -99,16 +129,16 @@ public class StaxReader extends AbstractStructuredStringReader {
           return nextValue();
         }
         this.name = tagName;
-        return State.NAME;
+        return StructuredState.NAME;
       case XMLStreamConstants.END_ELEMENT:
         this.arrayStack >>= 1;
         uri = this.xml.getNamespaceURI();
         if (uri == null) {
           return null;
         } else if (uri.equals(StructuredFormat.NS_URI_ARRAY)) {
-          return State.END_ARRAY;
+          return StructuredState.END_ARRAY;
         } else if (uri.equals(StructuredFormat.NS_URI_OBJECT)) {
-          return State.END_OBJECT;
+          return StructuredState.END_OBJECT;
         } else {
           throw error("Unexpected namespace URI " + uri);
         }
@@ -116,7 +146,7 @@ public class StaxReader extends AbstractStructuredStringReader {
         addComment(unescapeXmlComment(this.xml.getText()));
         return null;
       case XMLStreamConstants.END_DOCUMENT:
-        return State.DONE;
+        return StructuredState.DONE;
     }
     return null;
   }
@@ -124,7 +154,7 @@ public class StaxReader extends AbstractStructuredStringReader {
   @Override
   public Object readValue() {
 
-    expect(State.VALUE);
+    require(StructuredState.VALUE);
     Object value;
     if (this.xml.getAttributeCount() == 0) {
       value = null;
@@ -150,7 +180,7 @@ public class StaxReader extends AbstractStructuredStringReader {
   @Override
   protected String readValueAsNumberString() {
 
-    expect(State.VALUE);
+    require(StructuredState.VALUE);
     String value = this.xml.getAttributeValue(null, StructuredFormat.ATR_NUMBER_VALUE);
     if (value == null) {
       value = this.xml.getAttributeValue(null, StructuredFormat.ATR_STRING_VALUE);
@@ -166,7 +196,7 @@ public class StaxReader extends AbstractStructuredStringReader {
   @Override
   public boolean isStringValue() {
 
-    if (this.state == State.VALUE) {
+    if (getState() == StructuredState.VALUE) {
       String value = this.xml.getAttributeValue(null, StructuredFormat.ATR_STRING_VALUE);
       return (value != null);
     }
@@ -174,27 +204,26 @@ public class StaxReader extends AbstractStructuredStringReader {
   }
 
   @Override
-  protected RuntimeException error(String message, Throwable cause) {
+  protected String appendContextDetails(String message) {
 
+    message = super.appendContextDetails(message);
     Location location = this.xml.getLocation();
     if (location != null) {
       message = "XML invalid at line " + location.getLineNumber() + " and column " + location.getColumnNumber() + ": "
           + message;
     }
-    return super.error(message, cause);
+    return message;
   }
 
   @Override
-  public void close() {
+  protected void doClose() throws IOException {
 
-    if (this.xml != null) {
-      try {
-        this.xml.close();
-      } catch (XMLStreamException e) {
-        throw new IllegalStateException(e);
-      }
-      this.xml = null;
+    try {
+      this.xml.close();
+    } catch (XMLStreamException e) {
+      throw new IllegalStateException(e);
     }
+    this.xml = null;
   }
 
 }

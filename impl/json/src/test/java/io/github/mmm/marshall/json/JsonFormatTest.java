@@ -29,7 +29,7 @@ public class JsonFormatTest extends AbstractJsonFormatTest {
 
     // given
     StructuredWriter writer = newWriter(MarshallingConfig.DEFAULTS
-        .with(MarshallingConfig.OPT_UNQUOTED_PROPERTIES, Boolean.TRUE).with(MarshallingConfig.OPT_INDENTATION, null));
+        .with(MarshallingConfig.VAR_UNQUOTED_PROPERTIES, Boolean.TRUE).with(MarshallingConfig.VAR_INDENTATION, null));
     // when
     writeTestData(writer);
     // then

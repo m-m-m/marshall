@@ -7,14 +7,17 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import com.google.protobuf.CodedOutputStream;
 import com.google.protobuf.WireFormat;
 
 import io.github.mmm.base.exception.RuntimeIoException;
-import io.github.mmm.marshall.AbstractStructuredWriter;
-import io.github.mmm.marshall.StructuredFormat;
+import io.github.mmm.marshall.StructuredState;
 import io.github.mmm.marshall.StructuredWriter;
+import io.github.mmm.marshall.id.StructuredIdMapping;
+import io.github.mmm.marshall.id.StructuredIdMappingObject;
+import io.github.mmm.marshall.spi.AbstractStructuredBinaryWriter;
 import io.github.mmm.marshall.spi.StructuredNodeType;
 
 /**
@@ -24,7 +27,7 @@ import io.github.mmm.marshall.spi.StructuredNodeType;
  *
  * @since 1.0.0
  */
-public class MrpcWriter extends AbstractStructuredWriter {
+public class MrpcWriter extends AbstractStructuredBinaryWriter<MrpcNode> {
 
   private final CodedOutputStream out;
 
@@ -32,50 +35,53 @@ public class MrpcWriter extends AbstractStructuredWriter {
 
   private int arrayItemType;
 
-  private MrpcWriteState state;
-
   private int id;
 
   /**
    * The constructor.
    *
-   * @param out the {@link Appendable} to write the data to.
+   * @param out the {@link CodedOutputStream} to write the data to.
    * @param format the {@link #getFormat()}.
    */
-  public MrpcWriter(CodedOutputStream out, StructuredFormat format) {
+  public MrpcWriter(CodedOutputStream out, MrpcFormat format) {
 
     super(format);
     this.out = out;
-    this.state = new MrpcWriteState();
     this.array = new ArrayList<>();
     this.arrayItemType = -1;
   }
 
   @Override
-  public void writeName(String newName, int newId) {
+  protected MrpcNode newNode(StructuredNodeType type, StructuredIdMappingObject object) {
 
-    super.writeName(newName, newId);
-    this.id = this.state.id(newId);
+    StructuredIdMapping idMapping = null;
+    if (type == StructuredNodeType.OBJECT) {
+      idMapping = this.idMappingProvider.getMapping(object);
+      Objects.requireNonNull(idMapping);
+    }
+    return new MrpcNode(this.node, type, idMapping);
   }
 
   @Override
-  public void writeStartArray(int size) {
+  public void writeName(String newName) {
 
-    writeStart(MrpcFormat.TYPE_START_ARRAY, StructuredNodeType.ARRAY);
+    super.writeName(newName);
+    this.id = this.node.idMapping.id(this.name);
+    assert (this.id > 0);
   }
 
   @Override
-  public void writeStartObject(int size) {
-
-    writeStart(MrpcFormat.TYPE_START_OBJECT, StructuredNodeType.OBJECT);
-  }
-
-  private void writeStart(int type, StructuredNodeType nodeType) {
+  protected void doWriteStart(StructuredNodeType type, StructuredIdMappingObject object) {
 
     try {
       writeArrayBuffer();
-      this.out.writeTag(this.id, type);
-      this.state = new MrpcWriteState(nodeType, this.state);
+      if (type == StructuredNodeType.ARRAY) {
+        this.out.writeTag(this.id, MrpcFormat.TYPE_START_ARRAY);
+      } else if (type == StructuredNodeType.OBJECT) {
+        if ((this.node.parent != null) || this.encodeRootObject) {
+          this.out.writeTag(this.id, MrpcFormat.TYPE_START_OBJECT);
+        }
+      }
       clearProperty();
     } catch (IOException e) {
       throw new IllegalStateException(e);
@@ -83,12 +89,14 @@ public class MrpcWriter extends AbstractStructuredWriter {
   }
 
   @Override
-  public void writeEnd() {
+  protected void doWriteEnd(StructuredNodeType type) {
 
     try {
       writeArrayBuffer();
-      this.out.writeTag(0, MrpcFormat.TYPE_END);
-      this.state = this.state.parent;
+      if ((type != StructuredNodeType.OBJECT) || ((this.node.parent != null) && (this.node.parent.parent != null))
+          || this.encodeRootObject) {
+        this.out.writeTag(0, MrpcFormat.TYPE_END);
+      }
     } catch (IOException e) {
       throw new IllegalStateException(e);
     }
@@ -104,7 +112,7 @@ public class MrpcWriter extends AbstractStructuredWriter {
   public void writeValueAsNull() {
 
     // in mRPC null values are omitted except in arrays...
-    if (this.state.type == StructuredNodeType.ARRAY) {
+    if (this.node.type == StructuredNodeType.ARRAY) {
       writeRawNull();
     }
     clearProperty();
@@ -115,6 +123,7 @@ public class MrpcWriter extends AbstractStructuredWriter {
     try {
       if (item == null) {
         writeRawNull();
+        return;
       } else if (this.arrayItemType == -1) {
         assert (this.array.isEmpty());
         this.arrayItemType = type;
@@ -127,6 +136,7 @@ public class MrpcWriter extends AbstractStructuredWriter {
         this.arrayItemType = type;
         this.array.add(item);
       }
+      setState(StructuredState.VALUE);
     } catch (IOException e) {
       throw new RuntimeIoException(e);
     }
@@ -150,6 +160,7 @@ public class MrpcWriter extends AbstractStructuredWriter {
 
     try {
       this.out.write((byte) 0);
+      setState(StructuredState.VALUE);
     } catch (IOException e) {
       throw new RuntimeIoException(e);
     }
@@ -161,34 +172,34 @@ public class MrpcWriter extends AbstractStructuredWriter {
       writeRawString((String) value);
     } else if (value instanceof Number) {
       writeRawNumber((Number) value);
-    } else if (value instanceof Boolean) {
-      writeRawBoolean((Boolean) value);
-    } else if (value instanceof Enum) {
-
+    } else if (value instanceof Boolean b) {
+      writeRawBoolean(b.booleanValue());
+    } else if (value instanceof Enum e) {
+      writeRawInteger(e.ordinal());
     }
   }
 
   private void writeRawNumber(Number value) {
 
     if (value instanceof Integer) {
-      writeRawInteger((Integer) value);
+      writeRawInteger(value.intValue());
     } else if (value instanceof Long) {
-      writeRawLong((Long) value);
+      writeRawLong(value.longValue());
     } else if (value instanceof Double) {
-      writeRawDouble((Double) value);
+      writeRawDouble(value.doubleValue());
     } else if (value instanceof Float) {
-      writeRawFloat((Float) value);
+      writeRawFloat(value.floatValue());
     } else if (value instanceof Byte) {
-      writeRawByte((Byte) value);
+      writeRawInteger(value.intValue());
     } else if (value instanceof Short) {
-      writeRawShort((Short) value);
+      writeRawInteger(value.intValue());
     }
   }
 
   @Override
   public void writeValueAsString(String value) {
 
-    if (this.state.type == StructuredNodeType.ARRAY) {
+    if (this.node.type == StructuredNodeType.ARRAY) {
       writeArrayItem(value, WireFormat.WIRETYPE_LENGTH_DELIMITED);
     } else if (value == null) {
       writeValueAsNull();
@@ -206,32 +217,32 @@ public class MrpcWriter extends AbstractStructuredWriter {
       } else {
         this.out.writeString(this.id, value);
       }
+      setState(StructuredState.VALUE);
     } catch (IOException e) {
       throw new RuntimeIoException(e);
     }
   }
 
   @Override
-  public void writeValueAsBoolean(Boolean value) {
+  public void writeValueAsBoolean(boolean value) {
 
-    if (this.state.type == StructuredNodeType.ARRAY) {
-      writeArrayItem(value, WireFormat.WIRETYPE_VARINT);
-    } else if (value == null) {
-      writeValueAsNull();
+    if (this.node.type == StructuredNodeType.ARRAY) {
+      writeArrayItem(Boolean.valueOf(value), WireFormat.WIRETYPE_VARINT);
     } else {
       writeRawBoolean(value);
       clearProperty();
     }
   }
 
-  private void writeRawBoolean(Boolean value) {
+  private void writeRawBoolean(boolean value) {
 
     try {
       if (this.id == 0) {
-        this.out.writeBoolNoTag(value.booleanValue());
+        this.out.writeBoolNoTag(value);
       } else {
-        this.out.writeBool(this.id, value.booleanValue());
+        this.out.writeBool(this.id, value);
       }
+      setState(StructuredState.VALUE);
     } catch (IOException e) {
       throw new RuntimeIoException(e);
     }
@@ -260,172 +271,113 @@ public class MrpcWriter extends AbstractStructuredWriter {
   }
 
   @Override
-  public void writeValueAsLong(Long value) {
+  public void writeValueAsLong(long value) {
 
-    if (this.state.type == StructuredNodeType.ARRAY) {
-      writeArrayItem(value, WireFormat.WIRETYPE_VARINT);
-    } else if (value == null) {
-      writeValueAsNull();
+    if (this.node.type == StructuredNodeType.ARRAY) {
+      writeArrayItem(Long.valueOf(value), WireFormat.WIRETYPE_VARINT);
     } else {
       writeRawLong(value);
       clearProperty();
     }
   }
 
-  private void writeRawLong(Long value) {
+  private void writeRawLong(long value) {
 
     try {
       if (this.id == 0) {
-        this.out.writeSInt64NoTag(value.longValue());
+        this.out.writeSInt64NoTag(value);
       } else {
-        this.out.writeSInt64(this.id, value.longValue());
+        this.out.writeSInt64(this.id, value);
       }
+      setState(StructuredState.VALUE);
     } catch (IOException e) {
       throw new RuntimeIoException(e);
     }
   }
 
   @Override
-  public void writeValueAsInteger(Integer value) {
+  public void writeValueAsInteger(int value) {
 
-    if (this.state.type == StructuredNodeType.ARRAY) {
-      writeArrayItem(value, WireFormat.WIRETYPE_VARINT);
-    } else if (value == null) {
-      writeValueAsNull();
+    if (this.node.type == StructuredNodeType.ARRAY) {
+      writeArrayItem(Integer.valueOf(value), WireFormat.WIRETYPE_VARINT);
     } else {
       writeRawInteger(value);
       clearProperty();
     }
   }
 
-  private void writeRawInteger(Integer value) {
+  private void writeRawInteger(int value) {
 
     try {
       if (this.id == 0) {
-        this.out.writeSInt32NoTag(value.intValue());
+        this.out.writeSInt32NoTag(value);
       } else {
-        this.out.writeSInt32(this.id, value.intValue());
+        this.out.writeSInt32(this.id, value);
       }
+      setState(StructuredState.VALUE);
     } catch (IOException e) {
       throw new RuntimeIoException(e);
     }
   }
 
   @Override
-  public void writeValueAsDouble(Double value) {
+  public void writeValueAsDouble(double value) {
 
-    if (this.state.type == StructuredNodeType.ARRAY) {
-      writeArrayItem(value, WireFormat.WIRETYPE_FIXED64);
-    } else if (value == null) {
-      writeValueAsNull();
+    if (this.node.type == StructuredNodeType.ARRAY) {
+      writeArrayItem(Double.valueOf(value), WireFormat.WIRETYPE_FIXED64);
     } else {
       writeRawDouble(value);
       clearProperty();
     }
   }
 
-  private void writeRawDouble(Double value) {
+  private void writeRawDouble(double value) {
 
     try {
       if (this.id == 0) {
-        this.out.writeDoubleNoTag(value.doubleValue());
+        this.out.writeDoubleNoTag(value);
       } else {
-        this.out.writeDouble(this.id, value.doubleValue());
+        this.out.writeDouble(this.id, value);
       }
+      setState(StructuredState.VALUE);
     } catch (IOException e) {
       throw new RuntimeIoException(e);
     }
   }
 
   @Override
-  public void writeValueAsFloat(Float value) {
+  public void writeValueAsFloat(float value) {
 
-    if (this.state.type == StructuredNodeType.ARRAY) {
-      writeArrayItem(value, WireFormat.WIRETYPE_FIXED32);
-    } else if (value == null) {
-      writeValueAsNull();
+    if (this.node.type == StructuredNodeType.ARRAY) {
+      writeArrayItem(Float.valueOf(value), WireFormat.WIRETYPE_FIXED32);
     } else {
       writeRawFloat(value);
       clearProperty();
     }
   }
 
-  private void writeRawFloat(Float value) {
+  private void writeRawFloat(float value) {
 
     try {
       if (this.id == 0) {
-        this.out.writeFloatNoTag(value.floatValue());
+        this.out.writeFloatNoTag(value);
       } else {
-        this.out.writeFloat(this.id, value.floatValue());
+        this.out.writeFloat(this.id, value);
       }
+      setState(StructuredState.VALUE);
     } catch (IOException e) {
       throw new RuntimeIoException(e);
     }
   }
 
   @Override
-  public void writeValueAsShort(Short value) {
-
-    if (this.state.type == StructuredNodeType.ARRAY) {
-      writeArrayItem(value, WireFormat.WIRETYPE_VARINT);
-    } else if (value == null) {
-      writeValueAsNull();
-    } else {
-      writeRawShort(value);
-      clearProperty();
-    }
-  }
-
-  private void writeRawShort(Short value) {
+  protected void doClose() throws IOException {
 
     try {
-      if (this.id == 0) {
-        this.out.writeSInt32NoTag(value.intValue());
-      } else {
-        this.out.writeSInt32(this.id, value.intValue());
-      }
+      this.out.flush();
     } catch (IOException e) {
       throw new RuntimeIoException(e);
     }
-  }
-
-  @Override
-  public void writeValueAsByte(Byte value) {
-
-    if (this.state.type == StructuredNodeType.ARRAY) {
-      writeArrayItem(value, WireFormat.WIRETYPE_VARINT);
-    } else if (value == null) {
-      writeValueAsNull();
-    } else {
-      writeRawByte(value);
-      clearProperty();
-    }
-  }
-
-  private void writeRawByte(Byte value) {
-
-    try {
-      if (this.id == 0) {
-        this.out.writeSInt32NoTag(value.intValue());
-      } else {
-        this.out.writeSInt32(this.id, value.intValue());
-      }
-    } catch (IOException e) {
-      throw new RuntimeIoException(e);
-    }
-  }
-
-  @Override
-  public void close() {
-
-    if (this.state != null) {
-      try {
-        this.out.flush();
-      } catch (IOException e) {
-        throw new RuntimeIoException(e);
-      }
-    }
-    this.state = null;
   }
 
 }

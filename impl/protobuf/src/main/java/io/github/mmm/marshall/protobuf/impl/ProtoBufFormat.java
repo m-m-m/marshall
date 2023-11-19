@@ -5,26 +5,31 @@ package io.github.mmm.marshall.protobuf.impl;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-import com.google.protobuf.CodedInputStream;
-import com.google.protobuf.CodedOutputStream;
+import com.google.protobuf.WireFormat;
 
 import io.github.mmm.marshall.MarshallingConfig;
-import io.github.mmm.marshall.StructuredBinaryFormat;
 import io.github.mmm.marshall.StructuredFormat;
 import io.github.mmm.marshall.StructuredReader;
 import io.github.mmm.marshall.StructuredWriter;
-import io.github.mmm.marshall.size.StructuredFormatSizeComputor;
+import io.github.mmm.marshall.spi.AbstractStructuredBinaryIdBasedFormat;
 
 /**
  * Implementation of {@link StructuredFormat} for ProtoBuf/gRPC.
  *
  * @since 1.0.0
  */
-public class ProtoBufFormat implements StructuredBinaryFormat {
+public class ProtoBufFormat extends AbstractStructuredBinaryIdBasedFormat {
+
+  /** Wire type for start of (nested) object. */
+  public static final int TYPE_START_OBJECT = WireFormat.WIRETYPE_START_GROUP;
+
+  /** Wire type for start of nested array. */
+  public static final int TYPE_START_ARRAY = 6;
+
+  /** Wire type for end of object or end of nested array. */
+  public static final int TYPE_END = WireFormat.WIRETYPE_END_GROUP;
 
   private static final ProtoBufFormat DEFAULT = of(MarshallingConfig.DEFAULTS);
-
-  private final MarshallingConfig config;
 
   /**
    * The constructor.
@@ -34,14 +39,7 @@ public class ProtoBufFormat implements StructuredBinaryFormat {
    */
   public ProtoBufFormat(MarshallingConfig config) {
 
-    super();
-    this.config = config;
-  }
-
-  @Override
-  public MarshallingConfig getConfig() {
-
-    return this.config;
+    super(config);
   }
 
   @Override
@@ -51,27 +49,15 @@ public class ProtoBufFormat implements StructuredBinaryFormat {
   }
 
   @Override
-  public boolean isIdBased() {
-
-    return true;
-  }
-
-  @Override
-  public StructuredFormatSizeComputor getSizeComputor() {
-
-    return ProtoBufSizeComputor.get();
-  }
-
-  @Override
   public StructuredReader reader(InputStream in) {
 
-    return new ProtoBufReader(CodedInputStream.newInstance(in), this);
+    return new ProtoBufReader(in, this);
   }
 
   @Override
   public StructuredWriter writer(OutputStream out) {
 
-    return new ProtoBufWriter(CodedOutputStream.newInstance(out), this);
+    return new ProtoBufWriter(out, this);
   }
 
   /**

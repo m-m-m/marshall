@@ -16,36 +16,40 @@ When you want to do (un)marshalling with Java EE standards the current state is:
 
 * https://javaee.github.io/jsonp/[JSON-P] to map to/from https://www.json.org/[JSON].
 * https://javaee.github.io/jaxb-v2/[JAXB] to map to/from https://en.wikipedia.org/wiki/XML[XML].
-* no support for other formats like https://yaml.org/[YAML], https://grpc.io/[gRPC], https://developers.google.com/protocol-buffers/[ProtoBuf], etc.
+* no support for other formats like https://yaml.org/[YAML], https://grpc.io/[gRPC] / https://developers.google.com/protocol-buffers/[ProtoBuf], https://avro.apache.org/[Avro], etc.
 
-As a result you implement your marshalling and unmarshalling code for a single format. If you want to support a different format, you have to start from scratch.
-Further, the reference implementation for https://javaee.github.io/jsonp/[JSON-P] is lacking obvious features. E.g. the indentation is hardcoded as you can see
-https://github.com/eclipse-ee4j/jsonp/blob/dcef07f088197eb7f44829a3ccf4f6a9b99d29ff/impl/src/main/java/org/glassfish/json/JsonPrettyGeneratorImpl.java#L31[here].
-You can also not configure to include or omit `null` values. Also, there is no build in support to skip a value and doing so requires an awful lot of code (in case the value might contain nested arrays and/or objects).
+As a result you implement your marshalling and unmarshalling code for a single format.
+If you want to support a different format, you have to start from scratch.
+Further, the reference implementation for https://javaee.github.io/jsonp/[JSON-P] is lacking obvious features.
+E.g. the indentation is hardcoded as you can see https://github.com/eclipse-ee4j/jsonp/blob/dcef07f088197eb7f44829a3ccf4f6a9b99d29ff/impl/src/main/java/org/glassfish/json/JsonPrettyGeneratorImpl.java#L31[here].
+You can also not configure to include or omit `null` values.
+Also, there is no build in support to skip a value and doing so requires an awful lot of code (in case the value might contain nested arrays and/or objects).
 
 == Solution
 
-So instead we define a universal API for (un)marshalling. You can write your mapping code once and then you can benefit from all formats supported by this project or even add custom formats as plugin yourself.
+So instead we define a universal API for (un)marshalling.
+You can write your mapping code once and then you can benefit from all formats supported by this project or even add custom formats as plugin yourself.
 
 == Features
 
 * Simple but powerful API to marshall and unmarshall your data in a format agnostic way.
-* link:core/src/main/java/io/github/mmm/marshall/MarshallingConfig.java#L21[Configurable indendation]
-* link:core/src/main/java/io/github/mmm/marshall/MarshallingConfig.java#L28[Configuration to omit null values]
+* link:core/src/main/java/io/github/mmm/marshall/MarshallingConfig.java#L21[Configurable indentation]
+* link:core/src/main/java/io/github/mmm/marshall/MarshallingConfig.java#L28[Configuration to include or omit null values]
 * Works in JVM as well as in the browser using http://teavm.org/[TeaVM] or as cloud-native binary using https://www.graalvm.org/[GraalVM].
 * You can even use https://github.com/m-m-m/bean[mmm-bean] to get the entire marshalling and unmarshalling for free with many other cool features.
-* You can furhter use https://github.com/m-m-m/rpc[mmm-rpc] to implement client and/or server for https://en.wikipedia.org/wiki/Remote_procedure_call[RCP] communication with minimum code but maximum benefits (support for different formats, sync/async/reactive support, etc.).
+* You can further use https://github.com/m-m-m/rpc[mmm-rpc] to implement client and/or server for https://en.wikipedia.org/wiki/Remote_procedure_call[RCP] communication with minimum code but maximum benefits (support for different formats, sync/async/reactive support, etc.).
 
 We provide the following implementations:
 
+* human readable text formats:
 ** link:impl/json/README.adoc[mmm-marshall-json] (native implementation for JSON with flexibilty)
 ** link:impl/jsonp/README.adoc[mmm-marhsall-jsonp] (implementation for JSON based on JSON-P)
 ** link:impl/stax/README.adoc[mmm-marshall-stax] (implementation for XML based on StAX)
 ** link:impl/tvm-xml/README.adoc[mmm-marshall-tvm-xml] (implementation for XML using TeaVM and XML API of the browser)
-** link:impl/protobuf/README.adoc[mmm-marshall-protobuf] (implementation for ProtoBuf/gRPC)
-** link:impl/mrpc/README.adoc[mmm-marshall-mrpc] (implementation for mRPC an improved ProtoBuf format)
 ** link:impl/yaml/README.adoc[mmm-marshall-yaml] (implementation for YAML with flexibility)
 ** link:impl/snakeyaml/README.adoc[mmm-marshall-snakeyaml] (implementation for YAML based on SnakeYaml)
+* highly efficient binary formats:
+** link:impl/protobuf/README.adoc[mmm-marshall-protobuf] (implementation for ProtoBuf/gRPC)
 
 === Usage
 
@@ -71,24 +75,28 @@ Module Dependency:
 == Example
 
 To get started we use a very simple example based on a stupid POJO that every vanilla Java developer will immediately understand.
-Please note that we provide much better beans with build-in marshalling support via https://github.com/m-m-m/bean[mmm-bean].
+Please note that we provide build-in marshalling with https://github.com/m-m-m/property[mmm-property] and https://github.com/m-m-m/bean[mmm-bean].
+If you decide to use this, you get all this and many other advanced features for free.
 However, here comes our stupid example:
 
 ```java
-public class Person {
+public class Person implements StructuredIdMappingObject {
   private String name;
   private int age;
   public String getName() { return this.name; }
   public void setName(String name) { this.name = name; }
   public int getAge() { return this.age; }
   public void setAge(int age) { this.age = age; }
+  public StructuredIdMapping defineIdMapping() {
+    return StructuredIdMapping.of("name", "age"); // only needed for optimal support of binary formats such as gRPC
+  }
 }
 ```
 
 Now, we can marshall a `Person` like this:
 ```java
 public void marshall(StructuredWriter writer, Person person) {
-  writer.writeStartObject();
+  writer.writeStartObject(person);
   writer.writeName("name", 1);
   writer.writeValue(person.getName());
   writer.writeName("age", 2);
@@ -118,20 +126,83 @@ This will print the following output:
 
 The interesting fact is that you can exchange `JsonFormat.of()` with something else to get a different format without changing your implementation of `marshal`. So you can also use `XmlFormat.of()` to produce XML or you can generate YAML or even gRPC/ProtoBuf.
 
-To unmarhall a `Person` you can do something like this:
+To unmarshall a `Person` you can do something like this:
 
 ```java
 public void unmarshall(StructuredReader reader, Person person) {
+  // for better design and reuse you would typically keep these 3 lines outside of this method
+  reader.require(START_OBJECT);
+  boolean start = readStartObject(person);
+  assert start;
+
   while (!reader.readEnd()) {
-    if (reader.isName("name", 1)) {
+    if (reader.isName("name")) {
       person.setName(reader.readValueAsString());
-    } else if (reader.isName("age", 2)) {
+    } else if (reader.isName("age")) {
       person.setAge(reader.readValueAsInteger());
     } else {
       // ignore unknown property for compatibility
+      reader.readName();
+      reader.skipValue();
       // we have dynamic properties support in mmm-bean
       // even much better than gRPC generated unknownFields
     }
   }
 }
 ```
+
+== Schemas
+
+Formats like `JSON`, `YAML`, or `XML` are generic and can be used without a schema.
+These formats are human readable therefore transparent, widely adopted, and fully inter-operable.
+However, looking at efficiency and performance these formats are rather poor:
+`XML` is full of redundancy due to closing tags.
+But even `JSON` and partially `YAML` are not following DRY principle and cause lots of waste and overhead especially for arrays of homogeneous objects:
+
+```json
+[
+{"longPropertyName":"value1","someNumber":1},
+{"longPropertyName":"value2","someNumber":2},
+{"longPropertyName":"value3","someNumber":3},
+{"longPropertyName":"value4","someNumber":42}
+]
+```
+Here already `CSV` would be more efficient:
+
+```
+"longPropertyName";"someNumber"
+"value1";1
+"value2";2
+"value3";3
+"value4";42
+```
+
+For advanced performance there are optimized formats that are binary and typically use some schema as metadata shared by the service provider and the consumer.
+The most fundamental form of such a schema is a mapping from property names to unique IDs and vice versa for an object.
+So instead of encoding "longPropertyName", you agree to map this property to e.g. the ID `1` and "someNumber" would have Id `2`.
+Already for `JSON` you can quickly see the benefit in size of the payload.
+However, with binary formats, you can encode the information much more efficient.
+This is exactly the purpose of such binary and schema based formats.
+A disadvantage of such binary formats is that they are not human readable what makes it harder to debug for developers.
+As with `mmm-marshall` you get support for all formats for free, you can simply do your own service communication in binary formats for optimum performance.
+However, if you want to debug something, you can get the same data also as `JSON` what can also be a good choice for communication between different parties that can not agree on a binary format for arbitrary reasons and prefer the simplicity, transparency, and inter-oparability of `JSON`.
+Also a browser may prefer to get the data as `JSON` what is the natural language of browser technology.
+
+=== ID mapping
+If you want to (also) support binary formats, you need to somehow provide a schema for your data.
+Therefore you need to consider the following aspects:
+
+* We have decided to abstract as much as possible from these technical implications in the API of `mmm-marshall`.
+So if you develop mapping code, you simply read or write property names as `String`.
+* However, under the hood we then need to map names to IDs and vice versa what happens via the interface `StructuredIdMapping`.
+* The only impact is that the methods `writeStartObject` and `readStartObject` take a `StructuredIdMappingObject` as argument what is typically the object to write or read.
+The interface allows the object to provide its custom `StructuredIdMapping`.
+In the example above we have shown how to implement this to get fully portable and optimal results (see `defineIdMapping`).
+However, this leads to extra maintenance effort and therefore we give you flexible alternatives.
+* You may also pass an instance of `StructuredIdMapping` directly instead of the object to write or read.
+This can be especially helpful if you need two different marshallings for different representations of the same object.
+* When creating an according binary structured format, you can also provide your own implementation of `StructuredIdMappingProvider` with the configuration.
+It will receive the passed `StructuredIdMappingObject` instances and returns the according `StructuredIdMapping`.
+Here you may also read a `*.proto` or `*.avro` file derived from the type of the object to map and return an according `StructuredIdMapping`.
+Also you could even create a global ID mapping by collecting all property names of your entire data-model and allow your marshalling code
+to passes `null` as `StructuredIdMappingObject`.

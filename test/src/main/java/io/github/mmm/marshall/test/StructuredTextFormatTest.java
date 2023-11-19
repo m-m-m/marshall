@@ -8,8 +8,8 @@ import java.util.Map;
 import org.junit.jupiter.api.Test;
 
 import io.github.mmm.marshall.MarshallingConfig;
+import io.github.mmm.marshall.StructuredState;
 import io.github.mmm.marshall.StructuredReader;
-import io.github.mmm.marshall.StructuredReader.State;
 import io.github.mmm.marshall.StructuredTextFormat;
 import io.github.mmm.marshall.StructuredTextFormatProvider;
 import io.github.mmm.marshall.StructuredWriter;
@@ -134,23 +134,23 @@ public abstract class StructuredTextFormatTest extends StructuredFormatTest {
   public void testReadValueRecursive() {
 
     StructuredReader reader = newReader();
-    assertThat(reader.getState()).isSameAs(State.START_OBJECT);
+    assertThat(reader.getState()).isSameAs(StructuredState.START_OBJECT);
     Object value = reader.readValue(true);
-    assertThat(reader.getState()).isSameAs(State.DONE);
+    assertThat(reader.getState()).isSameAs(StructuredState.DONE);
     assertThat(reader.isDone()).isTrue();
 
     assertThat(value).isInstanceOf(Map.class);
     Map<String, Object> map = (Map<String, Object>) value;
-    assertThat(map.get(P1_NAME)).isEqualTo("bar");
-    Object v1 = getGenericValue(P3_VALUE1);
-    Object v2 = getGenericValue(P3_VALUE2);
-    Object v3 = getGenericValue(P3_VALUE3);
-    Object v4 = getGenericValue(P3_VALUE4);
-    Object v5 = getGenericValue(P3_VALUE5);
-    Object v7 = getGenericValue(P3_VALUE7);
-    Object v6 = getGenericValue(P3_VALUE6);
-    Object v8 = getGenericValue(P3_VALUE8);
-    Object v9 = getGenericValue(P3_VALUE9);
+    assertThat(map.get(RootTestBean.PROPERTY_FOO)).isEqualTo("bar");
+    Object v1 = getGenericValue(P3_LIST_VALUE1);
+    Object v2 = getGenericValue(P3_LIST_VALUE2);
+    Object v3 = getGenericValue(P3_LIST_VALUE3);
+    Object v4 = getGenericValue(P3_LIST_VALUE4);
+    Object v5 = getGenericValue(P3_LIST_VALUE5);
+    Object v7 = getGenericValue(P3_LIST_VALUE7);
+    Object v6 = getGenericValue(P3_LIST_VALUE6);
+    Object v8 = getGenericValue(P3_LIST_VALUE8);
+    Object v9 = getGenericValue(P3_LIST_VALUE9);
     List<Object> v10 = new ArrayList<>();
     Map<String, Object> object = new HashMap<>();
     object.put("key", "value");

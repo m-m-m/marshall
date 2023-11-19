@@ -58,10 +58,10 @@ public class SnakeYamlFormatTest extends AbstractYamlFormatTest {
   @Override
   protected Object getGenericValue(Object value) {
 
-    if (value == P3_VALUE7) {
-      return Double.valueOf(P3_VALUE7.doubleValue());
-    } else if (value == P3_VALUE9) {
-      return Double.valueOf(P3_VALUE9.doubleValue());
+    if (value == P3_LIST_VALUE7) {
+      return Double.valueOf(P3_LIST_VALUE7.doubleValue());
+    } else if (value == P3_LIST_VALUE9) {
+      return Double.valueOf(P3_LIST_VALUE9.doubleValue());
     }
     return super.getGenericValue(value);
   }

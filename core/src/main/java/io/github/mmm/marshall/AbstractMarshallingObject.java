@@ -2,17 +2,17 @@
  * http://www.apache.org/licenses/LICENSE-2.0 */
 package io.github.mmm.marshall;
 
-import io.github.mmm.marshall.StructuredReader.State;
+import io.github.mmm.marshall.id.StructuredIdMappingObject;
 
 /**
  * Abstract base implementation of {@link MarshallingObject} for objects
  */
-public abstract class AbstractMarshallingObject implements MarshallingObject {
+public abstract class AbstractMarshallingObject implements MarshallingObject, StructuredIdMappingObject {
 
   @Override
   public void write(StructuredWriter writer) {
 
-    writer.writeStartObject();
+    writer.writeStartObject(this);
     writeProperties(writer);
     writer.writeEnd();
   }
@@ -25,13 +25,14 @@ public abstract class AbstractMarshallingObject implements MarshallingObject {
   protected abstract void writeProperties(StructuredWriter writer);
 
   @Override
-  public void read(StructuredReader reader) {
+  public MarshallingObject read(StructuredReader reader) {
 
-    reader.require(State.START_OBJECT, true);
+    reader.require(StructuredState.START_OBJECT, true);
     while (!reader.readEnd()) {
       String name = reader.readName();
       readProperty(reader, name);
     }
+    return this;
   }
 
   /**

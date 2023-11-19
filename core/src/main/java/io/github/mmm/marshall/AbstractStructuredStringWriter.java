@@ -4,18 +4,19 @@ package io.github.mmm.marshall;
 
 import java.io.IOException;
 
+import io.github.mmm.marshall.spi.AbstractStructuredWriter;
+import io.github.mmm.marshall.spi.StructuredNode;
+
 /**
  * {@link AbstractStructuredWriter} for writing data as {@link String} to {@link Appendable}.
  *
+ * @param <S> type of the {@link StructuredNode}.
  * @since 1.0.0
  */
-public abstract class AbstractStructuredStringWriter extends AbstractStructuredWriter {
+public abstract class AbstractStructuredStringWriter<S extends StructuredNode<S>> extends AbstractStructuredWriter<S> {
 
   /** The {@link Appendable} where to {@link Appendable#append(CharSequence) write} the data to. */
   protected Appendable out;
-
-  /** The current indentation count. */
-  protected int indentCount;
 
   /** @see #writeComment(String) */
   private String comment;
@@ -116,11 +117,8 @@ public abstract class AbstractStructuredStringWriter extends AbstractStructuredW
   }
 
   @Override
-  public void close() {
+  protected void doClose() {
 
-    if (this.out == null) {
-      return;
-    }
     if (this.out instanceof AutoCloseable) {
       try {
         ((AutoCloseable) this.out).close();

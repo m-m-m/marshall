@@ -19,8 +19,7 @@ public interface UnmarshallableObject extends Unmarshaller<Object> {
   @Override
   default UnmarshallableObject readObject(StructuredReader reader) {
 
-    read(reader);
-    return this;
+    return read(reader);
   }
 
   /**
@@ -28,7 +27,8 @@ public interface UnmarshallableObject extends Unmarshaller<Object> {
    *        read data will be applied. Only properties present in the read data will be set (overridden). In order to
    *        get a clean representation of the data from the given reader you should invoke this method on an empty
    *        object (new instance).
+   * @return typically this object itself (however, for polymorphic unmarshalling it may also be a sub-type instance).
    */
-  void read(StructuredReader reader);
+  UnmarshallableObject read(StructuredReader reader);
 
 }

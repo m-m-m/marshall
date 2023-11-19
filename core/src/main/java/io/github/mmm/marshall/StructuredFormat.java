@@ -4,7 +4,6 @@ package io.github.mmm.marshall;
 
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.io.StringReader;
 
 /**
  * Interface providing a structured format such as JSON or XML.
@@ -74,7 +73,7 @@ public interface StructuredFormat {
 
   /**
    * @param data the data as a potentially proprietary implementation-specific type.
-   * @return the {@link StringReader}.
+   * @return the {@link StructuredReader}.
    */
   default StructuredReader reader(Object data) {
 
@@ -110,8 +109,8 @@ public interface StructuredFormat {
   /**
    * @return {@code true} if this format uses IDs instead of names to identify properties (like {@link #ID_PROTOBUF
    *         gRPC/ProtoBuf}), {@code false} otherwise.
-   * @see StructuredWriter#writeName(String, int)
-   * @see StructuredReader#readId()
+   * @see io.github.mmm.marshall.id.StructuredIdMapping
+   * @see io.github.mmm.marshall.id.StructuredIdMappingProvider
    */
   default boolean isIdBased() {
 

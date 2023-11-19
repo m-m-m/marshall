@@ -23,7 +23,7 @@ public class IndentingXmlStreamWriter implements XMLStreamWriter {
    * The constructor.
    *
    * @param xml the {@link XMLStreamWriter} to wrap and delegate to.
-   * @param indentation the {@link io.github.mmm.marshall.MarshallingConfig#OPT_INDENTATION indentation}.
+   * @param indentation the {@link io.github.mmm.marshall.MarshallingConfig#VAR_INDENTATION indentation}.
    */
   public IndentingXmlStreamWriter(XMLStreamWriter xml, String indentation) {
 

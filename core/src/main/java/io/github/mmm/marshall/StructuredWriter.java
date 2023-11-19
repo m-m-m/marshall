@@ -13,7 +13,7 @@ import java.time.OffsetTime;
 import java.time.ZonedDateTime;
 import java.time.temporal.Temporal;
 
-import io.github.mmm.marshall.StructuredReader.State;
+import io.github.mmm.marshall.id.StructuredIdMappingObject;
 
 /**
  * Interface for a writer to produce a {@link StructuredFormat structured format} such as JSON or XML.
@@ -27,68 +27,34 @@ public interface StructuredWriter extends StructuredProcessor {
    * collection a call of {@link #writeValue(Object)} (including any of its typed variants) needs to be called followed
    * by {@link #writeEnd()}.
    */
-  default void writeStartArray() {
-
-    writeStartArray(-1);
-  }
-
-  /**
-   * Writes the start of an array or collection. After the call of this method for each element of the array or
-   * collection a call of {@link #writeValue(Object)} (including any of its typed variants) needs to be called followed
-   * by {@link #writeEnd()}.
-   *
-   * @param size the size of the array as payload in bytes or {@code -1} if unknown. Should be provided for efficient
-   *        writing of gRPC/ProtoBuf.
-   */
-  void writeStartArray(int size);
+  void writeStartArray();
 
   /**
    * Writes the start of an object. After the call of this method for each property of the object
    * {@link #writeName(String)} needs to be called followed by writing its value. Then {@link #writeEnd()} needs to be
-   * called to terminate the object.
-   */
-  default void writeStartObject() {
-
-    writeStartObject(-1);
-  }
-
-  /**
-   * Writes the start of an object. After the call of this method for each property of the object
-   * {@link #writeName(String)} needs to be called followed by writing its value. Then {@link #writeEnd()} needs to be
-   * called to terminate the object.
+   * called to terminate the object.<br>
+   * Please note that the arguments to this method are only used as meta-data. Formats like JSON or YAML might not need
+   * them while they are required for grpc/protobuf the map property names.
    *
-   * @param size the size of the object as payload in bytes or {@code -1} if unknown. Should be provided for efficient
-   *        writing of gRPC/ProtoBuf.
+   * @param object the {@link Object} to be written. May also be an external {@link Marshalling} (e.g. if you create
+   *        some alternative marshalling representation for the same object that already has a default marshalling).
    */
-  void writeStartObject(int size);
+  void writeStartObject(StructuredIdMappingObject object);
 
   /**
-   * Writes the end of an {@link #writeStartArray() array} or {@link #writeStartObject() object}.
+   * Writes the end of an {@link #writeStartArray() array} or {@link #writeStartObject(StructuredIdMappingObject)
+   * object}.
    */
   void writeEnd();
 
   /**
    * Writes the name of a property. After the call of this method a subsequent call of {@link #writeStartArray()},
-   * {@link #writeStartObject()} or {@link #writeValue(Object)} (including any of its typed variants) needs to be
-   * called.
+   * {@link #writeStartObject(StructuredIdMappingObject)} or {@link #writeValue(Object)} (including any of its typed
+   * variants) needs to be called.
    *
    * @param name the name of the property.
    */
-  default void writeName(String name) {
-
-    writeName(name, -1);
-  }
-
-  /**
-   * Writes the name of a property. After the call of this method a subsequent call of {@link #writeStartArray()},
-   * {@link #writeStartObject()} or {@link #writeValue(Object)} (including any of its typed variants) needs to be
-   * called.
-   *
-   * @param name the name of the property.
-   * @param id the ID of the field name. Will only be required by specific {@link StructuredFormat formats} such as
-   *        {@link StructuredFormat#ID_PROTOBUF ProtoBuf/gRPC}.
-   */
-  void writeName(String name, int id);
+  void writeName(String name);
 
   /**
    * Writes a value for the current property or {@link #writeStartArray() array} element.<br>
@@ -106,7 +72,7 @@ public interface StructuredWriter extends StructuredProcessor {
     } else if (value instanceof String) {
       writeValueAsString(value.toString());
     } else if (value instanceof Boolean) {
-      writeValueAsBoolean((Boolean) value);
+      writeValueAsBoolean(((Boolean) value).booleanValue());
     } else if (value instanceof Number) {
       writeValueAsNumber((Number) value);
     } else if (value instanceof Enum) {
@@ -146,29 +112,29 @@ public interface StructuredWriter extends StructuredProcessor {
     if (value == null) {
       writeValueAsNull();
     } else if (value instanceof Long) {
-      writeValueAsLong((Long) value);
+      writeValueAsLong(value.longValue());
     } else if (value instanceof Integer) {
-      writeValueAsInteger((Integer) value);
+      writeValueAsInteger(value.intValue());
+    } else if (value instanceof Double) {
+      writeValueAsDouble(value.doubleValue());
     } else if (value instanceof BigDecimal) {
       writeValueAsBigDecimal((BigDecimal) value);
     } else if (value instanceof BigInteger) {
       writeValueAsBigInteger((BigInteger) value);
-    } else if (value instanceof Short) {
-      writeValueAsShort((Short) value);
-    } else if (value instanceof Byte) {
-      writeValueAsByte((Byte) value);
     } else if (value instanceof Float) {
-      writeValueAsFloat((Float) value);
-    } else if (value instanceof Double) {
-      writeValueAsDouble((Double) value);
+      writeValueAsFloat(value.floatValue());
+    } else if (value instanceof Short) {
+      writeValueAsShort(value.shortValue());
+    } else if (value instanceof Byte) {
+      writeValueAsByte(value.byteValue());
     } else {
-      writeValueAsDouble(Double.valueOf(value.doubleValue()));
+      writeValueAsDouble(value.doubleValue());
     }
   }
 
   /**
    * Writes the value {@code null} (undefined). Called from all other {@code writeValue*} methods in case {@code null}
-   * is provided as value. Via {@link MarshallingConfig#OPT_WRITE_NULL_VALUES} one can configure if {@code null} values
+   * is provided as value. Via {@link MarshallingConfig#VAR_WRITE_NULL_VALUES} one can configure if {@code null} values
    * should be written or omitted (to save bandwidth).
    *
    * @see #writeValue(Object)
@@ -288,6 +254,12 @@ public interface StructuredWriter extends StructuredProcessor {
    * @param value the value to write.
    * @see #writeValue(Object)
    */
+  void writeValueAsBoolean(boolean value);
+
+  /**
+   * @param value the value to write.
+   * @see #writeValue(Object)
+   */
   default void writeValueAsBigDecimal(BigDecimal value) {
 
     writeValueAsNumber(value);
@@ -315,9 +287,29 @@ public interface StructuredWriter extends StructuredProcessor {
    * @param value the value to write.
    * @see #writeValue(Object)
    */
+  default void writeValueAsLong(long value) {
+
+    // should be overridden to avoid boxing
+    writeValueAsNumber(Long.valueOf(value));
+  }
+
+  /**
+   * @param value the value to write.
+   * @see #writeValue(Object)
+   */
   default void writeValueAsInteger(Integer value) {
 
     writeValueAsNumber(value);
+  }
+
+  /**
+   * @param value the value to write.
+   * @see #writeValue(Object)
+   */
+  default void writeValueAsInteger(int value) {
+
+    // should be overridden to avoid boxing
+    writeValueAsNumber(Integer.valueOf(value));
   }
 
   /**
@@ -333,9 +325,27 @@ public interface StructuredWriter extends StructuredProcessor {
    * @param value the value to write.
    * @see #writeValue(Object)
    */
+  default void writeValueAsShort(short value) {
+
+    writeValueAsInteger(value);
+  }
+
+  /**
+   * @param value the value to write.
+   * @see #writeValue(Object)
+   */
   default void writeValueAsByte(Byte value) {
 
     writeValueAsNumber(value);
+  }
+
+  /**
+   * @param value the value to write.
+   * @see #writeValue(Object)
+   */
+  default void writeValueAsByte(byte value) {
+
+    writeValueAsInteger(value);
   }
 
   /**
@@ -351,9 +361,29 @@ public interface StructuredWriter extends StructuredProcessor {
    * @param value the value to write.
    * @see #writeValue(Object)
    */
+  default void writeValueAsDouble(double value) {
+
+    // should be overridden to avoid boxing
+    writeValueAsNumber(Double.valueOf(value));
+  }
+
+  /**
+   * @param value the value to write.
+   * @see #writeValue(Object)
+   */
   default void writeValueAsFloat(Float value) {
 
     writeValueAsNumber(value);
+  }
+
+  /**
+   * @param value the value to write.
+   * @see #writeValue(Object)
+   */
+  default void writeValueAsFloat(float value) {
+
+    // should be overridden to avoid boxing
+    writeValueAsNumber(Float.valueOf(value));
   }
 
   /**
@@ -361,7 +391,7 @@ public interface StructuredWriter extends StructuredProcessor {
    * allow comments at all) will simply do nothing when this method is called. Otherwise implementations have to take
    * care that the comment is written at a very next position and in a way that results valid output. Typically when you
    * have just written a {@link #writeValue(Object) value}, start, or end the call of this method will result in a
-   * comment being written after that and before the next {@link #writeName(String, int) property} or start/end.
+   * comment being written after that and before the next {@link #writeName(String) property} or start/end.
    *
    * @param comment the comment to write.
    * @see StructuredFormat#isSupportingComments()
@@ -376,64 +406,9 @@ public interface StructuredWriter extends StructuredProcessor {
    * convert from one {@link StructuredFormat} to another (e.g. YAML to JSON).
    *
    * @param reader the {@link StructuredReader} to read the data from and write it to this {@link StructuredWriter}. The
-   *        entire {@link StructuredReader} will be consumed until the {@link State#DONE} is reached. Then this
-   *        {@link StructuredWriter} will be {@link #close() closed}.
+   *        entire {@link StructuredReader} will be consumed until the {@link StructuredState#DONE} is reached. Then
+   *        this {@link StructuredWriter} will be {@link #close() closed}.
    */
-  default void write(StructuredReader reader) {
-
-    StructuredFormat readerFormat = reader.getFormat();
-    boolean readerIdBased = readerFormat.isIdBased();
-    StructuredFormat writerFormat = getFormat();
-    boolean writerIdBased = writerFormat.isIdBased();
-    int nextId = 0;
-    boolean todo = true;
-    while (todo) {
-      String comment = reader.readComment();
-      if (comment != null) {
-        writeComment(comment);
-      }
-      State state = reader.getState();
-      if (state == null) {
-        // protobuf is limited so we need to guess...
-        state = State.START_OBJECT;
-      }
-      if (state == State.START_OBJECT) {
-        reader.readStartObject();
-        writeStartObject();
-        nextId = 0;
-      } else if (state == State.END_OBJECT) {
-        reader.readEndObject();
-        writeEnd();
-      } else if (state == State.START_ARRAY) {
-        reader.readStartArray();
-        writeStartArray();
-      } else if (state == State.END_ARRAY) {
-        reader.readEndArray();
-        writeEnd();
-      } else if (state == State.NAME) {
-        int id = -1;
-        String name = null;
-        if (readerIdBased) {
-          id = reader.readId();
-          if (!writerIdBased) {
-            name = Integer.toString(id);
-          }
-        } else {
-          name = reader.readName();
-          if (writerIdBased) {
-            nextId++;
-            id = nextId;
-          }
-        }
-        writeName(name, id);
-      } else if (state == State.VALUE) {
-        Object value = reader.readValue();
-        writeValue(value);
-      } else if (state == State.DONE) {
-        close();
-        todo = false;
-      }
-    }
-  }
+  void write(StructuredReader reader);
 
 }

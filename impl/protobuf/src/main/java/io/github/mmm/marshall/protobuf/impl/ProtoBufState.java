@@ -2,7 +2,10 @@
  * http://www.apache.org/licenses/LICENSE-2.0 */
 package io.github.mmm.marshall.protobuf.impl;
 
-import io.github.mmm.marshall.StructuredReader.State;
+import java.util.Objects;
+
+import io.github.mmm.marshall.StructuredState;
+import io.github.mmm.marshall.id.StructuredIdMapping;
 
 /**
  * State object for reading or writing ProtoBuf/gRPC.
@@ -13,16 +16,23 @@ public class ProtoBufState {
 
   final ProtoBufState parent;
 
-  final State state;
+  final StructuredState state;
 
   final int end;
+
+  StructuredIdMapping idMapping;
 
   ProtoBufState() {
 
     this(null, null, Integer.MAX_VALUE);
   }
 
-  ProtoBufState(ProtoBufState parent, State state, int end) {
+  ProtoBufState(ProtoBufState parent, StructuredState state) {
+
+    this(parent, state, Integer.MAX_VALUE);
+  }
+
+  ProtoBufState(ProtoBufState parent, StructuredState state, int end) {
 
     super();
     this.parent = parent;
@@ -30,25 +40,28 @@ public class ProtoBufState {
     this.end = end;
   }
 
-  State getEnd() {
+  StructuredState getEnd() {
 
-    if (this.state == State.START_OBJECT) {
-      return State.END_OBJECT;
-    } else if (this.state == State.START_ARRAY) {
-      return State.END_ARRAY;
+    if (this.state == StructuredState.START_OBJECT) {
+      return StructuredState.END_OBJECT;
+    } else if (this.state == StructuredState.START_ARRAY) {
+      return StructuredState.END_ARRAY;
     } else {
-      return State.DONE;
+      return StructuredState.DONE;
     }
   }
 
-  ProtoBufState startObject(int newEnd) {
+  ProtoBufState startObject(int newEnd, StructuredIdMapping mapping) {
 
-    return new ProtoBufState(this, State.START_OBJECT, newEnd);
+    Objects.requireNonNull(mapping);
+    ProtoBufState result = new ProtoBufState(this, StructuredState.START_OBJECT, newEnd);
+    result.idMapping = mapping;
+    return result;
   }
 
   ProtoBufState startArray(int newEnd) {
 
-    return new ProtoBufState(this, State.START_ARRAY, newEnd);
+    return new ProtoBufState(this, StructuredState.START_ARRAY, newEnd);
   }
 
 }

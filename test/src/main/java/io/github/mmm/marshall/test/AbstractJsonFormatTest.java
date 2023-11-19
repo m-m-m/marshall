@@ -5,7 +5,7 @@ import java.math.BigInteger;
 
 import org.junit.jupiter.api.Test;
 
-import io.github.mmm.marshall.JsonFormat;
+import io.github.mmm.marshall.StandardFormat;
 import io.github.mmm.marshall.StructuredFormat;
 import io.github.mmm.marshall.StructuredFormatFactory;
 import io.github.mmm.marshall.StructuredFormatProvider;
@@ -87,14 +87,14 @@ public abstract class AbstractJsonFormatTest extends AbstractJsonBasedFormatTest
   }
 
   /**
-   * Test with {@link StructuredFormat#ID_JSON} and {@link JsonFormat#of()}.
+   * Test with {@link StructuredFormat#ID_JSON} and {@link StandardFormat#xml()}.
    */
   @Test
   public void testJsonFormat() {
 
     StructuredFormatProvider provider = StructuredFormatFactory.get().getProvider(StructuredFormat.ID_JSON);
     StructuredFormat format = provider.create();
-    assertThat(format).isSameAs(getProvider().create()).isSameAs(JsonFormat.of());
+    assertThat(format).isSameAs(getProvider().create()).isSameAs(StandardFormat.json());
     assertThat(format.isSupportingComments()).isFalse();
   }
 

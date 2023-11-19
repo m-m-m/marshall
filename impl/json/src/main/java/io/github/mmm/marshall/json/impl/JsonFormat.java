@@ -7,8 +7,8 @@ import java.io.Reader;
 import io.github.mmm.marshall.MarshallingConfig;
 import io.github.mmm.marshall.StructuredFormat;
 import io.github.mmm.marshall.StructuredReader;
-import io.github.mmm.marshall.StructuredTextFormat;
 import io.github.mmm.marshall.StructuredWriter;
+import io.github.mmm.marshall.spi.AbstractStructuredTextFormat;
 import io.github.mmm.scanner.CharReaderScanner;
 import io.github.mmm.scanner.CharSequenceScanner;
 
@@ -17,11 +17,9 @@ import io.github.mmm.scanner.CharSequenceScanner;
  *
  * @since 1.0.0
  */
-public class JsonFormat implements StructuredTextFormat {
+public class JsonFormat extends AbstractStructuredTextFormat {
 
   private static final JsonFormat DEFAULT = of(MarshallingConfig.DEFAULTS);
-
-  private final MarshallingConfig config;
 
   /**
    * The constructor.
@@ -31,14 +29,7 @@ public class JsonFormat implements StructuredTextFormat {
    */
   public JsonFormat(MarshallingConfig config) {
 
-    super();
-    this.config = config;
-  }
-
-  @Override
-  public MarshallingConfig getConfig() {
-
-    return this.config;
+    super(config);
   }
 
   @Override

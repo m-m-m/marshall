@@ -18,15 +18,15 @@ import io.github.mmm.base.io.AppendableWriter;
 import io.github.mmm.marshall.MarshallingConfig;
 import io.github.mmm.marshall.StructuredFormat;
 import io.github.mmm.marshall.StructuredReader;
-import io.github.mmm.marshall.StructuredTextFormat;
 import io.github.mmm.marshall.StructuredWriter;
+import io.github.mmm.marshall.spi.AbstractStructuredTextFormat;
 
 /**
  * Implementation of {@link StructuredFormat} for XML using StAX.
  *
  * @since 1.0.0
  */
-public class StaxFormat implements StructuredTextFormat {
+public class StaxFormat extends AbstractStructuredTextFormat {
 
   private static final Logger LOG = LoggerFactory.getLogger(StaxFormat.class);
 
@@ -35,8 +35,6 @@ public class StaxFormat implements StructuredTextFormat {
   private final XMLInputFactory readerFactory;
 
   private final XMLOutputFactory writerFactory;
-
-  private final MarshallingConfig config;
 
   static {
 
@@ -54,10 +52,9 @@ public class StaxFormat implements StructuredTextFormat {
    */
   public StaxFormat(XMLInputFactory readerFactory, XMLOutputFactory writerFactory, MarshallingConfig config) {
 
-    super();
+    super(config);
     this.readerFactory = readerFactory;
     this.writerFactory = writerFactory;
-    this.config = config;
   }
 
   /**
@@ -67,7 +64,7 @@ public class StaxFormat implements StructuredTextFormat {
    */
   public StaxFormat(MarshallingConfig config) {
 
-    super();
+    super(config);
     XMLInputFactory xmlReaderFactory = XMLInputFactory.newFactory();
     XMLOutputFactory xmlWriterFactory = XMLOutputFactory.newFactory();
     for (Entry<String, Object> entry : config.getMap().entrySet()) {
@@ -96,13 +93,6 @@ public class StaxFormat implements StructuredTextFormat {
     }
     this.readerFactory = xmlReaderFactory;
     this.writerFactory = xmlWriterFactory;
-    this.config = config;
-  }
-
-  @Override
-  public MarshallingConfig getConfig() {
-
-    return this.config;
   }
 
   @Override

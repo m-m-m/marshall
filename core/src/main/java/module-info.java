@@ -16,7 +16,9 @@ module io.github.mmm.marshall {
 
   exports io.github.mmm.marshall;
 
-  exports io.github.mmm.marshall.size;
+  exports io.github.mmm.marshall.id;
+
+  exports io.github.mmm.marshall.id.impl to io.github.mmm.marshall.protobuf, io.github.mmm.marshall.mrpc;
 
   exports io.github.mmm.marshall.spi;
 

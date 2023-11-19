@@ -18,6 +18,7 @@ public class StaxFormatTest extends AbstractXmlFormatTest {
     return new StaxFormatProvider();
   }
 
+  // workaround to convince Eclipse that this is an executable JUnit
   @Test
   @Override
   public void testFormatFlags() {

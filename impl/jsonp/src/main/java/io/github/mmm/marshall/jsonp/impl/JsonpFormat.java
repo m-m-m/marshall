@@ -16,23 +16,21 @@ import io.github.mmm.base.io.AppendableWriter;
 import io.github.mmm.marshall.MarshallingConfig;
 import io.github.mmm.marshall.StructuredFormat;
 import io.github.mmm.marshall.StructuredReader;
-import io.github.mmm.marshall.StructuredTextFormat;
 import io.github.mmm.marshall.StructuredWriter;
+import io.github.mmm.marshall.spi.AbstractStructuredTextFormat;
 
 /**
  * Implementation of {@link StructuredFormat} for JSON (JavaScript Object Notation).
  *
  * @since 1.0.0
  */
-public class JsonpFormat implements StructuredTextFormat {
+public class JsonpFormat extends AbstractStructuredTextFormat {
 
   private static final JsonpFormat DEFAULT = of(MarshallingConfig.DEFAULTS);
 
   private final JsonGeneratorFactory writerFactory;
 
   private final JsonParserFactory readerFactory;
-
-  private final MarshallingConfig config;
 
   /**
    * The constructor.
@@ -44,16 +42,9 @@ public class JsonpFormat implements StructuredTextFormat {
    */
   public JsonpFormat(JsonParserFactory readerFactory, JsonGeneratorFactory writerFactory, MarshallingConfig config) {
 
-    super();
+    super(config);
     this.writerFactory = writerFactory;
     this.readerFactory = readerFactory;
-    this.config = config;
-  }
-
-  @Override
-  public MarshallingConfig getConfig() {
-
-    return this.config;
   }
 
   @Override
@@ -94,7 +85,7 @@ public class JsonpFormat implements StructuredTextFormat {
       return DEFAULT;
     }
     Map<String, Object> map = new HashMap<>();
-    String indentation = config.get(MarshallingConfig.OPT_INDENTATION);
+    String indentation = config.get(MarshallingConfig.VAR_INDENTATION);
     if (indentation != null) {
       map.put(JsonGenerator.PRETTY_PRINTING, Boolean.TRUE);
     }

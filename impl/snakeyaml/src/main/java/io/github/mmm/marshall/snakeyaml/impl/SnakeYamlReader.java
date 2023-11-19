@@ -2,10 +2,16 @@
  * http://www.apache.org/licenses/LICENSE-2.0 */
 package io.github.mmm.marshall.snakeyaml.impl;
 
-import io.github.mmm.marshall.AbstractStructuredValueReader;
+import java.io.IOException;
+
 import io.github.mmm.marshall.StructuredFormat;
 import io.github.mmm.marshall.StructuredReader;
-import io.github.mmm.marshall.snakeyaml.impl.state.SnakeYamlState;
+import io.github.mmm.marshall.StructuredState;
+import io.github.mmm.marshall.id.StructuredIdMappingObject;
+import io.github.mmm.marshall.snakeyaml.impl.state.SnakeYamlNode;
+import io.github.mmm.marshall.snakeyaml.impl.state.SnakeYamlRootNode;
+import io.github.mmm.marshall.spi.AbstractStructuredValueReader;
+import io.github.mmm.marshall.spi.StructuredNodeType;
 
 /**
  * Implementation of {@link StructuredReader} for JSON from scratch.
@@ -14,9 +20,7 @@ import io.github.mmm.marshall.snakeyaml.impl.state.SnakeYamlState;
  *
  * @since 1.0.0
  */
-public class SnakeYamlReader extends AbstractStructuredValueReader {
-
-  private SnakeYamlState yamlState;
+public class SnakeYamlReader extends AbstractStructuredValueReader<SnakeYamlNode> {
 
   /**
    * The constructor.
@@ -27,40 +31,54 @@ public class SnakeYamlReader extends AbstractStructuredValueReader {
   public SnakeYamlReader(Object value, StructuredFormat format) {
 
     super(format);
-    this.yamlState = SnakeYamlState.of(value);
-    this.state = this.yamlState.getState();
+    this.node = SnakeYamlNode.of(value);
+    setState(this.node.state);
   }
 
   @Override
-  public State next() {
+  protected SnakeYamlNode newNode(StructuredNodeType type, StructuredIdMappingObject object) {
 
-    if (this.state == State.DONE) {
+    return new SnakeYamlRootNode();
+  }
+
+  @Override
+  protected StructuredState next(boolean skip) {
+
+    if (skip) {
+      setState(this.node.type.getEnd());
+      this.node = this.node.parent;
+    }
+    if (isDone()) {
       throw new IllegalStateException("Already done!");
     }
-    this.state = null;
-    while (this.state == null) {
-      this.yamlState = this.yamlState.next();
-      if (this.yamlState == null) {
-        this.state = State.DONE;
+    StructuredState state = null;
+    SnakeYamlNode nextNode = this.node;
+    while (state == null) {
+      nextNode = nextNode.next();
+      if (nextNode == null) {
+        state = StructuredState.DONE;
+        this.node = null;
         break;
       }
-      this.state = this.yamlState.getState();
+      state = nextNode.state;
     }
+    this.node = nextNode;
+    setState(state);
     String nextName = null;
-    if (this.yamlState != null) {
-      nextName = this.yamlState.getName();
+    if (this.node != null) {
+      nextName = this.node.getName();
     }
     if (nextName != null) {
       this.name = nextName;
     }
-    return this.state;
+    return state;
   }
 
   @Override
   public boolean isStringValue() {
 
-    if (this.state == State.VALUE) {
-      return (this.yamlState.getValue() instanceof String);
+    if (getState() == StructuredState.VALUE) {
+      return (this.node.getValue() instanceof String);
     }
     return false;
   }
@@ -68,26 +86,22 @@ public class SnakeYamlReader extends AbstractStructuredValueReader {
   @Override
   public Object readValue() {
 
-    expect(State.VALUE);
-    Object v = this.yamlState.getValue();
+    require(StructuredState.VALUE);
+    Object v = this.node.getValue();
     next();
     return v;
   }
 
   @Override
-  public void close() {
+  protected void doClose() throws IOException {
 
-    if (this.yamlState == null) {
-      return;
-    }
-    this.yamlState = null;
-    this.state = State.DONE;
+    // nothing to do...
   }
 
   @Override
   public String toString() {
 
-    return this.yamlState.getValue().toString();
+    return this.node.getValue().toString();
   }
 
 }

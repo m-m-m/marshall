@@ -5,22 +5,21 @@ package io.github.mmm.marshall.mrpc.impl;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-import com.google.protobuf.CodedInputStream;
 import com.google.protobuf.CodedOutputStream;
 import com.google.protobuf.WireFormat;
 
 import io.github.mmm.marshall.MarshallingConfig;
-import io.github.mmm.marshall.StructuredBinaryFormat;
 import io.github.mmm.marshall.StructuredFormat;
 import io.github.mmm.marshall.StructuredReader;
 import io.github.mmm.marshall.StructuredWriter;
+import io.github.mmm.marshall.spi.AbstractStructuredBinaryIdBasedFormat;
 
 /**
  * Implementation of {@link StructuredFormat} for mRPC.
  *
  * @since 1.0.0
  */
-public class MrpcFormat implements StructuredBinaryFormat {
+public class MrpcFormat extends AbstractStructuredBinaryIdBasedFormat {
 
   static final int TYPE_START_OBJECT = WireFormat.WIRETYPE_START_GROUP;
 
@@ -30,8 +29,6 @@ public class MrpcFormat implements StructuredBinaryFormat {
 
   private static final MrpcFormat DEFAULT = of(MarshallingConfig.DEFAULTS);
 
-  private final MarshallingConfig config;
-
   /**
    * The constructor.
    *
@@ -40,14 +37,7 @@ public class MrpcFormat implements StructuredBinaryFormat {
    */
   public MrpcFormat(MarshallingConfig config) {
 
-    super();
-    this.config = config;
-  }
-
-  @Override
-  public MarshallingConfig getConfig() {
-
-    return this.config;
+    super(config);
   }
 
   @Override
@@ -57,15 +47,9 @@ public class MrpcFormat implements StructuredBinaryFormat {
   }
 
   @Override
-  public boolean isIdBased() {
-
-    return true;
-  }
-
-  @Override
   public StructuredReader reader(InputStream in) {
 
-    return new MrpcReader(CodedInputStream.newInstance(in), this);
+    return new MrpcReader(in, this);
   }
 
   @Override

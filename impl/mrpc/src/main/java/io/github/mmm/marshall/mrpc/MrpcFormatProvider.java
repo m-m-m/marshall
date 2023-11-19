@@ -4,17 +4,17 @@ package io.github.mmm.marshall.mrpc;
 
 import io.github.mmm.marshall.MarshallingConfig;
 import io.github.mmm.marshall.StructuredBinaryFormat;
-import io.github.mmm.marshall.StructuredBinaryFormatProvider;
 import io.github.mmm.marshall.StructuredFormat;
 import io.github.mmm.marshall.StructuredFormatProvider;
 import io.github.mmm.marshall.mrpc.impl.MrpcFormat;
+import io.github.mmm.marshall.spi.StructuredBinaryIdBasedFormatProvider;
 
 /**
  * Implementation of {@link StructuredFormatProvider} for mRPC.
  *
  * @since 1.0.0
  */
-public class MrpcFormatProvider implements StructuredBinaryFormatProvider {
+public class MrpcFormatProvider implements StructuredBinaryIdBasedFormatProvider {
 
   @Override
   public String getId() {

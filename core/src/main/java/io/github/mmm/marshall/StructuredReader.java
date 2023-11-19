@@ -16,122 +16,89 @@ import java.util.Map;
 import java.util.Objects;
 
 import io.github.mmm.base.exception.ObjectMismatchException;
+import io.github.mmm.marshall.id.StructuredIdMapping;
+import io.github.mmm.marshall.id.StructuredIdMappingObject;
+import io.github.mmm.marshall.id.impl.StructuredIdMappingIdentity;
 
 /**
  * Interface for a reader to parse a {@link StructuredFormat structured format} such as JSON or XML.
  *
  * @since 1.0.0
  */
-public interface StructuredReader extends StructuredProcessor {
+public interface StructuredReader extends StructuredProcessor, StructuredIdMappingObject {
 
   /**
    * @return the name of the current property or element. Consumes to the {@link #next() next} {@link #getState()
    *         state}.
    * @see #getName()
-   * @see #isName(String, int)
+   * @see #isName(String)
+   * @see #isNameMatching(String, String)
    */
   default String readName() {
 
-    require(State.NAME, true);
+    require(StructuredState.NAME, true);
     return getName();
   }
 
   /**
-   * @return the name of the current property or element. Does not change the state of this reader and can be called
-   *         multiple times.
+   * Retrieves the name of the current property (see {@link StructuredState#NAME}).<br>
+   * <b>ATTENTION:</b><br>
+   * For full portability and flexibility you need to match names via {@link #isNameMatching(String, String)}. For
+   * convenience it is strongly recommended to prefer {@link #isName(String, boolean)} instead of {@link #getName()}.
+   *
    * @see #getName(boolean)
-   * @see #isName(String, int)
+   * @see #isName(String)
+   * @see #isNameMatching(String, String)
    */
+  @Override
   String getName();
 
   /**
+   * Retrieves the name of the current property (see {@link StructuredState#NAME}).<br>
+   * <b>ATTENTION:</b><br>
+   * For portability and flexibility it required to match names via {@link #isNameMatching(String, String)}. For
+   * convenience is strongly recommended to prefer {@link #isName(String, boolean)} instead of {@link #getName()}.
+   *
    * @param next - {@code true} to advance to the {@link #next() next} {@link #getState() state}, {@code false}
    *        otherwise (keep current state and only peek the name).
    * @return the name of the current property or element.
-   * @see #isName(String, int)
+   * @see #isName(String)
+   * @see #isNameMatching(String, String)
    */
   default String getName(boolean next) {
 
     if (next) {
-      require(State.NAME, next);
+      require(StructuredState.NAME, next);
     }
     return getName();
   }
 
   /**
-   * @return the ID of the current property. Consumes to the {@link #next() next} {@link #getState() state}.
-   * @see #getId()
-   * @see #isName(String, int)
-   */
-  default int readId() {
-
-    require(State.NAME, true);
-    return getId();
-  }
-
-  /**
-   * @return the ID of the current property. Does not change the state of this reader and can be called multiple times.
-   * @see #getId(boolean)
-   * @see #isName(String, int)
-   */
-  default int getId() {
-
-    return -1;
-  }
-
-  /**
-   * @param next - {@code true} to advance to the {@link #next() next} {@link #getState() state}, {@code false}
-   *        otherwise (keep current state and only peek the name).
-   * @return the ID of the current property.
-   * @see #isName(String, int)
-   */
-  default int getId(boolean next) {
-
-    if (next) {
-      require(State.NAME, true);
-    }
-    return getId();
-  }
-
-  /**
-   * This method checks if the current property in {@link State#NAME} matches the given {@link #getName() name} or
-   * {@link #getId() ID}. In case of a match, it consumes to the {@link #next() next} {@link #getState() state}.<br>
-   * Use this method instead of directly accessing {@link #getName() name} or {@link #getId() ID} to be fully portable
-   * to any format in case you want to support both textual formats like JSON, YAML, or XML that identify properties via
-   * {@link #getName() name} as well as gRPC/ProtoBuf that uses a numeric {@link #getId() ID} instead.
+   * This method checks if the given {@code name} {@link #isNameMatching(String, String) matches} the {@link #getName()
+   * current property name}. In case of a match, it consumes to the {@link #next() next} {@link #getState() state}.
    *
    * @param name the {@link #getName() name} of the expected property.
-   * @param id the {@link #getId() ID} of the expected property.
-   * @return {@code true} if the expected property matches accroding to {@link #getName() name} or {@link #getId() ID},
-   *         {@code false} otherwise.
+   * @return {@code true} if the expected property matches according to {@link #getName() name}, {@code false}
+   *         otherwise.
    */
-  default boolean isName(String name, int id) {
+  default boolean isName(String name) {
 
-    return isName(name, id, true);
+    return isName(name, true);
   }
 
   /**
-   * This method checks if the current property in {@link State#NAME} matches the given {@link #getName() name} or
-   * {@link #getId() ID}.<br>
-   * Use this method instead of directly accessing {@link #getName() name} or {@link #getId() ID} to be fully portable
-   * to any format in case you want to support both textual formats like JSON, YAML, or XML that identify properties via
-   * {@link #getName() name} as well as gRPC/ProtoBuf that uses a numeric {@link #getId() ID} instead.
+   * This method checks if the given {@code name} {@link #isNameMatching(String, String) matches} the {@link #getName()
+   * current property name}.
    *
    * @param name the {@link #getName() name} of the expected property.
-   * @param id the {@link #getId() ID} of the expected property.
    * @param next - {@code true} to consumes to the {@link #next() next} {@link #getState() state} on match,
    *        {@code false} otherwise (do not change state).
-   * @return {@code true} if the expected property matches accroding to {@link #getName() name} or {@link #getId() ID},
-   *         {@code false} otherwise.
+   * @return {@code true} if the expected property matches according to {@link #getName() name}, {@code false}
+   *         otherwise.
    */
-  default boolean isName(String name, int id, boolean next) {
+  default boolean isName(String name, boolean next) {
 
-    boolean match = false;
-    if (getFormat().isIdBased()) {
-      match = (id == getId());
-    } else {
-      match = Objects.equals(name, getName());
-    }
+    boolean match = isNameMatching(getName(), name);
     if (match && next) {
       next();
     }
@@ -139,10 +106,45 @@ public interface StructuredReader extends StructuredProcessor {
   }
 
   /**
-   * @return {@code true} if pointing to the start of an object, {@code false} otherwise.
-   * @see StructuredWriter#writeStartObject()
+   * Checks if the given names match each other. Using this method instead of manually checking using
+   * {@link Objects#equals(Object) equals check} is required for portability and flexibility. Some formats (e.g.
+   * gRPC/protobuf) write names technically as {@link StructuredFormat#isIdBased() IDs}. Therefore you may received a
+   * name back in a normalized format that is different from the exact string you have written (e.g. you may receive
+   * lower case names back). In such case this method can be overridden by such formats to consider these
+   * normalizations.<br>
+   * This also implies that you should never use property names in the same object that only differ by syntax and not by
+   * semantic (e.g. "customerNumber", "CustomerNumber", "customer-number", and "customernumber" should all mean the same
+   * thing and not different things). We do not consider this as a limitation but rather as a feature avoiding
+   * anti-patterns and ill-designed data formats or APIs.
+   *
+   * @param name the {@link #getName() actual name}.
+   * @param expectedName the expected name to match.
+   * @return {@code true} if both names match, {@code false} otherwise.
    */
-  boolean readStartObject();
+  default boolean isNameMatching(String name, String expectedName) {
+
+    return Objects.equals(name, expectedName);
+  }
+
+  /**
+   * @param object the {@link Object} instance expected to be read (e.g. the empty bean to populate or a
+   *        template/prototype instance). Should be an instance of {@link StructuredIdMappingObject}.
+   * @return {@code true} if pointing to the start of an object, {@code false} otherwise.
+   * @see StructuredWriter#writeStartObject(StructuredIdMappingObject)
+   */
+  boolean readStartObject(StructuredIdMappingObject object);
+
+  /**
+   * May be called after {@link #readStartObject(StructuredIdMappingObject)} has returned {@code true} and the
+   * {@link #TYPE polymorphic type} information has been resolved.
+   *
+   * @param object the {@link Object} instance to read (e.g. the empty bean to populate or a template/prototype
+   *        instance). Should be an instance of {@link StructuredIdMappingObject}.
+   */
+  default void specializeObject(StructuredIdMappingObject object) {
+
+    // nothing to do by default...
+  }
 
   /**
    * @return {@code true} if pointing to the start of an object, {@code false} otherwise.
@@ -161,18 +163,20 @@ public interface StructuredReader extends StructuredProcessor {
   /**
    * Generic method to read and unmarshall a value supporting the build in types {@link Boolean}, {@link String}, and
    * {@link Number}. In case {@code recursive} is {@code true} also {@link java.util.List} for {@link #readStartArray()
-   * arrays} and {@link java.util.Map} for {@link #readStartObject() objects} are supported.<br>
+   * arrays} and {@link java.util.Map} for {@link #readStartObject(StructuredIdMappingObject) objects} are
+   * supported.<br>
    *
    * @param recursive - {@code true} for recursive reading of {@link #readStartArray() arrays} as {@link java.util.List}
-   *        and {@link #readStartObject() objects} as {@link java.util.Map}, {@code false} otherwise.
+   *        and {@link #readStartObject(StructuredIdMappingObject) objects} as {@link java.util.Map}, {@code false}
+   *        otherwise.
    * @return the unmarsahlled value. May be {@code null}.
    */
   Object readValue(boolean recursive);
 
   /**
-   * This method may be called if the {@link #getState() current state} is {@link State#START_OBJECT} to read the object
-   * into the given {@link Map}. After the call of this method the {@link #getState() state} will point to the
-   * {@link #next() next} one after the corresponding {@link State#END_OBJECT}.
+   * This method may be called if the {@link #getState() current state} is {@link StructuredState#START_OBJECT} to read
+   * the object into the given {@link Map}. After the call of this method the {@link #getState() state} will point to
+   * the {@link #next() next} one after the corresponding {@link StructuredState#END_OBJECT}.
    *
    * @param map the {@link Map} where to add the properties. Unlike {@link #readValue(boolean)} this allows you to
    *        choose the {@link Map} implementation.
@@ -180,9 +184,9 @@ public interface StructuredReader extends StructuredProcessor {
   void readObject(Map<String, Object> map);
 
   /**
-   * This method may be called called if the {@link #getState() current state} is {@link State#START_ARRAY} to read the
-   * array into the given {@link Collection}. After the call of this method the {@link #getState() state} will point to
-   * the {@link #next() next} one after the corresponding {@link State#END_ARRAY}.
+   * This method may be called called if the {@link #getState() current state} is {@link StructuredState#START_ARRAY} to
+   * read the array into the given {@link Collection}. After the call of this method the {@link #getState() state} will
+   * point to the {@link #next() next} one after the corresponding {@link StructuredState#END_ARRAY}.
    *
    * @param array the {@link Collection} where to add the {@link #readValue(boolean) values}.
    */
@@ -360,7 +364,8 @@ public interface StructuredReader extends StructuredProcessor {
   /**
    * Skips the current value. Should be called after {@link #readName()}.
    * <ul>
-   * <li>If currently at {@link #readStartObject() start of object}, skip that entire object.</li>
+   * <li>If currently at {@link #readStartObject(StructuredIdMappingObject) start of object}, skip that entire
+   * object.</li>
    * <li>If currently at {@link #readStartArray() start of array}, skip the entire array.</li>
    * <li>If currently at a {@link #readValue(Class) single value}, skip that value.</li>
    * </ul>
@@ -368,17 +373,17 @@ public interface StructuredReader extends StructuredProcessor {
   void skipValue();
 
   /**
-   * @return {@code true} if the end of an {@link #readStartArray() array} or {@link #readStartObject() object} has been
-   *         reached.
+   * @return {@code true} if the end of an {@link #readStartArray() array} or
+   *         {@link #readStartObject(StructuredIdMappingObject) object} has been reached.
    */
   boolean readEnd();
 
   /**
-   * @return {@code true} if the end of an {@link #readStartObject() object} has been reached.
+   * @return {@code true} if the end of an {@link #readStartObject(StructuredIdMappingObject) object} has been reached.
    */
   default boolean readEndObject() {
 
-    if (getState() == State.END_OBJECT) {
+    if (getState() == StructuredState.END_OBJECT) {
       next();
       return true;
     }
@@ -386,11 +391,11 @@ public interface StructuredReader extends StructuredProcessor {
   }
 
   /**
-   * @return {@code true} if the end of an {@link #readStartObject() object} has been reached.
+   * @return {@code true} if the end of an {@link #readStartObject(StructuredIdMappingObject) object} has been reached.
    */
   default boolean readEndArray() {
 
-    if (getState() == State.END_ARRAY) {
+    if (getState() == StructuredState.END_ARRAY) {
       next();
       return true;
     }
@@ -403,46 +408,42 @@ public interface StructuredReader extends StructuredProcessor {
   boolean isDone();
 
   /**
-   * @return {@code true} if the {@link #getState() current state} is {@link State#VALUE} and the value is encoded as
-   *         {@link String}, {@code false} otherwise. This can be helpful whilst reading numbers to distinguish between
-   *         values such as {@code "1"} and {@code 1}.
+   * @return {@code true} if the {@link #getState() current state} is {@link StructuredState#VALUE} and the value is
+   *         encoded as {@link String}, {@code false} otherwise. This can be helpful whilst reading numbers to
+   *         distinguish between values such as {@code "1"} and {@code 1}.
    */
   boolean isStringValue();
 
   /**
-   * @return the current state of this reader.
-   */
-  State getState();
-
-  /**
-   * Proceeds to the next {@link State} skipping the current information.
+   * Proceeds to the next {@link StructuredState} skipping the current information.
    *
-   * @return the new {@link State}.
+   * @return the new {@link StructuredState}.
    */
-  State next();
+  StructuredState next();
 
   /**
-   * @param expected the required {@link State} expect for the current {@link #getState() state}.
+   * @param expected the required {@link StructuredState} expect for the current {@link #getState() state}.
    * @throws ObjectMismatchException if the {@link #getState() current state} is not the same as the given
-   *         {@code expected} {@link State}.
+   *         {@code expected} {@link StructuredState}.
    */
-  default void require(State expected) {
+  default void require(StructuredState expected) {
 
     require(expected, false);
   }
 
   /**
-   * @param expected the required {@link State} expect for the current {@link #getState() state}.
+   * @param expected the required {@link StructuredState} expect for the current {@link #getState() state}.
    * @param next - {@code true} to advance to the {@link #next() next} {@link #getState() state}, {@code false}
    *        otherwise (keep current state and only peek the name).
-   * @return the {@link #next() next} {@link State} after successfully matching the {@link #getState() current state}.
+   * @return the {@link #next() next} {@link StructuredState} after successfully matching the {@link #getState() current
+   *         state} if {@code next} was {@code true}. Otherwise the unmodified {@link #getState() current state}.
    * @throws ObjectMismatchException if the {@link #getState() current state} is not the same as the given
-   *         {@code expected} {@link State}.
+   *         {@code expected} {@link StructuredState}.
    */
-  default State require(State expected, boolean next) {
+  default StructuredState require(StructuredState expected, boolean next) {
 
-    State currentState = getState();
-    if ((currentState != expected) && (currentState != null)) {
+    StructuredState currentState = getState();
+    if ((currentState != expected) && (currentState != StructuredState.NULL)) {
       throw new ObjectMismatchException(currentState, expected);
     }
     if (next) {
@@ -454,8 +455,8 @@ public interface StructuredReader extends StructuredProcessor {
   /**
    * Reads the comment at the current position. Comments are intentionally not part of the {@link #getState() state} and
    * can be read at any time. Implementations that support comments shall allow to access a comment from
-   * {@link State#NAME} still in the {@link #next() following} {@link State}. After a comment is read using this method
-   * it will be set to {@code null} until the next comment has been parsed.
+   * {@link StructuredState#NAME} still in the {@link #next() following} {@link StructuredState}. After a comment is
+   * read using this method it will be set to {@code null} until the next comment has been parsed.
    *
    * @return the comment at the current position or {@code null} if no comment is present. Will always be {@code null}
    *         for formats that do not support comments such as JSON or protoBuf.
@@ -466,94 +467,16 @@ public interface StructuredReader extends StructuredProcessor {
     return null;
   }
 
-  /**
-   * Enum with the possible states of a {@link StructuredReader}.
-   *
-   * @see StructuredReader#getState()
-   */
-  public enum State {
+  @Override
+  default StructuredIdMapping defineIdMapping() {
 
-    /**
-     * Start of an array.
-     *
-     * @see StructuredReader#readStartArray()
-     */
-    START_ARRAY,
+    return StructuredIdMappingIdentity.get();
+  }
 
-    /**
-     * Start of an object.
-     *
-     * @see StructuredReader#readStartObject()
-     */
-    START_OBJECT,
+  @Override
+  default Object asTypeKey() {
 
-    /**
-     * A regular value.
-     *
-     * @see StructuredReader#readValue()
-     */
-    VALUE,
-
-    /**
-     * Name of a property.
-     *
-     * @see StructuredReader#readName()
-     */
-    NAME,
-
-    /**
-     * End of an array.
-     *
-     * @see StructuredReader#readEnd()
-     * @see StructuredReader#readStartArray()
-     */
-    END_ARRAY,
-
-    /**
-     * End of an object.
-     *
-     * @see StructuredReader#readEnd()
-     * @see StructuredReader#readStartObject()
-     */
-    END_OBJECT,
-
-    /**
-     * End of data.
-     *
-     * @see StructuredReader#isDone()
-     */
-    DONE;
-
-    /**
-     * @return {@code true} if a start {@link State} such as {@link #START_ARRAY} or {@link #START_OBJECT},
-     *         {@code false} otherwise.
-     */
-    public boolean isStart() {
-
-      switch (this) {
-        case START_ARRAY:
-        case START_OBJECT:
-          return true;
-        default:
-          return false;
-      }
-    }
-
-    /**
-     * @return {@code true} if an end {@link State} such as {@link #END_ARRAY} or {@link #END_OBJECT}, {@code false}
-     *         otherwise.
-     */
-    public boolean isEnd() {
-
-      switch (this) {
-        case END_ARRAY:
-        case END_OBJECT:
-        case DONE:
-          return true;
-        default:
-          return false;
-      }
-    }
+    return StructuredReader.class;
   }
 
 }

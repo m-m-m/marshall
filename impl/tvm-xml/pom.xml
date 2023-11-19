@@ -11,12 +11,23 @@
   <packaging>jar</packaging>
   <name>${project.artifactId}</name>
   <description>Implementations of mmm-marshall API for XML using TeaVM.</description>
-  
+
   <dependencies>
     <dependency>
       <groupId>org.teavm</groupId>
       <artifactId>teavm-jso-apis</artifactId>
       <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.teavm</groupId>
+      <artifactId>teavm-junit</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>4.13.2</version>
+      <scope>test</scope>
     </dependency>
   </dependencies>
 </project>

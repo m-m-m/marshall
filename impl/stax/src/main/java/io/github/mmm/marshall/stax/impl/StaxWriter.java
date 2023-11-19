@@ -2,19 +2,25 @@
  * http://www.apache.org/licenses/LICENSE-2.0 */
 package io.github.mmm.marshall.stax.impl;
 
+import java.io.IOException;
+
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
-import io.github.mmm.marshall.AbstractStructuredWriter;
 import io.github.mmm.marshall.StructuredFormat;
+import io.github.mmm.marshall.StructuredState;
 import io.github.mmm.marshall.StructuredWriter;
+import io.github.mmm.marshall.id.StructuredIdMappingObject;
+import io.github.mmm.marshall.spi.AbstractStructuredWriter;
+import io.github.mmm.marshall.spi.StructuredNodeDefault;
+import io.github.mmm.marshall.spi.StructuredNodeType;
 
 /**
  * Implementation of {@link StructuredWriter} for XML using {@link XMLStreamWriter}.
  *
  * @since 1.0.0
  */
-public class StaxWriter extends AbstractStructuredWriter {
+public class StaxWriter extends AbstractStructuredWriter<StructuredNodeDefault> {
 
   private XMLStreamWriter xml;
 
@@ -43,25 +49,25 @@ public class StaxWriter extends AbstractStructuredWriter {
   }
 
   @Override
-  public void writeStartArray(int size) {
+  protected StructuredNodeDefault newNode(StructuredNodeType type, StructuredIdMappingObject object) {
 
-    try {
-      this.xml.writeStartElement(StructuredFormat.NS_PREFIX_ARRAY, requireName(), StructuredFormat.NS_URI_ARRAY);
-      if (this.name == StructuredFormat.TAG_ROOT) {
-        this.xml.writeNamespace(StructuredFormat.NS_PREFIX_ARRAY, StructuredFormat.NS_URI_ARRAY);
-        this.xml.writeNamespace(StructuredFormat.NS_PREFIX_OBJECT, StructuredFormat.NS_URI_OBJECT);
-      }
-      this.name = null;
-    } catch (XMLStreamException e) {
-      throw new IllegalStateException(e);
-    }
+    return new StructuredNodeDefault(this.node, type);
   }
 
   @Override
-  public void writeStartObject(int size) {
+  protected void doWriteStart(StructuredNodeType type, StructuredIdMappingObject object) {
 
     try {
-      this.xml.writeStartElement(StructuredFormat.NS_PREFIX_OBJECT, requireName(), StructuredFormat.NS_URI_OBJECT);
+      String ns;
+      String uri;
+      if (type == StructuredNodeType.ARRAY) {
+        ns = StructuredFormat.NS_PREFIX_ARRAY;
+        uri = StructuredFormat.NS_URI_ARRAY;
+      } else {
+        ns = StructuredFormat.NS_PREFIX_OBJECT;
+        uri = StructuredFormat.NS_URI_OBJECT;
+      }
+      this.xml.writeStartElement(ns, requireName(), uri);
       if (this.name == StructuredFormat.TAG_ROOT) {
         this.xml.writeNamespace(StructuredFormat.NS_PREFIX_ARRAY, StructuredFormat.NS_URI_ARRAY);
         this.xml.writeNamespace(StructuredFormat.NS_PREFIX_OBJECT, StructuredFormat.NS_URI_OBJECT);
@@ -81,7 +87,7 @@ public class StaxWriter extends AbstractStructuredWriter {
   }
 
   @Override
-  public void writeEnd() {
+  protected void doWriteEnd(StructuredNodeType type) {
 
     try {
       this.xml.writeEndElement();
@@ -103,13 +109,9 @@ public class StaxWriter extends AbstractStructuredWriter {
   }
 
   @Override
-  public void writeValueAsBoolean(Boolean value) {
+  public void writeValueAsBoolean(boolean value) {
 
-    if (value == null) {
-      writeValueAsNull();
-    } else {
-      writeValue(value.toString(), StructuredFormat.ATR_BOOLEAN_VALUE);
-    }
+    writeValue(Boolean.toString(value), StructuredFormat.ATR_BOOLEAN_VALUE);
   }
 
   @Override
@@ -137,6 +139,7 @@ public class StaxWriter extends AbstractStructuredWriter {
         this.xml.writeAttribute(attribute, value);
       }
       this.name = null;
+      setState(StructuredState.VALUE);
     } catch (XMLStreamException e) {
       throw new IllegalStateException(e);
     }
@@ -156,14 +159,12 @@ public class StaxWriter extends AbstractStructuredWriter {
   }
 
   @Override
-  public void close() {
+  protected void doClose() throws IOException {
 
     try {
-      if (this.xml != null) {
-        this.xml.writeEndDocument();
-        this.xml.close();
-        this.xml = null;
-      }
+      this.xml.writeEndDocument();
+      this.xml.close();
+      this.xml = null;
     } catch (XMLStreamException e) {
       throw new IllegalStateException(e);
     }

@@ -2,68 +2,68 @@
  * http://www.apache.org/licenses/LICENSE-2.0 */
 package io.github.mmm.marshall.yaml.impl;
 
-import io.github.mmm.marshall.StructuredReader.State;
+import io.github.mmm.marshall.StructuredState;
 import io.github.mmm.marshall.spi.StructuredNodeType;
 
 /**
- *
+ * Enum with groups of expected {@link StructuredState}s.
  */
 public enum YamlExpectedType {
 
-  /** {@link State#NAME} or {@link State#END_OBJECT}. */
+  /** {@link StructuredState#NAME} or {@link StructuredState#END_OBJECT}. */
   NAME_OR_END {
     @Override
-    public boolean accepts(State state) {
+    public boolean accepts(StructuredState state) {
 
-      return (state == State.NAME) || (state == State.END_OBJECT);
+      return (state == StructuredState.NAME) || (state == StructuredState.END_OBJECT);
     }
   },
 
-  /** {@link State#VALUE} */
+  /** {@link StructuredState#VALUE} */
   VALUE {
     @Override
-    public boolean accepts(State state) {
+    public boolean accepts(StructuredState state) {
 
-      return (state == State.VALUE);
+      return (state == StructuredState.VALUE);
     }
   },
 
-  /** {@link State#VALUE}, {@link State#START_ARRAY}, or {@link State#START_OBJECT}. */
+  /** {@link StructuredState#VALUE}, {@link StructuredState#START_ARRAY}, or {@link StructuredState#START_OBJECT}. */
   ANY_VALUE {
     @Override
-    public boolean accepts(State state) {
+    public boolean accepts(StructuredState state) {
 
-      return (state == State.VALUE) || (state.isStart());
+      return (state == StructuredState.VALUE) || (state.isStart());
     }
   },
 
   /**
-   * {@link State#VALUE}, {@link State#START_ARRAY}, {@link State#START_OBJECT}, {@link State#END_ARRAY}, or
-   * {@link State#END_OBJECT}.
+   * {@link StructuredState#VALUE}, {@link StructuredState#START_ARRAY}, {@link StructuredState#START_OBJECT},
+   * {@link StructuredState#END_ARRAY}, or {@link StructuredState#END_OBJECT}.
    */
   ANY_VALUE_OR_END {
     @Override
-    public boolean accepts(State state) {
+    public boolean accepts(StructuredState state) {
 
-      return (state == State.VALUE) || state.isStart() || state.isEnd();
+      return (state == StructuredState.VALUE) || state.isStart() || state.isEnd();
     }
   },
 
-  /** {@link State#DONE} */
+  /** {@link StructuredState#DONE} */
   DONE {
     @Override
-    public boolean accepts(State state) {
+    public boolean accepts(StructuredState state) {
 
-      return (state == State.DONE);
+      return (state == StructuredState.DONE);
     }
   };
 
-  abstract boolean accepts(State state);
+  abstract boolean accepts(StructuredState state);
 
   /**
-   * @param actualState the actual {@link State} to verify.
+   * @param actualState the actual {@link StructuredState} to verify.
    */
-  public void verify(State actualState) {
+  public void verify(StructuredState actualState) {
 
     if (!accepts(actualState)) {
       throw new IllegalStateException("Expected state " + this + " but found " + actualState);
@@ -71,18 +71,18 @@ public enum YamlExpectedType {
   }
 
   /**
-   * @param yamlState the current {@link YamlState}.
-   * @param state the current {@link State}.
-   * @return the resulting {@link YamlExpectedType} for the next {@link State}.
+   * @param yamlState the current {@link YamlNode}.
+   * @param state the current {@link StructuredState}.
+   * @return the resulting {@link YamlExpectedType} for the next {@link StructuredState}.
    */
-  public static YamlExpectedType of(YamlState yamlState, State state) {
+  public static YamlExpectedType of(YamlNode yamlState, StructuredState state) {
 
     if (yamlState.type == StructuredNodeType.ARRAY) {
       return ANY_VALUE_OR_END;
     } else if (yamlState.type == StructuredNodeType.OBJECT) {
-      if (state == State.START_OBJECT) {
+      if (state == StructuredState.START_OBJECT) {
         return NAME_OR_END;
-      } else if (state == State.NAME) {
+      } else if (state == StructuredState.NAME) {
         return ANY_VALUE;
       } else {
         return NAME_OR_END;
@@ -91,11 +91,11 @@ public enum YamlExpectedType {
       assert (yamlState.type == null); // root
       if (state == null) {
         return ANY_VALUE;
-      } else if (state == State.END_OBJECT) {
+      } else if (state == StructuredState.END_OBJECT) {
         return DONE;
-      } else if (state == State.VALUE) {
+      } else if (state == StructuredState.VALUE) {
         return DONE;
-      } else if (state == State.DONE) {
+      } else if (state == StructuredState.DONE) {
         return null;
       }
     }

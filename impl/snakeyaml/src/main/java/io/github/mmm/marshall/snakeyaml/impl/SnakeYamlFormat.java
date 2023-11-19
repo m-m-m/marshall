@@ -11,19 +11,17 @@ import io.github.mmm.base.io.AppendableWriter;
 import io.github.mmm.marshall.MarshallingConfig;
 import io.github.mmm.marshall.StructuredFormat;
 import io.github.mmm.marshall.StructuredReader;
-import io.github.mmm.marshall.StructuredTextFormat;
 import io.github.mmm.marshall.StructuredWriter;
+import io.github.mmm.marshall.spi.AbstractStructuredTextFormat;
 
 /**
  * Implementation of {@link StructuredFormat} for JSON (JavaScript Object Notation).
  *
  * @since 1.0.0
  */
-public class SnakeYamlFormat implements StructuredTextFormat {
+public class SnakeYamlFormat extends AbstractStructuredTextFormat {
 
   private static final SnakeYamlFormat DEFAULT = of(MarshallingConfig.DEFAULTS);
-
-  private final MarshallingConfig config;
 
   private final Yaml yaml;
 
@@ -35,15 +33,8 @@ public class SnakeYamlFormat implements StructuredTextFormat {
    */
   public SnakeYamlFormat(MarshallingConfig config) {
 
-    super();
-    this.config = config;
+    super(config);
     this.yaml = new Yaml();
-  }
-
-  @Override
-  public MarshallingConfig getConfig() {
-
-    return this.config;
   }
 
   @Override

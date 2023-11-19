@@ -7,8 +7,10 @@ import java.math.BigInteger;
 
 import io.github.mmm.marshall.AbstractStructuredStringWriter;
 import io.github.mmm.marshall.MarshallingConfig;
-import io.github.mmm.marshall.StructuredFormat;
+import io.github.mmm.marshall.StructuredState;
 import io.github.mmm.marshall.StructuredWriter;
+import io.github.mmm.marshall.id.StructuredIdMappingObject;
+import io.github.mmm.marshall.spi.StructuredNodeDefault;
 import io.github.mmm.marshall.spi.StructuredNodeType;
 
 /**
@@ -18,13 +20,11 @@ import io.github.mmm.marshall.spi.StructuredNodeType;
  *
  * @since 1.0.0
  */
-public class JsonWriter extends AbstractStructuredStringWriter {
+public class JsonWriter extends AbstractStructuredStringWriter<StructuredNodeDefault> {
 
   private static final long JS_NUMBER_MAX = (2L << 52) - 1;
 
   private static final long JS_NUMBER_MIN = -JS_NUMBER_MAX;
-
-  private JsonState jsonState;
 
   private final boolean quoteProperties;
 
@@ -34,41 +34,33 @@ public class JsonWriter extends AbstractStructuredStringWriter {
    * @param out the {@link Appendable} to write the data to.
    * @param format the {@link #getFormat() format}.
    */
-  public JsonWriter(Appendable out, StructuredFormat format) {
+  public JsonWriter(Appendable out, JsonFormat format) {
 
     super(out, format);
-    this.jsonState = new JsonState();
-    Boolean unquotedProperties = format.getConfig().get(MarshallingConfig.OPT_UNQUOTED_PROPERTIES);
+    Boolean unquotedProperties = format.getConfig().get(MarshallingConfig.VAR_UNQUOTED_PROPERTIES);
     this.quoteProperties = !Boolean.TRUE.equals(unquotedProperties);
   }
 
   @Override
-  public void writeStartArray(int size) {
+  protected StructuredNodeDefault newNode(StructuredNodeType type, StructuredIdMappingObject object) {
 
-    writeStart(StructuredNodeType.ARRAY);
+    return new StructuredNodeDefault(this.node, type);
   }
 
   @Override
-  public void writeStartObject(int size) {
+  protected void doWriteStart(StructuredNodeType type, StructuredIdMappingObject object) {
 
-    writeStart(StructuredNodeType.OBJECT);
-  }
-
-  private void writeStart(StructuredNodeType type) {
-
-    if (this.jsonState.valueCount > 0) {
+    if (this.node.elementCount > 0) {
       write(',');
     }
     writeIndent();
     writeName();
     write(type.getOpen());
-    this.jsonState = new JsonState(this.jsonState, type);
-    this.indentCount++;
   }
 
   private void writeName() {
 
-    this.jsonState.valueCount++;
+    this.node.elementCount++;
     if (this.name == null) {
       return;
     }
@@ -93,24 +85,18 @@ public class JsonWriter extends AbstractStructuredStringWriter {
   }
 
   @Override
-  public void writeEnd() {
+  protected void doWriteEnd(StructuredNodeType type) {
 
-    if ((this.jsonState.type != null) && (this.jsonState.parent != null)) {
-      this.indentCount--;
-      if (this.jsonState.valueCount > 0) {
-        writeIndent();
-      }
-      write(this.jsonState.type.getClose());
-      this.jsonState = this.jsonState.parent;
-    } else {
-      throw new IllegalStateException();
+    if (this.node.elementCount > 0) {
+      writeIndent();
     }
+    write(this.node.type.getClose());
   }
 
   @Override
   public void writeValueAsNull() {
 
-    writeValueInternal("null");
+    writeValueInternal(null);
   }
 
   @Override
@@ -124,23 +110,24 @@ public class JsonWriter extends AbstractStructuredStringWriter {
   }
 
   @Override
-  public void writeValueAsBoolean(Boolean value) {
+  public void writeValueAsBoolean(boolean value) {
 
-    writeValueInternal(value);
+    writeValueInternal(Boolean.toString(value));
   }
 
   private void writeValueInternal(Object value) {
 
     String s;
     if (value == null) {
-      if (!this.writeNullValues) {
+      if (!this.writeNullValues && (this.node.type != StructuredNodeType.ARRAY)
+          && (this.node.type != null)) {
         return;
       }
       s = "null"; // JSON null representation
     } else {
       s = value.toString();
     }
-    if (this.jsonState.valueCount > 0) {
+    if (this.node.elementCount > 0) {
       write(',');
     }
     if (this.indentCount > 0) {
@@ -148,6 +135,7 @@ public class JsonWriter extends AbstractStructuredStringWriter {
     }
     writeName();
     write(s);
+    setState(StructuredState.VALUE);
   }
 
   @Override
@@ -185,58 +173,34 @@ public class JsonWriter extends AbstractStructuredStringWriter {
   }
 
   @Override
-  public void writeValueAsLong(Long value) {
+  public void writeValueAsLong(long value) {
 
-    if (value == null) {
-      writeValueAsNull();
+    String string = Long.toString(value);
+    // TODO this should be a configurable feature, though default behavior due to JavaScript that sucks
+    if ((value >= JS_NUMBER_MIN) && (value <= JS_NUMBER_MAX)) {
+      writeValueInternal(string);
     } else {
-      long l = value.longValue();
-      if ((l >= JS_NUMBER_MIN) && (l <= JS_NUMBER_MAX)) {
-        writeValueInternal(value);
-      } else {
-        writeValueAsString(value.toString());
-      }
+      writeValueAsString(string);
     }
   }
 
   @Override
-  public void writeValueAsInteger(Integer value) {
+  public void writeValueAsInteger(int value) {
 
-    writeValueInternal(value);
+    writeValueInternal(Integer.toString(value));
   }
 
   @Override
-  public void writeValueAsDouble(Double value) {
+  public void writeValueAsDouble(double value) {
 
-    writeValueInternal(value);
+    writeValueInternal(Double.toString(value));
   }
 
   @Override
-  public void writeValueAsFloat(Float value) {
+  public void writeValueAsFloat(float value) {
 
+    // TODO why do we do this???
     writeValueAsDouble(Double.parseDouble(Float.toString(value)));
-  }
-
-  @Override
-  public void writeValueAsShort(Short value) {
-
-    writeValueInternal(value);
-  }
-
-  @Override
-  public void writeValueAsByte(Byte value) {
-
-    writeValueInternal(value);
-  }
-
-  @Override
-  public void close() {
-
-    if (this.jsonState == null) {
-      return;
-    }
-    assert (this.jsonState.parent == null);
-    this.jsonState = null;
   }
 
 }

@@ -9,8 +9,10 @@ import io.github.mmm.binary.BinaryType;
 import io.github.mmm.marshall.MarshallingConfig;
 import io.github.mmm.marshall.StructuredBinaryFormat;
 import io.github.mmm.marshall.StructuredBinaryFormatProvider;
+import io.github.mmm.marshall.StructuredFormat;
+import io.github.mmm.marshall.StructuredFormatProvider;
 import io.github.mmm.marshall.StructuredReader;
-import io.github.mmm.marshall.StructuredReader.State;
+import io.github.mmm.marshall.StructuredState;
 import io.github.mmm.marshall.StructuredWriter;
 
 /**
@@ -23,23 +25,49 @@ public abstract class StructuredBinaryFormatTest extends StructuredFormatTest {
   @Override
   protected abstract StructuredBinaryFormatProvider getProvider();
 
+  /**
+   * @return a new instance of {@link StructuredBinaryFormat} for testing.
+   */
+  protected StructuredFormat newFormat() {
+
+    return newFormat(MarshallingConfig.DEFAULTS);
+  }
+
+  /**
+   * @param config the {@link MarshallingConfig}.
+   * @return a new instance of {@link StructuredBinaryFormat} for testing.
+   */
+  protected StructuredFormat newFormat(MarshallingConfig config) {
+
+    return newFormat(getProvider(), config);
+  }
+
+  /**
+   * @param config the {@link MarshallingConfig}.
+   * @param provider the {@link StructuredBinaryFormatProvider} to test.
+   * @return a new instance of {@link StructuredBinaryFormat} for testing.
+   */
+  protected StructuredFormat newFormat(StructuredFormatProvider provider, MarshallingConfig config) {
+
+    return provider.create(config);
+  }
+
   @Override
   protected StructuredReader newReader(String data) {
 
     byte[] bytes = BinaryType.parseHex(data);
-    return getProvider().create().reader(new ByteArrayInputStream(bytes));
+    return newFormat().reader(new ByteArrayInputStream(bytes));
   }
 
   @Override
   protected StructuredWriter newWriter(MarshallingConfig config) {
 
     this.baos = new ByteArrayOutputStream();
-    StructuredBinaryFormatProvider provider = getProvider();
-    StructuredBinaryFormat format;
+    StructuredFormat format;
     if (config == null) {
-      format = provider.create();
+      format = newFormat();
     } else {
-      format = provider.create(config);
+      format = newFormat(config);
     }
     return format.writer(this.baos);
   }
@@ -51,8 +79,14 @@ public abstract class StructuredBinaryFormatTest extends StructuredFormatTest {
   }
 
   @Override
-  protected void checkState(StructuredReader reader, State state) {
+  protected void checkState(StructuredReader reader, StructuredState state) {
 
+    if ((reader.getState() == StructuredState.VALUE) && (state == StructuredState.START_ARRAY)) {
+      // in protobuf regular "arrays" are encoded as repeated values
+      // to prevent parsing and buffering lookahead we cannot distinguish between VALUE and START_ARRAY before
+      // the unmarshalling code has to know if it expects an array or a single value.
+      return;
+    }
     reader.require(state);
   }
 
@@ -62,7 +96,7 @@ public abstract class StructuredBinaryFormatTest extends StructuredFormatTest {
   @Test
   public void testFormatFlags() {
 
-    StructuredBinaryFormat format = getProvider().create();
+    StructuredFormat format = newFormat();
     assertThat(format.isBinary()).isTrue();
     assertThat(format.isText()).isFalse();
   }

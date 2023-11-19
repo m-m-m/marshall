@@ -8,7 +8,7 @@ import java.math.BigInteger;
 import org.assertj.core.data.Offset;
 import org.junit.jupiter.api.Test;
 
-import io.github.mmm.marshall.JsonFormat;
+import io.github.mmm.marshall.StandardFormat;
 import io.github.mmm.marshall.StructuredReader;
 import io.github.mmm.marshall.StructuredTextFormatProvider;
 import io.github.mmm.marshall.StructuredWriter;
@@ -82,7 +82,7 @@ public class YamlFormatTest extends AbstractYamlFormatTest {
     String yaml = getExpectedData();
     StructuredReader reader = newReader(yaml);
     StringBuilder sb = new StringBuilder();
-    StructuredWriter writer = JsonFormat.of().writer(sb);
+    StructuredWriter writer = StandardFormat.json().writer(sb);
     // when
     writer.write(reader);
     // then

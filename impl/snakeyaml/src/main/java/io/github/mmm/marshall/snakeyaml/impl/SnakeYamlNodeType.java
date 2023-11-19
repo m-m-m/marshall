@@ -2,7 +2,7 @@
  * http://www.apache.org/licenses/LICENSE-2.0 */
 package io.github.mmm.marshall.snakeyaml.impl;
 
-import io.github.mmm.marshall.StructuredReader.State;
+import io.github.mmm.marshall.StructuredState;
 
 /**
  *
@@ -10,20 +10,20 @@ import io.github.mmm.marshall.StructuredReader.State;
 public enum SnakeYamlNodeType {
 
   /** JSON Object: {} */
-  OBJECT('{', '}', State.START_OBJECT, State.END_OBJECT),
+  OBJECT('{', '}', StructuredState.START_OBJECT, StructuredState.END_OBJECT),
 
   /** JSON Array: [] */
-  ARRAY('[', ']', State.START_ARRAY, State.END_ARRAY);
+  ARRAY('[', ']', StructuredState.START_ARRAY, StructuredState.END_ARRAY);
 
   private final char open;
 
   private final char close;
 
-  private final State start;
+  private final StructuredState start;
 
-  private final State end;
+  private final StructuredState end;
 
-  private SnakeYamlNodeType(char open, char close, State start, State end) {
+  private SnakeYamlNodeType(char open, char close, StructuredState start, StructuredState end) {
 
     this.open = open;
     this.close = close;
@@ -50,7 +50,7 @@ public enum SnakeYamlNodeType {
   /**
    * @return start
    */
-  public State getStart() {
+  public StructuredState getStart() {
 
     return this.start;
   }
@@ -58,7 +58,7 @@ public enum SnakeYamlNodeType {
   /**
    * @return end
    */
-  public State getEnd() {
+  public StructuredState getEnd() {
 
     return this.end;
   }

@@ -12,8 +12,9 @@ import io.github.mmm.marshall.StructuredFormat;
 import io.github.mmm.marshall.StructuredFormatFactory;
 import io.github.mmm.marshall.StructuredFormatProvider;
 import io.github.mmm.marshall.StructuredReader;
-import io.github.mmm.marshall.StructuredReader.State;
+import io.github.mmm.marshall.StructuredState;
 import io.github.mmm.marshall.StructuredWriter;
+import io.github.mmm.marshall.id.impl.StructuredIdMappingIdentity;
 import io.github.mmm.marshall.mrpc.MrpcFormatProvider;
 import io.github.mmm.marshall.mrpc.impl.MrpcFormat;
 import io.github.mmm.marshall.test.StructuredBinaryFormatTest;
@@ -38,7 +39,7 @@ public class MrpcFormatTest extends StructuredBinaryFormatTest {
   @Override
   protected String getExpectedData() {
 
-    return "030a03626172121b313939392d31322d33315432333a35393a35392e3939393939395a1e20010101e9f0e0fd5b0d6666864009f6285c8fc23545401a1f302e3132333435363738393031323334353637383930313233343536373839283132333435363738393031323334353637383930313233343536373839303132333435363738393004312e313006030a0576616c7565040404260404";
+    return "0a03626172121b313939392d31322d33315432333a35393a35392e3939393939395a1e20010101e9f0e0fd5b0d6666864009f6285c8fc23545401a1f302e3132333435363738393031323334353637383930313233343536373839283132333435363738393031323334353637383930313233343536373839303132333435363738393004312e313006030a0576616c75650404042604";
   }
 
   @Override
@@ -61,7 +62,7 @@ public class MrpcFormatTest extends StructuredBinaryFormatTest {
 
     StructuredFormatProvider provider = StructuredFormatFactory.get().getProvider(StructuredFormat.ID_MRPC);
     assertThat(provider).isNotNull().isInstanceOf(MrpcFormatProvider.class);
-    assertThat(provider.create()).isInstanceOf(MrpcFormat.class);
+    assertThat(newFormat(provider, MarshallingConfig.DEFAULTS)).isInstanceOf(MrpcFormat.class);
   }
 
   /**
@@ -70,68 +71,69 @@ public class MrpcFormatTest extends StructuredBinaryFormatTest {
   @Test
   public void testReadme() {
 
-    // given
-    String expectedTestdata = "0308ac02120774657374696e671e180002040a0774657374696e67030400042308540404";
-    // when
+    // arrange
+    String expectedTestdata = "08ac02120774657374696e671e180002040a0774657374696e670304000423085404";
+    StructuredIdMappingIdentity object = StructuredIdMappingIdentity.get();
+    // act
     StructuredWriter writer = newWriter(MarshallingConfig.NO_INDENTATION);
     writeReadmeTestData(writer);
-    // then
+    // assert
     assertThat(getActualData()).isEqualTo(expectedTestdata);
 
-    // and when
+    // act
     StructuredReader reader = newReader(expectedTestdata);
-    // then
+    // assert
     assertThat(reader.isDone()).isFalse();
-    checkState(reader, State.START_OBJECT);
-    assertThat(reader.readStartObject()).isTrue();
-    assertThat(reader.getState()).isSameAs(State.NAME);
-    checkName(reader, "1", 1);
-    assertThat(reader.getState()).isSameAs(State.VALUE);
+    checkState(reader, StructuredState.START_OBJECT);
+    assertThat(reader.readStartObject(object)).isTrue();
+    assertThat(reader.getState()).isSameAs(StructuredState.NAME);
+    checkName(reader, "1");
+    assertThat(reader.getState()).isSameAs(StructuredState.VALUE);
     assertThat(reader.isStringValue()).isFalse();
     assertThat(reader.readValueAsInteger()).isEqualTo(INTEGER_150);
-    assertThat(reader.getState()).isSameAs(State.NAME);
-    checkName(reader, "2", 2);
-    assertThat(reader.getState()).isSameAs(State.VALUE);
+    assertThat(reader.getState()).isSameAs(StructuredState.NAME);
+    checkName(reader, "2");
+    assertThat(reader.getState()).isSameAs(StructuredState.VALUE);
     assertThat(reader.isStringValue()).isTrue();
     assertThat(reader.readValueAsString()).isEqualTo(STRING_TESTING);
-    assertThat(reader.getState()).isSameAs(State.NAME);
-    checkName(reader, "3", 3);
-    assertThat(reader.getState()).isSameAs(State.START_ARRAY);
+    assertThat(reader.getState()).isSameAs(StructuredState.NAME);
+    checkName(reader, "3");
+    assertThat(reader.getState()).isSameAs(StructuredState.START_ARRAY);
     assertThat(reader.readStartArray()).isTrue();
-    assertThat(reader.getState()).isSameAs(State.VALUE);
+    assertThat(reader.getState()).isSameAs(StructuredState.VALUE);
     assertThat(reader.isStringValue()).isFalse();
     assertThat(reader.readValueAsInteger()).isEqualTo(INTEGER_0);
-    assertThat(reader.getState()).isSameAs(State.VALUE);
+    assertThat(reader.getState()).isSameAs(StructuredState.VALUE);
     assertThat(reader.isStringValue()).isFalse();
     assertThat(reader.readValueAsInteger()).isEqualTo(INTEGER_1);
-    assertThat(reader.getState()).isSameAs(State.VALUE);
+    assertThat(reader.getState()).isSameAs(StructuredState.VALUE);
     assertThat(reader.isStringValue()).isFalse();
     assertThat(reader.readValueAsInteger()).isEqualTo(INTEGER_2);
-    assertThat(reader.getState()).isSameAs(State.VALUE);
+    assertThat(reader.getState()).isSameAs(StructuredState.VALUE);
     assertThat(reader.isStringValue()).isTrue();
     assertThat(reader.readValueAsString()).isEqualTo(STRING_TESTING);
-    assertThat(reader.getState()).isSameAs(State.START_OBJECT);
-    assertThat(reader.readStartObject()).isTrue();
-    assertThat(reader.getState()).isSameAs(State.END_OBJECT);
+    assertThat(reader.getState()).isSameAs(StructuredState.START_OBJECT);
+    assertThat(reader.readStartObject(object)).isTrue();
+    assertThat(reader.getState()).isSameAs(StructuredState.END_OBJECT);
     assertThat(reader.readEndObject()).isTrue();
-    assertThat(reader.getState()).isSameAs(State.VALUE);
+    assertThat(reader.getState()).isSameAs(StructuredState.VALUE);
     assertThat(reader.readValue()).isNull();
-    assertThat(reader.getState()).isSameAs(State.END_ARRAY);
+    assertThat(reader.getState()).isSameAs(StructuredState.END_ARRAY);
     assertThat(reader.readEndArray()).isTrue();
-    assertThat(reader.getState()).isSameAs(State.NAME);
-    checkName(reader, "4", 4);
-    assertThat(reader.getState()).isSameAs(State.START_OBJECT);
-    assertThat(reader.readStartObject()).isTrue();
-    assertThat(reader.getState()).isSameAs(State.NAME);
-    checkName(reader, "1", 1);
-    assertThat(reader.getState()).isSameAs(State.VALUE);
+    assertThat(reader.getState()).isSameAs(StructuredState.NAME);
+    checkName(reader, "4");
+    assertThat(reader.getState()).isSameAs(StructuredState.START_OBJECT);
+    assertThat(reader.readStartObject(object)).isTrue();
+    assertThat(reader.getState()).isSameAs(StructuredState.NAME);
+    checkName(reader, "1");
+    assertThat(reader.getState()).isSameAs(StructuredState.VALUE);
     assertThat(reader.readValueAsInteger()).isEqualTo(INTEGER_42);
-    assertThat(reader.getState()).isSameAs(State.END_OBJECT);
+    assertThat(reader.getState()).isSameAs(StructuredState.END_OBJECT);
     assertThat(reader.readEndObject()).isTrue();
-    assertThat(reader.getState()).isSameAs(State.END_OBJECT);
+    assertThat(reader.getState()).isSameAs(StructuredState.END_OBJECT);
     assertThat(reader.isDone()).isFalse();
     assertThat(reader.readEndObject()).isTrue();
-    assertThat(reader.getState()).isSameAs(State.DONE);
+    assertThat(reader.getState()).isSameAs(StructuredState.DONE);
     assertThat(reader.isDone()).isTrue();
   }
 
@@ -140,24 +142,25 @@ public class MrpcFormatTest extends StructuredBinaryFormatTest {
    */
   protected void writeReadmeTestData(StructuredWriter writer) {
 
-    writer.writeStartObject();
-    writer.writeName("1", 1);
+    StructuredIdMappingIdentity object = StructuredIdMappingIdentity.get();
+    writer.writeStartObject(object);
+    writer.writeName("1");
     writer.writeValue(INTEGER_150);
-    writer.writeName("2", 2);
+    writer.writeName("2");
     writer.writeValueAsString(STRING_TESTING);
-    writer.writeName("3", 3);
+    writer.writeName("3");
     writer.writeStartArray();
     writer.writeValueAsInteger(INTEGER_0);
     writer.writeValueAsInteger(INTEGER_1);
     writer.writeValueAsInteger(INTEGER_2);
     writer.writeValueAsString(STRING_TESTING);
-    writer.writeStartObject();
+    writer.writeStartObject(object);
     writer.writeEnd();
     writer.writeValue(null);
     writer.writeEnd();
-    writer.writeName("4", 4);
-    writer.writeStartObject();
-    writer.writeName("1", 1);
+    writer.writeName("4");
+    writer.writeStartObject(object);
+    writer.writeName("1");
     writer.writeValue(INTEGER_42);
     writer.writeEnd();
     writer.writeEnd();

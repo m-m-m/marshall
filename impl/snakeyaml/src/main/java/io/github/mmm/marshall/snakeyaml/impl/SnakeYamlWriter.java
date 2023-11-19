@@ -2,17 +2,25 @@
  * http://www.apache.org/licenses/LICENSE-2.0 */
 package io.github.mmm.marshall.snakeyaml.impl;
 
+import java.io.IOException;
 import java.io.Writer;
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
 
 import org.yaml.snakeyaml.Yaml;
 
-import io.github.mmm.marshall.AbstractStructuredWriter;
 import io.github.mmm.marshall.StructuredFormat;
+import io.github.mmm.marshall.StructuredState;
 import io.github.mmm.marshall.StructuredWriter;
-import io.github.mmm.marshall.snakeyaml.impl.state.SnakeYamlParentState;
-import io.github.mmm.marshall.snakeyaml.impl.state.SnakeYamlRootState;
+import io.github.mmm.marshall.id.StructuredIdMappingObject;
+import io.github.mmm.marshall.snakeyaml.impl.state.SnakeYamlArrayNode;
+import io.github.mmm.marshall.snakeyaml.impl.state.SnakeYamlNode;
+import io.github.mmm.marshall.snakeyaml.impl.state.SnakeYamlObjectNode;
+import io.github.mmm.marshall.snakeyaml.impl.state.SnakeYamlRootNode;
+import io.github.mmm.marshall.spi.AbstractStructuredWriter;
+import io.github.mmm.marshall.spi.StructuredNodeType;
 
 /**
  * Implementation of {@link StructuredWriter} for JSON from scratch.
@@ -21,11 +29,9 @@ import io.github.mmm.marshall.snakeyaml.impl.state.SnakeYamlRootState;
  *
  * @since 1.0.0
  */
-public class SnakeYamlWriter extends AbstractStructuredWriter {
+public class SnakeYamlWriter extends AbstractStructuredWriter<SnakeYamlNode> {
 
   private final Yaml yaml;
-
-  private SnakeYamlParentState jsonState;
 
   private Writer out;
 
@@ -41,45 +47,47 @@ public class SnakeYamlWriter extends AbstractStructuredWriter {
     super(format);
     this.yaml = yaml;
     this.out = out;
-    this.jsonState = new SnakeYamlRootState();
   }
 
   @Override
-  public void writeStartArray(int size) {
+  protected SnakeYamlNode newNode(StructuredNodeType type, StructuredIdMappingObject object) {
 
-    this.jsonState = this.jsonState.startArray();
-  }
-
-  @Override
-  public void writeStartObject(int size) {
-
-    this.jsonState = this.jsonState.startObject();
-  }
-
-  @Override
-  public void writeEnd() {
-
-    SnakeYamlParentState parent = this.jsonState.end();
-    if (parent == null) {
-      close();
+    SnakeYamlNode result;
+    if (type == null) {
+      result = new SnakeYamlRootNode();
+    } else if (type == StructuredNodeType.ARRAY) {
+      result = new SnakeYamlArrayNode(this.node, this.name, new ArrayList<>());
+    } else {
+      result = new SnakeYamlObjectNode(this.node, this.name, new LinkedHashMap<>());
     }
-    this.jsonState = parent;
+    result.state = null;
+    this.name = null;
+    return result;
   }
 
   @Override
-  public void writeName(String newName, int newId) {
+  protected void doWriteStart(StructuredNodeType type, StructuredIdMappingObject object) {
 
-    super.writeName(newName, newId);
-    this.jsonState.setChildName(newName);
+    // nothing to do as all happens in newWriteState
+  }
+
+  @Override
+  protected void doWriteEnd(StructuredNodeType type) {
+
+    if (this.node.isRoot()) {
+      close();
+      return;
+    }
   }
 
   private void writeValueInternal(Object value) {
 
-    this.name = null;
-    if ((value == null) && !this.writeNullValues && !this.jsonState.isArray()) {
+    if ((value == null) && !this.writeNullValues && !this.node.isArray()) {
       return;
     }
-    this.jsonState.addValue(value);
+    this.node.addValue(this.name, value);
+    this.name = null;
+    setState(StructuredState.VALUE);
   }
 
   @Override
@@ -101,7 +109,7 @@ public class SnakeYamlWriter extends AbstractStructuredWriter {
   }
 
   @Override
-  public void writeValueAsBoolean(Boolean value) {
+  public void writeValueAsBoolean(boolean value) {
 
     writeValueInternal(value);
   }
@@ -125,51 +133,35 @@ public class SnakeYamlWriter extends AbstractStructuredWriter {
   }
 
   @Override
-  public void writeValueAsLong(Long value) {
+  public void writeValueAsLong(long value) {
 
     writeValueInternal(value);
   }
 
   @Override
-  public void writeValueAsInteger(Integer value) {
+  public void writeValueAsInteger(int value) {
 
     writeValueInternal(value);
   }
 
   @Override
-  public void writeValueAsDouble(Double value) {
+  public void writeValueAsDouble(double value) {
 
     writeValueInternal(value);
   }
 
   @Override
-  public void writeValueAsFloat(Float value) {
+  public void writeValueAsFloat(float value) {
 
     writeValueInternal(value);
   }
 
   @Override
-  public void writeValueAsShort(Short value) {
+  protected void doClose() throws IOException {
 
-    writeValueInternal(value);
-  }
-
-  @Override
-  public void writeValueAsByte(Byte value) {
-
-    writeValueInternal(value);
-  }
-
-  @Override
-  public void close() {
-
-    if (this.jsonState == null) {
-      return;
-    }
-    assert (this.jsonState.getParent() == null);
-    Object value = this.jsonState.getValue();
+    assert (this.node.parent == null);
+    Object value = this.node.getValue();
     this.yaml.dump(value, this.out);
-    this.jsonState = null;
   }
 
 }

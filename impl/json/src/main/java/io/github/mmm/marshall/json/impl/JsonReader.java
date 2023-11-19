@@ -5,10 +5,12 @@ package io.github.mmm.marshall.json.impl;
 import java.io.Reader;
 
 import io.github.mmm.base.filter.CharFilter;
-import io.github.mmm.marshall.AbstractStructuredScannerReader;
 import io.github.mmm.marshall.MarshallingConfig;
-import io.github.mmm.marshall.StructuredFormat;
 import io.github.mmm.marshall.StructuredReader;
+import io.github.mmm.marshall.StructuredState;
+import io.github.mmm.marshall.id.StructuredIdMappingObject;
+import io.github.mmm.marshall.spi.AbstractStructuredScannerReader;
+import io.github.mmm.marshall.spi.StructuredNodeDefault;
 import io.github.mmm.marshall.spi.StructuredNodeType;
 import io.github.mmm.scanner.CharStreamScanner;
 
@@ -19,7 +21,7 @@ import io.github.mmm.scanner.CharStreamScanner;
  *
  * @since 1.0.0
  */
-public class JsonReader extends AbstractStructuredScannerReader {
+public class JsonReader extends AbstractStructuredScannerReader<StructuredNodeDefault> {
 
   private static final CharFilter NUMBER_START_FILTER = c -> ((c >= '0') && (c <= '9')) || (c == '+') || (c == '-')
       || (c == '.');
@@ -30,8 +32,6 @@ public class JsonReader extends AbstractStructuredScannerReader {
   private static final CharFilter SPACE_FILTER = c -> (c == ' ') || (c == '\t') || (c == '\n') || (c == '\r');
 
   private boolean requireQuotedProperties;
-
-  private JsonState jsonState;
 
   private Object value;
 
@@ -46,77 +46,100 @@ public class JsonReader extends AbstractStructuredScannerReader {
    * @param scanner the {@link Reader} with the JSON to parse.
    * @param format the {@link #getFormat() format}.
    */
-  public JsonReader(CharStreamScanner scanner, StructuredFormat format) {
+  public JsonReader(CharStreamScanner scanner, JsonFormat format) {
 
     super(scanner, format);
-    Boolean unquotedProperties = format.getConfig().get(MarshallingConfig.OPT_UNQUOTED_PROPERTIES);
+    Boolean unquotedProperties = format.getConfig().get(MarshallingConfig.VAR_UNQUOTED_PROPERTIES);
     this.requireQuotedProperties = Boolean.FALSE.equals(unquotedProperties);
-    this.jsonState = new JsonState();
     next();
   }
 
   @Override
-  public State next() {
+  protected StructuredNodeDefault newNode(StructuredNodeType type, StructuredIdMappingObject object) {
 
-    this.stringValue = false;
-    this.reader.skipWhile(SPACE_FILTER);
-    if (!this.reader.hasNext()) {
-      this.state = State.DONE;
-      return this.state;
-    }
-    char c = this.reader.peek();
-    if (c == '{') {
-      nextStart(StructuredNodeType.OBJECT);
-    } else if (c == '}') {
-      nextEnd(StructuredNodeType.OBJECT);
-    } else if (c == '[') {
-      nextStart(StructuredNodeType.ARRAY);
-    } else if (c == ']') {
-      nextEnd(StructuredNodeType.ARRAY);
-    } else if (c == ',') {
-      if (this.commaCount != 0) {
-        throw new IllegalStateException();
+    return new StructuredNodeDefault(this.node, type);
+  }
+
+  @Override
+  protected StructuredState next(boolean skip) {
+
+    int skipCount = skip ? 1 : 0;
+    boolean todo;
+    do {
+      todo = false;
+      int skipAdd = 0;
+      this.stringValue = false;
+      this.reader.skipWhile(SPACE_FILTER);
+      if (!this.reader.hasNext()) {
+        return setState(StructuredState.DONE);
       }
-      expect(State.VALUE, State.END_OBJECT, State.END_ARRAY);
-      this.reader.next();
-      this.commaCount++;
-      next();
-    } else if ((this.jsonState.type == StructuredNodeType.OBJECT) && (this.state != State.NAME)) {
-      String propertyName;
-      if (c == '\"') {
-        this.reader.next();
-        propertyName = this.reader.readUntil('"', false, '\\');
-      } else {
-        if (this.requireQuotedProperties) {
-          error("Expected quoted property but found character " + c + " (0x" + Integer.toHexString(c) + ").");
-        }
-        propertyName = this.reader.readUntil(':', false);
-        if (propertyName == null) {
+      char c = this.reader.peek();
+      if (c == '{') {
+        start(StructuredNodeType.OBJECT);
+        skipAdd = 1;
+      } else if (c == '}') {
+        end(StructuredNodeType.OBJECT);
+        skipAdd = -1;
+      } else if (c == '[') {
+        start(StructuredNodeType.ARRAY);
+        skipAdd = 1;
+      } else if (c == ']') {
+        end(StructuredNodeType.ARRAY);
+        skipAdd = -1;
+      } else if (c == ',') {
+        if (this.commaCount != 0) {
           throw new IllegalStateException();
         }
-        propertyName = propertyName.trim();
-      }
-      nextName(propertyName);
-    } else if (c == '\"') {
-      nextString();
-    } else if (c == ':') {
-      expect(State.NAME);
-      this.reader.next();
-      this.reader.skipWhile(SPACE_FILTER);
-      c = this.reader.peek();
-      if (c == '\"') {
+        require(StructuredState.VALUE, StructuredState.END_OBJECT, StructuredState.END_ARRAY);
+        this.reader.next();
+        this.commaCount++;
+        // next();
+        todo = true;
+      } else if ((this.node.type == StructuredNodeType.OBJECT) && (getState() != StructuredState.NAME)) {
+        String propertyName;
+        if (c == '\"') {
+          this.reader.next();
+          propertyName = this.reader.readUntil('"', false, '\\');
+        } else {
+          if (this.requireQuotedProperties) {
+            error("Expected quoted property but found character " + c + " (0x" + Integer.toHexString(c) + ").");
+          }
+          propertyName = this.reader.readUntil(':', false);
+          if (propertyName == null) {
+            throw new IllegalStateException();
+          }
+          propertyName = propertyName.trim();
+        }
+        nextName(propertyName);
+      } else if (c == '\"') {
         nextString();
-      } else if (c == '{') {
-        nextStart(StructuredNodeType.OBJECT);
-      } else if (c == '[') {
-        nextStart(StructuredNodeType.ARRAY);
+      } else if (c == ':') {
+        require(StructuredState.NAME);
+        this.reader.next();
+        this.reader.skipWhile(SPACE_FILTER);
+        c = this.reader.peek();
+        if (c == '\"') {
+          nextString();
+        } else if (c == '{') {
+          start(StructuredNodeType.OBJECT);
+          skipAdd = 1;
+        } else if (c == '[') {
+          start(StructuredNodeType.ARRAY);
+          skipAdd = 1;
+        } else {
+          nextValue(c);
+        }
       } else {
         nextValue(c);
       }
-    } else {
-      nextValue(c);
-    }
-    return this.state;
+      if (skipCount > 0) {
+        skipCount += skipAdd;
+        if (skipCount == 0) {
+          todo = true;
+        }
+      }
+    } while ((skipCount > 0) || todo);
+    return getState();
   }
 
   private void nextValue(char c) {
@@ -180,64 +203,43 @@ public class JsonReader extends AbstractStructuredScannerReader {
 
   private void nextName(String string) {
 
-    expectNot(State.NAME);
+    setState(StructuredState.NAME);
     this.name = string;
-    this.state = State.NAME;
   }
 
-  private void nextStart(StructuredNodeType type) {
+  @Override
+  protected StructuredState start(StructuredNodeType type) {
 
-    if (this.jsonState.type == StructuredNodeType.OBJECT) {
-      expect(State.NAME);
-    }
-    this.jsonState = new JsonState(this.jsonState, type);
-    this.state = type.getStart();
+    StructuredState state = super.start(type);
     this.reader.next();
     this.commaCount = 0;
+    return state;
   }
 
-  private void nextEnd(StructuredNodeType type) {
+  @Override
+  protected StructuredState end(StructuredNodeType type) {
 
-    if (this.jsonState.type != type) {
-      throw new IllegalStateException();
-    }
-    this.jsonState = this.jsonState.parent;
-    this.state = type.getEnd();
+    StructuredState state = super.end(type);
     this.reader.next();
     this.commaCount = 0;
+    return state;
   }
 
   private void nextValue(Object v) {
 
     this.value = v;
-    this.state = State.VALUE;
+    setState(StructuredState.VALUE);
     this.commaCount = 0;
   }
 
   @Override
   public Object readValue() {
 
-    expect(State.VALUE);
+    require(StructuredState.VALUE);
     Object v = this.value;
     this.value = null;
     next();
     return v;
-  }
-
-  @Override
-  public void close() {
-
-    if (this.jsonState == null) {
-      return;
-    }
-    super.close();
-    this.jsonState = null;
-  }
-
-  @Override
-  public String toString() {
-
-    return this.reader.toString();
   }
 
 }

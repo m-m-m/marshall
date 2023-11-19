@@ -2,94 +2,125 @@
  * http://www.apache.org/licenses/LICENSE-2.0 */
 package io.github.mmm.marshall.tvm.xml.impl;
 
+import java.io.IOException;
+
 import org.teavm.jso.dom.xml.Attr;
 import org.teavm.jso.dom.xml.NamedNodeMap;
 import org.teavm.jso.dom.xml.Node;
 
-import io.github.mmm.marshall.AbstractStructuredStringReader;
 import io.github.mmm.marshall.StructuredFormat;
 import io.github.mmm.marshall.StructuredReader;
+import io.github.mmm.marshall.StructuredState;
+import io.github.mmm.marshall.id.StructuredIdMappingObject;
+import io.github.mmm.marshall.spi.AbstractStructuredStringReader;
+import io.github.mmm.marshall.spi.StructuredNodeDefault;
+import io.github.mmm.marshall.spi.StructuredNodeType;
 
 /**
  * Implementation of {@link StructuredReader} for XML using TeaVM.
  *
  * @since 1.0.0
  */
-public class TvmXmlDocumentReader extends AbstractStructuredStringReader {
+public class TvmXmlDocumentReader extends AbstractStructuredStringReader<StructuredNodeDefault> {
 
-  private Node node;
+  private Node xmlNode;
 
   /**
    * The constructor.
    *
-   * @param node the root {@link Node}.
+   * @param xmlNode the root {@link Node}.
    * @param format the {@link #getFormat() format}.
    */
-  public TvmXmlDocumentReader(Node node, StructuredFormat format) {
+  public TvmXmlDocumentReader(Node xmlNode, StructuredFormat format) {
 
     super(format);
-    this.node = node;
-    this.state = State.NAME;
+    this.xmlNode = xmlNode;
     next();
   }
 
   @Override
-  public State next() {
+  protected StructuredNodeDefault newNode(StructuredNodeType type, StructuredIdMappingObject object) {
 
-    if (this.state == State.NAME) {
-      this.state = nextState(true);
-    } else if ((this.state == State.VALUE) || (this.state == State.END_ARRAY) || (this.state == State.END_OBJECT)) {
-      Node next = null;
-      short nodeType = -1;
-      while (nodeType != Node.ELEMENT_NODE) {
-        next = this.node.getNextSibling();
-        if (next == null) {
-          break;
-        }
-        nodeType = next.getNodeType();
-        if (nodeType == Node.COMMENT_NODE) {
-          addComment(next.getTextContent());
-        }
-      }
-      if (next == null) {
-        this.node = next;
-      } else {
-        this.node = this.node.getParentNode();
-      }
-      if (this.node == null) {
-        this.state = State.DONE;
-      } else {
-        this.state = nextState(false);
-      }
-    } else if ((this.state == State.START_ARRAY) || (this.state == State.START_OBJECT)) {
-      this.node = this.node.getFirstChild();
-      this.state = nextState(true);
-    } else if (this.state == State.DONE) {
-      return State.DONE;
-    }
-    return this.state;
+    return null;
   }
 
-  private State nextState(boolean start) {
+  @Override
+  protected StructuredState next(boolean skip) {
 
-    String uri = this.node.getNamespaceURI();
+    int skipCount = skip ? 1 : 0;
+    StructuredState state = getState();
+    boolean todo;
+    do {
+      todo = false;
+      int skipAdd = 0;
+      if ((state == StructuredState.NAME) || (state == StructuredState.NULL)) {
+        state = nextState(true);
+        if (state.isStart()) {
+          skipAdd = 1;
+        } else if (state.isEnd()) {
+          skipAdd = -1;
+        }
+      } else if ((state == StructuredState.VALUE) || (state == StructuredState.END_ARRAY)
+          || (state == StructuredState.END_OBJECT)) {
+        Node next = null;
+        short nodeType = -1;
+        while (nodeType != Node.ELEMENT_NODE) {
+          next = this.xmlNode.getNextSibling();
+          if (next == null) {
+            break;
+          }
+          nodeType = next.getNodeType();
+          if (nodeType == Node.COMMENT_NODE) {
+            addComment(next.getTextContent());
+          }
+        }
+        if (next == null) {
+          this.xmlNode = next;
+        } else {
+          this.xmlNode = this.xmlNode.getParentNode();
+        }
+        if (this.xmlNode == null) {
+          state = StructuredState.DONE;
+        } else {
+          state = nextState(false);
+        }
+      } else if ((state == StructuredState.START_ARRAY) || (state == StructuredState.START_OBJECT)) {
+        this.xmlNode = this.xmlNode.getFirstChild();
+        state = nextState(true);
+      } else if (state == StructuredState.DONE) {
+        return StructuredState.DONE;
+      }
+      if (skipCount > 0) {
+        skipCount += skipAdd;
+        if (skipCount == 0) {
+          todo = true;
+        }
+      }
+      setState(state);
+    } while ((skipCount > 0) || todo);
+    return state;
+  }
+
+  private StructuredState nextState(boolean start) {
+
+    String uri = this.xmlNode.getNamespaceURI();
     if (uri == null) {
       if (start) {
-        return State.VALUE;
+        return StructuredState.VALUE;
       } else {
         throw error("Expected start value!");
       }
     } else if (uri.equals(StructuredFormat.NS_URI_ARRAY)) {
       if (start) {
-        return State.START_ARRAY;
+        return StructuredState.START_ARRAY;
       } else {
-        return State.END_ARRAY;
+        return StructuredState.END_ARRAY;
       }
     } else if (uri.equals(StructuredFormat.NS_URI_OBJECT)) {
       if (start) {
-        return State.START_OBJECT;
+        return StructuredState.START_OBJECT;
       } else {
-        return State.END_OBJECT;
+        return StructuredState.END_OBJECT;
       }
     } else {
       throw error("Unexpected namespace URI " + uri);
@@ -99,7 +130,7 @@ public class TvmXmlDocumentReader extends AbstractStructuredStringReader {
   @Override
   public String getName(boolean next) {
 
-    expect(State.NAME);
+    require(StructuredState.NAME);
     if (next) {
       next();
     }
@@ -109,10 +140,10 @@ public class TvmXmlDocumentReader extends AbstractStructuredStringReader {
   @Override
   public Object readValue() {
 
-    expect(State.VALUE);
+    require(StructuredState.VALUE);
     Object value;
     Attr attribute = null;
-    NamedNodeMap<Attr> attributes = this.node.getAttributes();
+    NamedNodeMap<Attr> attributes = this.xmlNode.getAttributes();
     if (attributes.getLength() == 0) {
       value = null;
     } else {
@@ -139,8 +170,8 @@ public class TvmXmlDocumentReader extends AbstractStructuredStringReader {
   @Override
   protected String readValueAsNumberString() {
 
-    expect(State.VALUE);
-    NamedNodeMap<Attr> attributes = this.node.getAttributes();
+    require(StructuredState.VALUE);
+    NamedNodeMap<Attr> attributes = this.xmlNode.getAttributes();
     Attr attr = null;
     if (attributes.getLength() > 0) {
       attr = attributes.getNamedItem(StructuredFormat.ATR_NUMBER_VALUE);
@@ -163,17 +194,17 @@ public class TvmXmlDocumentReader extends AbstractStructuredStringReader {
   @Override
   public boolean isStringValue() {
 
-    if (this.state == State.VALUE) {
-      Attr stringAttr = this.node.getAttributes().getNamedItem(StructuredFormat.ATR_STRING_VALUE);
+    if (getState() == StructuredState.VALUE) {
+      Attr stringAttr = this.xmlNode.getAttributes().getNamedItem(StructuredFormat.ATR_STRING_VALUE);
       return (stringAttr != null);
     }
     return false;
   }
 
   @Override
-  public void close() {
+  protected void doClose() throws IOException {
 
-    this.node = null;
+    this.xmlNode = null;
   }
 
 }

@@ -6,9 +6,11 @@ import java.io.Reader;
 
 import io.github.mmm.base.filter.CharFilter;
 import io.github.mmm.base.filter.ListCharFilter;
-import io.github.mmm.marshall.AbstractStructuredScannerReader;
 import io.github.mmm.marshall.StructuredFormat;
 import io.github.mmm.marshall.StructuredReader;
+import io.github.mmm.marshall.StructuredState;
+import io.github.mmm.marshall.id.StructuredIdMappingObject;
+import io.github.mmm.marshall.spi.AbstractStructuredScannerReader;
 import io.github.mmm.marshall.spi.StructuredNodeType;
 import io.github.mmm.scanner.CharStreamScanner;
 
@@ -19,7 +21,7 @@ import io.github.mmm.scanner.CharStreamScanner;
  *
  * @since 1.0.0
  */
-public class YamlReader extends AbstractStructuredScannerReader {
+public class YamlReader extends AbstractStructuredScannerReader<YamlNode> {
 
   private static final CharFilter NOT_NEWLINE_FILTER = CharFilter.NEWLINE.negate();
 
@@ -27,19 +29,15 @@ public class YamlReader extends AbstractStructuredScannerReader {
 
   private static final CharFilter VALUE_FILTER = new ListCharFilter(':', ',', '{', '[', '&', '\n', '\r');
 
-  private YamlState yamlState;
-
-  private YamlExpectedType expectedState;
-
   private String nextName;
 
   private Object value;
 
-  private int line;
-
-  private int lineStartPosition;
+  private int column;
 
   private int nextColumn;
+
+  private boolean json;
 
   private boolean yamlArrayValue;
 
@@ -59,56 +57,79 @@ public class YamlReader extends AbstractStructuredScannerReader {
   public YamlReader(CharStreamScanner reader, StructuredFormat format) {
 
     super(reader, format);
-    this.yamlState = new YamlState();
-    this.expectedState = YamlExpectedType.ANY_VALUE;
     this.nextColumn = -1;
     next();
   }
 
   @Override
-  public State next() {
+  protected YamlNode newNode(StructuredNodeType type, StructuredIdMappingObject object) {
 
-    if (this.state != State.NAME) {
-      readComment(); // clear comment to avoid appending unrelated comments
-    }
-    this.singleChar = 0;
-    if (this.nextColumn != -1) {
-      if (this.nextColumn > this.yamlState.column) {
-        StructuredNodeType type;
-        if (this.yamlArrayValue) {
-          type = StructuredNodeType.ARRAY;
-        } else {
-          type = StructuredNodeType.OBJECT;
-        }
-        nextStart(type, false, this.nextColumn);
-        this.nextColumn = -1;
-      } else {
-        nextEnd(this.yamlState.type);
-        int delta = this.yamlState.column - this.nextColumn;
-        if (delta == 0) {
+    return new YamlNode(this.node, type, this.json, this.column);
+  }
+
+  @Override
+  protected StructuredState next(boolean skip) {
+
+    int skipCount = skip ? 1 : 0;
+    StructuredState state;
+    boolean todo;
+    do {
+      todo = false;
+      int skipAdd = 0;
+      state = getState();
+      if (state != StructuredState.NAME) {
+        readComment(); // clear comment to avoid appending unrelated comments
+      }
+      this.singleChar = 0;
+      if (this.nextColumn != -1) {
+        if (this.nextColumn > this.node.column) {
+          StructuredNodeType type;
           if (this.yamlArrayValue) {
-            if (!this.yamlState.isYamlArray()) {
-              error("Not in YAML array.");
-            }
+            type = StructuredNodeType.ARRAY;
+          } else {
+            type = StructuredNodeType.OBJECT;
           }
+          start(type, false, this.nextColumn);
+          skipAdd = 1;
           this.nextColumn = -1;
-        } else if (delta < 0) {
-          error("Invalid indentation.");
+        } else {
+          end(null);
+          skipAdd = -1;
+          int delta = this.node.column - this.nextColumn;
+          if (delta == 0) {
+            if (this.yamlArrayValue) {
+              if (!this.node.isYamlArray()) {
+                error("Not in YAML array.");
+              }
+            }
+            this.nextColumn = -1;
+          } else if (delta < 0) {
+            error("Invalid indentation.");
+          }
+        }
+      } else if (this.nextName != null) {
+        state = setState(StructuredState.NAME);
+        this.name = this.nextName;
+        this.nextName = null;
+      } else if (this.end) {
+        end(null);
+      } else {
+        nextToken();
+        state = getState();
+        if (state.isStart()) {
+          skipAdd = 1;
+        } else if (state.isEnd()) {
+          skipAdd = -1;
         }
       }
-    } else if (this.nextName != null) {
-      this.state = State.NAME;
-      this.name = this.nextName;
-      this.nextName = null;
-    } else if (this.end) {
-      this.yamlState = this.yamlState.parent;
-      this.state = this.yamlState.type.getEnd();
-    } else {
-      nextToken();
-    }
-    this.expectedState.verify(this.state);
-    this.expectedState = YamlExpectedType.of(this.yamlState, this.state);
-    return this.state;
+      if (skipCount > 0) {
+        skipCount += skipAdd;
+        if (skipCount == 0) {
+          todo = true;
+        }
+      }
+    } while ((skipCount > 0) || todo);
+    return state;
   }
 
   private void nextToken() {
@@ -123,26 +144,26 @@ public class YamlReader extends AbstractStructuredScannerReader {
         nextToken();
         return;
       case ':':
-        expect(State.NAME);
+        require(StructuredState.NAME);
         this.reader.next();
         nextToken();
         return;
       case '{':
-        nextStart(StructuredNodeType.OBJECT, true, -1);
+        start(StructuredNodeType.OBJECT, true, -1);
         this.reader.next();
         return;
       case '}':
         requireJson(c);
-        nextEnd(StructuredNodeType.OBJECT);
+        end(StructuredNodeType.OBJECT);
         this.reader.next();
         return;
       case '[':
-        nextStart(StructuredNodeType.ARRAY, true, -1);
+        start(StructuredNodeType.ARRAY, true, -1);
         this.reader.next();
         return;
       case ']':
         requireJson(c);
-        nextEnd(StructuredNodeType.ARRAY);
+        end(StructuredNodeType.ARRAY);
         this.reader.next();
         return;
       case ',':
@@ -151,7 +172,7 @@ public class YamlReader extends AbstractStructuredScannerReader {
           error("Found ',' after '" + this.singleChar + "'.");
         }
         this.singleChar = ',';
-        expect(State.VALUE, State.END_OBJECT, State.END_ARRAY);
+        require(StructuredState.VALUE, StructuredState.END_OBJECT, StructuredState.END_ARRAY);
         this.reader.next();
         this.reader.skipWhile(SPACE_FILTER);
         nextToken();
@@ -159,20 +180,18 @@ public class YamlReader extends AbstractStructuredScannerReader {
       case '#': // comment
         this.reader.next();
         addComment(this.reader.readLine(true));
-        this.line++;
-        this.lineStartPosition = this.reader.getPosition();
         nextToken();
         return;
       case '-':
-        if (this.yamlState.json) {
+        if (this.node.json) {
           break;
         }
         if (this.reader.expect("- ")) { // inline-array
           this.yamlArrayValue = true;
-          int column = getColumn();
-          int columnDelta = column - this.yamlState.column;
+          int col = this.reader.getColumn();
+          int columnDelta = col - this.node.column;
           if (columnDelta == 0) {
-            if (this.yamlState.type != StructuredNodeType.ARRAY) {
+            if (this.node.type != StructuredNodeType.ARRAY) {
               error("Not in YAML array.");
             }
             nextToken();
@@ -180,14 +199,14 @@ public class YamlReader extends AbstractStructuredScannerReader {
             if (columnDelta != 2) {
               error("Invalid indentation for YAML array value.");
             }
-            nextStart(StructuredNodeType.ARRAY, false, column);
+            start(StructuredNodeType.ARRAY, false, col);
           } else if (columnDelta < 0) {
-            this.nextColumn = column;
+            this.nextColumn = col;
           }
           return;
         } else if (this.reader.expect("---")) { // block
           skipLine();
-          if (this.line > 1) {
+          if (this.reader.getLine() > 1) {
             this.end = true;
           }
           nextToken();
@@ -196,11 +215,10 @@ public class YamlReader extends AbstractStructuredScannerReader {
         break;
       case 0:
         if (!this.reader.hasNext()) {
-          if (this.yamlState.type == null) {
-            this.state = State.DONE;
+          if (this.node.type == null) {
+            setState(StructuredState.DONE);
           } else {
-            this.state = this.yamlState.type.getEnd();
-            this.yamlState = this.yamlState.parent;
+            end(null);
           }
         }
         return;
@@ -211,7 +229,7 @@ public class YamlReader extends AbstractStructuredScannerReader {
   private void nextStringOrValue(char c) {
 
     String string;
-    int column = getColumn();
+    final int col = this.reader.getColumn();
     if (c == '"') {
       this.stringValue = true;
       this.reader.next();
@@ -227,22 +245,22 @@ public class YamlReader extends AbstractStructuredScannerReader {
     char next = this.reader.peek();
     if (next == ':') {
       this.reader.next();
-      if (this.yamlState.type == null) {
-        nextStart(StructuredNodeType.OBJECT, false, column);
+      if (this.node.type == null) {
+        start(StructuredNodeType.OBJECT, false, col);
         this.nextName = string;
       } else {
-        expectNot(State.NAME);
-        if (!this.yamlState.json) {
-          int columnDelta = column - this.yamlState.column;
+        requireNot(StructuredState.NAME);
+        if (!this.node.json) {
+          int columnDelta = col - this.node.column;
           if (columnDelta != 0) {
             this.nextName = string;
-            this.nextColumn = column;
+            this.nextColumn = col;
             next();
             return;
           }
         }
         this.name = string;
-        this.state = State.NAME;
+        setState(StructuredState.NAME);
       }
     } else {
       if (this.stringValue) {
@@ -267,15 +285,12 @@ public class YamlReader extends AbstractStructuredScannerReader {
         return;
       }
       this.reader.next();
-      this.line++;
-      this.lineStartPosition = this.reader.getPosition();
       char n = this.reader.peek();
       if (!CharFilter.NEWLINE.accept(n)) {
         return;
       }
       if (c != n) {
         this.reader.next();
-        this.lineStartPosition++;
       }
     }
   }
@@ -313,35 +328,34 @@ public class YamlReader extends AbstractStructuredScannerReader {
     }
   }
 
-  private void nextStart(StructuredNodeType type, boolean json, int column) {
+  @Override
+  protected StructuredState start(StructuredNodeType type) {
 
-    if (this.yamlState.type == StructuredNodeType.OBJECT) {
-      expect(State.NAME);
-    }
     if (this.yamlArrayValue) {
       //
-    } else if (this.yamlState.isYamlArray()) {
+    } else if (this.node.isYamlArray()) {
       error("YAML array item must start with hyphen.");
     }
-    this.yamlState = new YamlState(this.yamlState, type, json, column);
-    this.state = type.getStart();
+    return super.start(type);
   }
 
-  private int getColumn() {
+  private StructuredState start(StructuredNodeType type, boolean isJson, int col) {
 
-    return this.reader.getPosition() - this.lineStartPosition;
+    this.json = isJson;
+    this.column = col;
+    return start(type);
   }
 
   private void requireJson(char c) {
 
-    if (!this.yamlState.json) {
+    if (!this.node.json) {
       error("Invalid character " + c);
     }
   }
 
   private void requireYaml(char c) {
 
-    if (this.yamlState.json) {
+    if (this.node.json) {
       error("Invalid character " + c);
     }
   }
@@ -349,17 +363,9 @@ public class YamlReader extends AbstractStructuredScannerReader {
   @Override
   protected RuntimeException error(String message, Throwable cause) {
 
-    message = "YAML invalid at line " + this.line + " and column " + getColumn() + ": " + message;
+    message = "YAML invalid at line " + this.reader.getLine() + " and column " + this.reader.getColumn() + ": "
+        + message;
     return super.error(message, cause);
-  }
-
-  private void nextEnd(StructuredNodeType type) {
-
-    if (this.yamlState.type != type) {
-      throw new IllegalStateException();
-    }
-    this.yamlState = this.yamlState.parent;
-    this.state = type.getEnd();
   }
 
   private void nextValueFromString(String v) {
@@ -416,34 +422,18 @@ public class YamlReader extends AbstractStructuredScannerReader {
   private void nextValue(Object v) {
 
     this.value = v;
-    this.state = State.VALUE;
+    setState(StructuredState.VALUE);
     this.yamlArrayValue = false;
   }
 
   @Override
   public Object readValue() {
 
-    expect(State.VALUE);
+    require(StructuredState.VALUE);
     Object v = this.value;
     this.value = null;
     next();
     return v;
-  }
-
-  @Override
-  public void close() {
-
-    if (this.yamlState == null) {
-      return;
-    }
-    this.yamlState = null;
-    super.close();
-  }
-
-  @Override
-  public String toString() {
-
-    return this.reader.toString();
   }
 
 }

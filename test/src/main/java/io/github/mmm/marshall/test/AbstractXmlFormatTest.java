@@ -2,11 +2,11 @@ package io.github.mmm.marshall.test;
 
 import org.junit.jupiter.api.Test;
 
+import io.github.mmm.marshall.StandardFormat;
 import io.github.mmm.marshall.StructuredFormat;
 import io.github.mmm.marshall.StructuredFormatFactory;
 import io.github.mmm.marshall.StructuredFormatProvider;
 import io.github.mmm.marshall.StructuredTextFormat;
-import io.github.mmm.marshall.XmlFormat;
 
 /**
  * Abstract test of {@link StructuredTextFormat}.
@@ -53,14 +53,14 @@ public abstract class AbstractXmlFormatTest extends StructuredTextFormatTest {
   }
 
   /**
-   * Test with {@link StructuredFormat#ID_XML} and {@link XmlFormat#of()}.
+   * Test with {@link StructuredFormat#ID_XML} and {@link StandardFormat#xml()}.
    */
   @Test
   public void testXmlFormat() {
 
     StructuredFormatProvider provider = StructuredFormatFactory.get().getProvider(StructuredFormat.ID_XML);
     StructuredFormat format = provider.create();
-    assertThat(format).isSameAs(getProvider().create()).isSameAs(XmlFormat.of());
+    assertThat(format).isSameAs(getProvider().create()).isSameAs(StandardFormat.xml());
     assertThat(format.isSupportingComments()).isTrue();
   }
 
