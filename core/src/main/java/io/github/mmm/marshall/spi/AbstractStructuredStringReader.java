@@ -40,7 +40,7 @@ public abstract class AbstractStructuredStringReader<S extends StructuredNode<S>
       return null;
     }
     try {
-      return type.valueOf(value);
+      return type.parse(value);
     } catch (RuntimeException e) {
       throw error(value, type.getType(), e);
     }

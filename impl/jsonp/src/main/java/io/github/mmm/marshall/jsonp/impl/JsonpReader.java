@@ -148,7 +148,7 @@ public class JsonpReader extends AbstractStructuredReader<StructuredNodeDefault>
     } else if (type == NumberType.LONG) {
       result = (N) Long.valueOf(this.json.getLong());
     } else {
-      result = type.valueOf(this.json.getString());
+      result = type.parse(this.json.getString());
     }
     next();
     return result;

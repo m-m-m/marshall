@@ -402,7 +402,7 @@ public class ProtoBufReader extends AbstractStructuredBinaryReader<ProtoBufNode>
       return null;
     }
     try {
-      return numberType.valueOf(value);
+      return numberType.parse(value);
     } catch (RuntimeException e) {
       throw error(value, numberType.getType(), e);
     }

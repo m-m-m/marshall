@@ -43,7 +43,7 @@ public abstract class AbstractStructuredValueReader<S extends StructuredNode<S>>
       }
     } else if (value instanceof String) {
       try {
-        return numberType.valueOf(value.toString());
+        return numberType.parse(value.toString());
       } catch (RuntimeException e) {
         throw error(value, numberType.getType(), e);
       }
