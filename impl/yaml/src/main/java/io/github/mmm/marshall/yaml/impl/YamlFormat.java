@@ -13,7 +13,8 @@ import io.github.mmm.scanner.CharReaderScanner;
 import io.github.mmm.scanner.CharSequenceScanner;
 
 /**
- * Implementation of {@link StructuredFormat} for JSON (JavaScript Object Notation).
+ * Implementation of {@link StructuredFormat} for YAML (YAML Ain't Markup Language) that extends JSON with nice and
+ * advanced features.
  *
  * @since 1.0.0
  */

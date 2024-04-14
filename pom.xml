@@ -66,7 +66,17 @@
       </dependency>
       <dependency>
         <groupId>${project.groupId}</groupId>
+        <artifactId>mmm-marshall-protobuf</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>${project.groupId}</groupId>
         <artifactId>mmm-marshall-stax</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>${project.groupId}</groupId>
+        <artifactId>mmm-marshall-snakeyaml</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
@@ -76,7 +86,7 @@
       </dependency>
       <dependency>
         <groupId>${project.groupId}</groupId>
-        <artifactId>mmm-marshall-protobuf</artifactId>
+        <artifactId>mmm-marshall-yaml</artifactId>
         <version>${project.version}</version>
       </dependency>
     </dependencies>
