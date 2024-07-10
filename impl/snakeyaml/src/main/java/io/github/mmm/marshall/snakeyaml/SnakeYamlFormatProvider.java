@@ -2,6 +2,7 @@
  * http://www.apache.org/licenses/LICENSE-2.0 */
 package io.github.mmm.marshall.snakeyaml;
 
+import io.github.mmm.marshall.AbstractStructuredFormatProvider;
 import io.github.mmm.marshall.MarshallingConfig;
 import io.github.mmm.marshall.StructuredFormat;
 import io.github.mmm.marshall.StructuredFormatProvider;
@@ -14,12 +15,18 @@ import io.github.mmm.marshall.snakeyaml.impl.SnakeYamlFormat;
  *
  * @since 1.0.0
  */
-public class SnakeYamlFormatProvider implements StructuredTextFormatProvider {
+public class SnakeYamlFormatProvider extends AbstractStructuredFormatProvider implements StructuredTextFormatProvider {
 
   @Override
   public String getId() {
 
     return StructuredFormat.ID_YAML;
+  }
+
+  @Override
+  public String[] getAliases() {
+
+    return new String[] { "yaml", "yml" };
   }
 
   @Override

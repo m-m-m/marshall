@@ -5,6 +5,7 @@ package io.github.mmm.marshall.stax;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLOutputFactory;
 
+import io.github.mmm.marshall.AbstractStructuredFormatProvider;
 import io.github.mmm.marshall.MarshallingConfig;
 import io.github.mmm.marshall.StructuredFormat;
 import io.github.mmm.marshall.StructuredFormatProvider;
@@ -17,12 +18,18 @@ import io.github.mmm.marshall.stax.impl.StaxFormat;
  *
  * @since 1.0.0
  */
-public class StaxFormatProvider implements StructuredTextFormatProvider {
+public class StaxFormatProvider extends AbstractStructuredFormatProvider implements StructuredTextFormatProvider {
 
   @Override
   public String getId() {
 
     return StructuredFormat.ID_XML;
+  }
+
+  @Override
+  public String[] getAliases() {
+
+    return new String[] { "xml" };
   }
 
   @Override

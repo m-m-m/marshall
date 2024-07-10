@@ -5,6 +5,7 @@ package io.github.mmm.marshall.jsonp;
 import javax.json.stream.JsonGeneratorFactory;
 import javax.json.stream.JsonParserFactory;
 
+import io.github.mmm.marshall.AbstractStructuredFormatProvider;
 import io.github.mmm.marshall.MarshallingConfig;
 import io.github.mmm.marshall.StructuredFormat;
 import io.github.mmm.marshall.StructuredFormatProvider;
@@ -17,12 +18,18 @@ import io.github.mmm.marshall.jsonp.impl.JsonpFormat;
  *
  * @since 1.0.0
  */
-public class JsonpFormatProvider implements StructuredTextFormatProvider {
+public class JsonpFormatProvider extends AbstractStructuredFormatProvider implements StructuredTextFormatProvider {
 
   @Override
   public String getId() {
 
     return StructuredFormat.ID_JSON;
+  }
+
+  @Override
+  public String[] getAliases() {
+
+    return new String[] { "json" };
   }
 
   @Override

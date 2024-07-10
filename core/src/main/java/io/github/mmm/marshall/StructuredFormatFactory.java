@@ -10,7 +10,8 @@ import io.github.mmm.marshall.impl.StructuredFormatFactoryImpl;
 public interface StructuredFormatFactory {
 
   /**
-   * @param formatId the {@link StructuredFormatProvider#getId() format Id}.
+   * @param formatId the {@link StructuredFormatProvider#getId() format Id}. May also be a
+   *        {@link AbstractStructuredFormatProvider#getAliases() alias}.
    * @return a new {@link StructuredFormatProvider} for the given {@code formatId} or {@code null} if no such provider
    *         is registered.
    * @throws io.github.mmm.base.exception.ObjectNotFoundException if no such provider could be found.

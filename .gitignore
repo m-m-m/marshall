@@ -1,4 +1,8 @@
 .*
+!.github
+!.gitignore
+!.gitattributes
+!.mvn
 *.bak
 *.log
 *.diff

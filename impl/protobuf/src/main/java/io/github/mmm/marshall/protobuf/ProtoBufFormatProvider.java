@@ -3,6 +3,7 @@
 package io.github.mmm.marshall.protobuf;
 
 import io.github.mmm.base.variable.VariableDefinition;
+import io.github.mmm.marshall.AbstractStructuredFormatProvider;
 import io.github.mmm.marshall.MarshallingConfig;
 import io.github.mmm.marshall.StructuredBinaryFormat;
 import io.github.mmm.marshall.StructuredFormat;
@@ -16,7 +17,8 @@ import io.github.mmm.marshall.spi.StructuredBinaryIdBasedFormatProvider;
  *
  * @since 1.0.0
  */
-public class ProtoBufFormatProvider implements StructuredBinaryIdBasedFormatProvider {
+public class ProtoBufFormatProvider extends AbstractStructuredFormatProvider
+    implements StructuredBinaryIdBasedFormatProvider {
 
   /**
    * {@link VariableDefinition} to configure if {@link StructuredState#START_OBJECT objects} should be encoded as
@@ -29,6 +31,12 @@ public class ProtoBufFormatProvider implements StructuredBinaryIdBasedFormatProv
   public String getId() {
 
     return StructuredFormat.ID_PROTOBUF;
+  }
+
+  @Override
+  public String[] getAliases() {
+
+    return new String[] { "protobuf" };
   }
 
   @Override
