@@ -27,7 +27,7 @@ public class YamlReader extends AbstractStructuredScannerReader<YamlNode> {
 
   private static final CharFilter SPACE_FILTER = c -> (c == ' ') || (c == '\t');
 
-  private static final CharFilter VALUE_FILTER = new ListCharFilter(':', ',', '{', '[', '&', '\n', '\r');
+  private static final CharFilter VALUE_FILTER = new ListCharFilter(":,{[&\n\r");
 
   private String nextName;
 
@@ -136,8 +136,8 @@ public class YamlReader extends AbstractStructuredScannerReader<YamlNode> {
 
     this.stringValue = false;
     this.reader.skipWhile(SPACE_FILTER);
-    char c = this.reader.peek();
-    switch (c) {
+    int cp = this.reader.peek();
+    switch (cp) {
       case '\n':
       case '\r':
         skipNewlines();
@@ -153,7 +153,7 @@ public class YamlReader extends AbstractStructuredScannerReader<YamlNode> {
         this.reader.next();
         return;
       case '}':
-        requireJson(c);
+        requireJson(cp);
         end(StructuredNodeType.OBJECT);
         this.reader.next();
         return;
@@ -162,12 +162,12 @@ public class YamlReader extends AbstractStructuredScannerReader<YamlNode> {
         this.reader.next();
         return;
       case ']':
-        requireJson(c);
+        requireJson(cp);
         end(StructuredNodeType.ARRAY);
         this.reader.next();
         return;
       case ',':
-        requireJson(c);
+        requireJson(cp);
         if (this.singleChar != 0) {
           error("Found ',' after '" + this.singleChar + "'.");
         }
@@ -223,26 +223,26 @@ public class YamlReader extends AbstractStructuredScannerReader<YamlNode> {
         }
         return;
     }
-    nextStringOrValue(c);
+    nextStringOrValue(cp);
   }
 
-  private void nextStringOrValue(char c) {
+  private void nextStringOrValue(int cp) {
 
     String string;
     final int col = this.reader.getColumn();
-    if (c == '"') {
+    if (cp == '"') {
       this.stringValue = true;
       this.reader.next();
       string = this.reader.readUntil('"', false, '\\');
-    } else if (c == '\'') {
-      requireYaml(c);
+    } else if (cp == '\'') {
+      requireYaml(cp);
       this.stringValue = true;
       this.reader.next();
       string = this.reader.readUntil('\'', false, '\'');
     } else {
       string = this.reader.readUntil(VALUE_FILTER, true);
     }
-    char next = this.reader.peek();
+    int next = this.reader.peek();
     if (next == ':') {
       this.reader.next();
       if (this.node.type == null) {
@@ -280,12 +280,12 @@ public class YamlReader extends AbstractStructuredScannerReader<YamlNode> {
   private void skipNewlines() {
 
     while (true) {
-      char c = this.reader.peek();
+      int c = this.reader.peek();
       if (!CharFilter.NEWLINE.accept(c)) {
         return;
       }
       this.reader.next();
-      char n = this.reader.peek();
+      int n = this.reader.peek();
       if (!CharFilter.NEWLINE.accept(n)) {
         return;
       }
@@ -346,18 +346,26 @@ public class YamlReader extends AbstractStructuredScannerReader<YamlNode> {
     return start(type);
   }
 
-  private void requireJson(char c) {
+  private void requireJson(int cp) {
 
     if (!this.node.json) {
-      error("Invalid character " + c);
+      invalidCharacter(cp);
     }
   }
 
-  private void requireYaml(char c) {
+  private void requireYaml(int cp) {
 
     if (this.node.json) {
-      error("Invalid character " + c);
+      invalidCharacter(cp);
     }
+  }
+
+  private void invalidCharacter(int cp) {
+
+    StringBuilder sb = new StringBuilder("Invalid character '");
+    sb.appendCodePoint(cp);
+    sb.append('\'');
+    error(sb.toString());
   }
 
   @Override

@@ -73,20 +73,20 @@ public class JsonReader extends AbstractStructuredScannerReader<StructuredNodeDe
       if (!this.reader.hasNext()) {
         return setState(StructuredState.DONE);
       }
-      char c = this.reader.peek();
-      if (c == '{') {
+      int cp = this.reader.peek();
+      if (cp == '{') {
         start(StructuredNodeType.OBJECT);
         skipAdd = 1;
-      } else if (c == '}') {
+      } else if (cp == '}') {
         end(StructuredNodeType.OBJECT);
         skipAdd = -1;
-      } else if (c == '[') {
+      } else if (cp == '[') {
         start(StructuredNodeType.ARRAY);
         skipAdd = 1;
-      } else if (c == ']') {
+      } else if (cp == ']') {
         end(StructuredNodeType.ARRAY);
         skipAdd = -1;
-      } else if (c == ',') {
+      } else if (cp == ',') {
         if (this.commaCount != 0) {
           throw new IllegalStateException();
         }
@@ -97,12 +97,12 @@ public class JsonReader extends AbstractStructuredScannerReader<StructuredNodeDe
         todo = true;
       } else if ((this.node.type == StructuredNodeType.OBJECT) && (getState() != StructuredState.NAME)) {
         String propertyName;
-        if (c == '\"') {
+        if (cp == '\"') {
           this.reader.next();
           propertyName = this.reader.readUntil('"', false, '\\');
         } else {
           if (this.requireQuotedProperties) {
-            error("Expected quoted property but found character " + c + " (0x" + Integer.toHexString(c) + ").");
+            error("Expected quoted property but found character " + cp + " (0x" + Integer.toHexString(cp) + ").");
           }
           propertyName = this.reader.readUntil(':', false);
           if (propertyName == null) {
@@ -111,26 +111,26 @@ public class JsonReader extends AbstractStructuredScannerReader<StructuredNodeDe
           propertyName = propertyName.trim();
         }
         nextName(propertyName);
-      } else if (c == '\"') {
+      } else if (cp == '\"') {
         nextString();
-      } else if (c == ':') {
+      } else if (cp == ':') {
         require(StructuredState.NAME);
         this.reader.next();
         this.reader.skipWhile(SPACE_FILTER);
-        c = this.reader.peek();
-        if (c == '\"') {
+        cp = this.reader.peek();
+        if (cp == '\"') {
           nextString();
-        } else if (c == '{') {
+        } else if (cp == '{') {
           start(StructuredNodeType.OBJECT);
           skipAdd = 1;
-        } else if (c == '[') {
+        } else if (cp == '[') {
           start(StructuredNodeType.ARRAY);
           skipAdd = 1;
         } else {
-          nextValue(c);
+          nextValue(cp);
         }
       } else {
-        nextValue(c);
+        nextValue(cp);
       }
       if (skipCount > 0) {
         skipCount += skipAdd;
@@ -142,9 +142,9 @@ public class JsonReader extends AbstractStructuredScannerReader<StructuredNodeDe
     return getState();
   }
 
-  private void nextValue(char c) {
+  private void nextValue(int cp) {
 
-    if (NUMBER_START_FILTER.accept(c)) {
+    if (NUMBER_START_FILTER.accept(cp)) {
       nextNumber();
     } else if (this.reader.expect("null")) {
       nextValue(null);
@@ -153,7 +153,10 @@ public class JsonReader extends AbstractStructuredScannerReader<StructuredNodeDe
       if (b != null) {
         nextValue(b);
       } else {
-        error("Unexpected JSON character '" + c + "'");
+        StringBuilder sb = new StringBuilder("Unexpected JSON character '");
+        sb.appendCodePoint(cp);
+        sb.append('\'');
+        error(sb.toString());
       }
     }
   }
