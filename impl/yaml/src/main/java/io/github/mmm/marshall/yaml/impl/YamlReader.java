@@ -213,13 +213,11 @@ public class YamlReader extends AbstractStructuredScannerReader<YamlNode> {
           return;
         }
         break;
-      case 0:
-        if (!this.reader.hasNext()) {
-          if (this.node.type == null) {
-            setState(StructuredState.DONE);
-          } else {
-            end(null);
-          }
+      case CharStreamScanner.EOS:
+        if (this.node.type == null) {
+          setState(StructuredState.DONE);
+        } else {
+          end(null);
         }
         return;
     }
