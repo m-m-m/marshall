@@ -35,4 +35,18 @@ public interface StructuredIdMappingMap extends StructuredIdMapping {
 
     return new StructuredIdMappingDefault(capacity);
   }
+
+  /**
+   * @param names the fixed names in the specified order. Always add new values at the end to prevent breaking the
+   *        contract.
+   * @return the {@link StructuredIdMappingMap}.
+   */
+  static StructuredIdMappingMap of(String... names) {
+
+    StructuredIdMappingMap mapping = new StructuredIdMappingDefault(names.length);
+    for (int i = 0; i < names.length; i++) {
+      mapping.put(i + 1, names[i]);
+    }
+    return mapping;
+  }
 }

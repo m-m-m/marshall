@@ -77,6 +77,18 @@ public final class MarshallingConfig extends VariableMap {
   public static final VariableDefinition<StructuredIdMappingProvider> VAR_ID_MAPPING_PROVIDER = new VariableDefinition<>(
       "id-mapping-provider", null);
 
+  /**
+   * {@link VariableDefinition} to configure if the {@code target} of a {@code Link} should be included. Its value has
+   * the following meaning:
+   * <ul>
+   * <li>{@code null}: If the {@code Id} is {@code null} or transient, the link target will be written. If the target is
+   * present, it will always be read. (default)</li>
+   * <li>{@code true}: Always include link target. (mainly for debugging)</li>
+   * <li>{@code false}: Never read or write link targets.</li>
+   * </ul>
+   */
+  public static final VariableDefinition<Boolean> VAR_LINK_TARGET = new VariableDefinition<>("link-target", null);
+
   /** Immutable instance of {@link MarshallingConfig} with the default values. */
   public static final MarshallingConfig DEFAULTS = new MarshallingConfig(Collections.emptyMap());
 

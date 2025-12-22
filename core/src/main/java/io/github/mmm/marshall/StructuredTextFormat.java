@@ -48,15 +48,18 @@ public interface StructuredTextFormat extends StructuredFormat {
   }
 
   /**
+   * @param <T> type of the {@link UnmarshallableObject}.
    * @param data the structured data as {@link String}.
    * @param object the {@link UnmarshallableObject} to read.
+   * @return typically this object itself (however, for polymorphic unmarshalling it may also be a sub-type instance).
    * @see UnmarshallableObject#read(StructuredReader)
    */
-  default void read(String data, UnmarshallableObject object) {
+  @SuppressWarnings("unchecked")
+  default <T extends UnmarshallableObject> T read(String data, T object) {
 
-    StructuredReader reader = reader(data);
-    object.read(reader);
-    reader.close();
+    try (StructuredReader reader = reader(data)) {
+      return (T) object.read(reader);
+    }
   }
 
   /**
