@@ -25,7 +25,7 @@ import io.github.mmm.marshall.test.StructuredBinaryFormatTest;
 /**
  * Test of {@link ProtoBufFormatProvider} and {@link io.github.mmm.marshall.protobuf.impl.ProtoBufFormat}.
  */
-public class ProtoBufFormatTest extends StructuredBinaryFormatTest {
+class ProtoBufFormatTest extends StructuredBinaryFormatTest {
 
   @Override
   protected String getExpectedData() {
@@ -58,7 +58,7 @@ public class ProtoBufFormatTest extends StructuredBinaryFormatTest {
    * @throws Exception on error.
    */
   @Test
-  public void testExcpectedValue() throws Exception {
+  void testExcpectedValue() throws Exception {
 
     String expectedData = getExpectedData();
     ByteArrayOutputStream baos = new ByteArrayOutputStream(expectedData.length() / 2);
@@ -89,7 +89,7 @@ public class ProtoBufFormatTest extends StructuredBinaryFormatTest {
    * Test that {@link ProtoBufFormatProvider} is registered.
    */
   @Test
-  public void testProtoBufFormat() {
+  void testProtoBufFormat() {
 
     StructuredFormatProvider provider = StructuredFormatFactory.get().getProvider(StructuredFormat.ID_PROTOBUF);
     assertThat(provider).isNotNull().isInstanceOf(ProtoBufFormatProvider.class);
@@ -102,7 +102,7 @@ public class ProtoBufFormatTest extends StructuredBinaryFormatTest {
    * @throws IOException on error.
    */
   @Test
-  public void testTagTypeSize() throws IOException {
+  void testTagTypeSize() throws IOException {
 
     assertThat(CodedOutputStream.computeTagSize(StructuredIdMapping.TYPE)).isEqualTo(2);
     ByteArrayOutputStream baos = new ByteArrayOutputStream(4);

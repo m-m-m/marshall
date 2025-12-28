@@ -8,8 +8,8 @@ import java.util.Map;
 import org.junit.jupiter.api.Test;
 
 import io.github.mmm.marshall.MarshallingConfig;
-import io.github.mmm.marshall.StructuredState;
 import io.github.mmm.marshall.StructuredReader;
+import io.github.mmm.marshall.StructuredState;
 import io.github.mmm.marshall.StructuredTextFormat;
 import io.github.mmm.marshall.StructuredTextFormatProvider;
 import io.github.mmm.marshall.StructuredWriter;
@@ -98,7 +98,7 @@ public abstract class StructuredTextFormatTest extends StructuredFormatTest {
    * Test of {@link StructuredReader} without indendation.
    */
   @Test
-  public void testReadWithoutIndentation() {
+  protected void testReadWithoutIndentation() {
 
     StructuredReader reader = newReader(getExpectedDataRaw(true));
     readTestData(reader);
@@ -108,7 +108,7 @@ public abstract class StructuredTextFormatTest extends StructuredFormatTest {
    * Test of {@link StructuredWriter} without indendation.
    */
   @Test
-  public void testWriteWithoutIndentation() {
+  protected void testWriteWithoutIndentation() {
 
     StructuredWriter writer = newWriter(MarshallingConfig.NO_INDENTATION);
     writeTestData(writer);
@@ -119,7 +119,7 @@ public abstract class StructuredTextFormatTest extends StructuredFormatTest {
    * Test of {@link StructuredTextFormat#isText()}.
    */
   @Test
-  public void testFormatFlags() {
+  protected void testFormatFlags() {
 
     StructuredTextFormat format = getProvider().create();
     assertThat(format.isText()).isTrue();
@@ -131,7 +131,7 @@ public abstract class StructuredTextFormatTest extends StructuredFormatTest {
    */
   @SuppressWarnings("unchecked")
   @Test
-  public void testReadValueRecursive() {
+  protected void testReadValueRecursive() {
 
     StructuredReader reader = newReader();
     assertThat(reader.getState()).isSameAs(StructuredState.START_OBJECT);

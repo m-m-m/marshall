@@ -5,7 +5,6 @@ package io.github.mmm.marshall.snakeyaml;
 import java.math.BigDecimal;
 
 import org.assertj.core.data.Offset;
-import org.junit.jupiter.api.Test;
 
 import io.github.mmm.marshall.StructuredTextFormatProvider;
 import io.github.mmm.marshall.test.AbstractYamlFormatTest;
@@ -13,7 +12,7 @@ import io.github.mmm.marshall.test.AbstractYamlFormatTest;
 /**
  * Test of {@link io.github.mmm.marshall.snakeyaml.impl.SnakeYamlFormat} via {@link SnakeYamlFormatProvider}.
  */
-public class SnakeYamlFormatTest extends AbstractYamlFormatTest {
+class SnakeYamlFormatTest extends AbstractYamlFormatTest {
 
   private static final Offset<BigDecimal> EPSILON = Offset.offset(new BigDecimal("0.00000000000000001"));
 
@@ -66,13 +65,7 @@ public class SnakeYamlFormatTest extends AbstractYamlFormatTest {
     return super.getGenericValue(value);
   }
 
-  @Test
   @Override
-  public void testYamlFormat() {
-
-    super.testYamlFormat();
-  }
-
   protected boolean isSupportingComments() {
 
     return false;

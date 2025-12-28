@@ -90,7 +90,7 @@ public abstract class AbstractJsonFormatTest extends AbstractJsonBasedFormatTest
    * Test with {@link StructuredFormat#ID_JSON} and {@link StandardFormat#xml()}.
    */
   @Test
-  public void testJsonFormat() {
+  void testJsonFormat() {
 
     StructuredFormatProvider provider = StructuredFormatFactory.get().getProvider(StructuredFormat.ID_JSON);
     StructuredFormat format = provider.create();

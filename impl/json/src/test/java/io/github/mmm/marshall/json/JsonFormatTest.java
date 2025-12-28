@@ -13,7 +13,7 @@ import io.github.mmm.marshall.test.AbstractJsonFormatTest;
 /**
  * Test of {@link io.github.mmm.marshall.json.impl.JsonFormat} via {@link JsonFormatProvider}.
  */
-public class JsonFormatTest extends AbstractJsonFormatTest {
+class JsonFormatTest extends AbstractJsonFormatTest {
 
   @Override
   protected StructuredTextFormatProvider getProvider() {
@@ -25,7 +25,7 @@ public class JsonFormatTest extends AbstractJsonFormatTest {
    * Test of writing JSON with unquoted properties.
    */
   @Test
-  public void testWriteUnquoted() {
+  void testWriteUnquoted() {
 
     // arrange
     StructuredWriter writer = newWriter(MarshallingConfig.DEFAULTS
@@ -40,7 +40,7 @@ public class JsonFormatTest extends AbstractJsonFormatTest {
    * Test of reading JSON with unquoted properties.
    */
   @Test
-  public void testReadUnquoted() {
+  void testReadUnquoted() {
 
     StructuredReader reader = newReader(getExpectedJsonData("", "", false));
     readTestData(reader);

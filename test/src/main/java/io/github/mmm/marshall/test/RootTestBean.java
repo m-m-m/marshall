@@ -10,7 +10,7 @@ import io.github.mmm.marshall.id.StructuredIdMappingObject;
 /**
  * Dummy bean for testing.
  */
-public class RootTestBean implements StructuredIdMappingObject {
+class RootTestBean implements StructuredIdMappingObject {
 
   static final String PROPERTY_FOO = "foo";
 

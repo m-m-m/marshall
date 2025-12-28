@@ -10,11 +10,11 @@ import io.github.mmm.marshall.EnumFormat;
 /**
  * Test of {@link EnumMappings}.
  */
-public class EnumMappingsTest extends Assertions {
+class EnumMappingsTest extends Assertions {
 
   /** Test of {@link EnumMappings} and {@link EnumMapping}. */
   @Test
-  public void testMapping() {
+  void testMapping() {
 
     // arrange
     EnumMappings mappings = EnumMappings.get();

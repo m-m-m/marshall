@@ -109,7 +109,7 @@ public abstract class StructuredFormatTest extends Assertions {
    * Test of {@link StructuredWriter}.
    */
   @Test
-  public void testWrite() {
+  protected void testWrite() {
 
     StructuredWriter writer = newWriter();
     writeTestData(writer);
@@ -192,7 +192,7 @@ public abstract class StructuredFormatTest extends Assertions {
    * Test of {@link StructuredReader}.
    */
   @Test
-  public void testRead() {
+  protected void testRead() {
 
     StructuredReader reader = newReader();
     readTestData(reader);
@@ -318,7 +318,7 @@ public abstract class StructuredFormatTest extends Assertions {
    * Test of {@link StructuredReader#skipValue()}.
    */
   @Test
-  public void testSkipValueAll() {
+  protected void testSkipValueAll() {
 
     StructuredReader reader = newReader();
     assertThat(reader.isDone()).isFalse();
@@ -330,7 +330,7 @@ public abstract class StructuredFormatTest extends Assertions {
    * Test of {@link StructuredReader#skipValue()}.
    */
   @Test
-  public void testSkipValuePerProperty() {
+  protected void testSkipValuePerProperty() {
 
     // arrange (dummy object)
     RootTestBean root = new RootTestBean();
@@ -359,7 +359,7 @@ public abstract class StructuredFormatTest extends Assertions {
 
   /** Test of {@link StructuredWriter#writeValue(Object)} in atomic way (without start object). */
   @Test
-  public void testWriteAtomicLong() {
+  protected void testWriteAtomicLong() {
 
     StructuredWriter writer = newWriter(MarshallingConfig.NO_INDENTATION);
     writer.writeValue(ATOMIC_LONG_VALUE);
@@ -369,7 +369,7 @@ public abstract class StructuredFormatTest extends Assertions {
 
   /** Test of {@link StructuredReader#readValue()} in atomic way (without start object). */
   @Test
-  public void testReadAtomicLong() {
+  protected void testReadAtomicLong() {
 
     StructuredReader reader = newReader(getExpectedDataForAtomicLong());
     checkState(reader, StructuredState.VALUE);

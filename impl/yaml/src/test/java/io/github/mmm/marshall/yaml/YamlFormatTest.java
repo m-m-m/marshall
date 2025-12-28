@@ -17,7 +17,7 @@ import io.github.mmm.marshall.test.AbstractYamlFormatTest;
 /**
  * Test of {@link io.github.mmm.marshall.yaml.impl.YamlFormat} via {@link YamlFormatProvider}.
  */
-public class YamlFormatTest extends AbstractYamlFormatTest {
+class YamlFormatTest extends AbstractYamlFormatTest {
 
   private static final Offset<BigDecimal> EPSILON = Offset.offset(new BigDecimal("0.00000000000000001"));
 
@@ -76,7 +76,7 @@ public class YamlFormatTest extends AbstractYamlFormatTest {
    * Test of {@link StructuredWriter#write(StructuredReader)} to convert YAML to JSON.
    */
   @Test
-  public void testYaml2Json() {
+  void testYaml2Json() {
 
     // arrange
     String yaml = getExpectedData();

@@ -22,7 +22,7 @@ import io.github.mmm.marshall.test.StructuredBinaryFormatTest;
 /**
  * Test of {@link MrpcFormatProvider} and {@link io.github.mmm.marshall.mrpc.impl.MrpcFormat}.
  */
-public class MrpcFormatTest extends StructuredBinaryFormatTest {
+class MrpcFormatTest extends StructuredBinaryFormatTest {
 
   private static final Integer INTEGER_0 = Integer.valueOf(0);
 
@@ -58,7 +58,7 @@ public class MrpcFormatTest extends StructuredBinaryFormatTest {
    * Test that {@link MrpcFormatProvider} is registered.
    */
   @Test
-  public void testMrpcFormat() {
+  void testMrpcFormat() {
 
     StructuredFormatProvider provider = StructuredFormatFactory.get().getProvider(StructuredFormat.ID_MRPC);
     assertThat(provider).isNotNull().isInstanceOf(MrpcFormatProvider.class);
@@ -69,7 +69,7 @@ public class MrpcFormatTest extends StructuredBinaryFormatTest {
    * Test that the example from our README is correct.
    */
   @Test
-  public void testReadme() {
+  void testReadme() {
 
     // arrange
     String expectedTestdata = "08ac02120774657374696e671e180002040a0774657374696e670304000423085404";

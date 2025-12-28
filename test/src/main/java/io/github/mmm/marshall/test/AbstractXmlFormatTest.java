@@ -56,7 +56,7 @@ public abstract class AbstractXmlFormatTest extends StructuredTextFormatTest {
    * Test with {@link StructuredFormat#ID_XML} and {@link StandardFormat#xml()}.
    */
   @Test
-  public void testXmlFormat() {
+  protected void testXmlFormat() {
 
     StructuredFormatProvider provider = StructuredFormatFactory.get().getProvider(StructuredFormat.ID_XML);
     StructuredFormat format = provider.create();

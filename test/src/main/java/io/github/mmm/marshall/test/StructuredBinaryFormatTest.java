@@ -94,7 +94,7 @@ public abstract class StructuredBinaryFormatTest extends StructuredFormatTest {
    * Test of {@link StructuredBinaryFormat#isBinary()}.
    */
   @Test
-  public void testFormatFlags() {
+  void testFormatFlags() {
 
     StructuredFormat format = newFormat();
     assertThat(format.isBinary()).isTrue();

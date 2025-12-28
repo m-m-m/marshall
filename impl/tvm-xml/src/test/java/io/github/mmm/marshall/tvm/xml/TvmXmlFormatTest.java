@@ -12,7 +12,7 @@ import io.github.mmm.marshall.tvm.xml.impl.TvmXmlFormat;
  * Test of {@link TvmXmlFormat}.
  */
 @RunWith(TeaVMTestRunner.class)
-public class TvmXmlFormatTest extends AbstractXmlFormatTest {
+class TvmXmlFormatTest extends AbstractXmlFormatTest {
 
   @Override
   protected StructuredTextFormatProvider getProvider() {
@@ -24,70 +24,70 @@ public class TvmXmlFormatTest extends AbstractXmlFormatTest {
 
   @Test
   @Override
-  public void testRead() {
+  protected void testRead() {
 
     super.testRead();
   }
 
   @Test
   @Override
-  public void testReadAtomicLong() {
+  protected void testReadAtomicLong() {
 
     super.testReadAtomicLong();
   }
 
   @Test
   @Override
-  public void testReadValueRecursive() {
+  protected void testReadValueRecursive() {
 
     super.testReadValueRecursive();
   }
 
   @Test
   @Override
-  public void testReadWithoutIndentation() {
+  protected void testReadWithoutIndentation() {
 
     super.testReadWithoutIndentation();
   }
 
   @Test
   @Override
-  public void testWrite() {
+  protected void testWrite() {
 
     super.testWrite();
   }
 
   @Test
   @Override
-  public void testWriteAtomicLong() {
+  protected void testWriteAtomicLong() {
 
     super.testWriteAtomicLong();
   }
 
   @Test
   @Override
-  public void testWriteWithoutIndentation() {
+  protected void testWriteWithoutIndentation() {
 
     super.testWriteWithoutIndentation();
   }
 
   @Test
   @Override
-  public void testSkipValueAll() {
+  protected void testSkipValueAll() {
 
     super.testSkipValueAll();
   }
 
   @Test
   @Override
-  public void testSkipValuePerProperty() {
+  protected void testSkipValuePerProperty() {
 
     super.testSkipValuePerProperty();
   }
 
   @Test
   @Override
-  public void testFormatFlags() {
+  protected void testFormatFlags() {
 
     super.testFormatFlags();
   }

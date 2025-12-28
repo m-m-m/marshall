@@ -101,7 +101,7 @@ public abstract class AbstractYamlFormatTest extends AbstractJsonBasedFormatTest
    * Test with {@link StructuredFormat#ID_YAML}.
    */
   @Test
-  public void testYamlFormat() {
+  void testYamlFormat() {
 
     StructuredFormatProvider provider = StructuredFormatFactory.get().getProvider(StructuredFormat.ID_YAML);
     StructuredFormat format = provider.create();
@@ -121,7 +121,7 @@ public abstract class AbstractYamlFormatTest extends AbstractJsonBasedFormatTest
    * Test of {@link StructuredReader} using JSON as this is also YAML.
    */
   @Test
-  public void testReadJson() {
+  void testReadJson() {
 
     // without indentation
     StructuredReader reader = newReader(getExpectedJsonData("", "", true));

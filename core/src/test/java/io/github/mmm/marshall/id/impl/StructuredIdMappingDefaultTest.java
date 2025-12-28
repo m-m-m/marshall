@@ -9,12 +9,12 @@ import io.github.mmm.marshall.id.StructuredIdMapping;
 /**
  * Test of {@link StructuredIdMappingDefault}.
  */
-public class StructuredIdMappingDefaultTest extends Assertions {
+class StructuredIdMappingDefaultTest extends Assertions {
 
   /** Test of {@link StructuredIdMappingDefault#computeSize(int)}. */
   @SuppressWarnings("javadoc")
   @Test
-  public void testComputeSize() {
+  void testComputeSize() {
 
     assertThat(StructuredIdMappingDefault.computeSize(0)).isEqualTo(16);
     assertThat(StructuredIdMappingDefault.computeSize(1)).isEqualTo(16);
@@ -44,7 +44,7 @@ public class StructuredIdMappingDefaultTest extends Assertions {
 
   /** Test of {@link StructuredIdMappingDefault} (put mappings and read them). */
   @Test
-  public void testMapping() {
+  void testMapping() {
 
     StructuredIdMappingDefault mapping = new StructuredIdMappingDefault(32);
     for (int id = 1; id <= 128; id++) {
@@ -61,7 +61,7 @@ public class StructuredIdMappingDefaultTest extends Assertions {
 
   /** Test of {@link StructuredIdMappingDefault#put(int, String)} with illegal mapping. */
   @Test
-  public void testIllegalMapping() {
+  void testIllegalMapping() {
 
     StructuredIdMappingDefault mapping = new StructuredIdMappingDefault(32);
     try {
@@ -80,7 +80,7 @@ public class StructuredIdMappingDefaultTest extends Assertions {
 
   /** Test of {@link StructuredIdMappingDefault} (put mappings and read them). */
   @Test
-  public void testMappingAutoId() {
+  void testMappingAutoId() {
 
     StructuredIdMappingDefault mapping = new StructuredIdMappingDefault(32);
     for (int id = 1; id <= 32; id++) {

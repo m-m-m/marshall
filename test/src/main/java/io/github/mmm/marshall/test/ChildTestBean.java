@@ -7,7 +7,7 @@ import io.github.mmm.marshall.id.StructuredIdMappingObject;
 /**
  * Dummy bean for testing.
  */
-public class ChildTestBean implements StructuredIdMappingObject {
+class ChildTestBean implements StructuredIdMappingObject {
 
   static final String PROPERTY_KEY = "key";
 
