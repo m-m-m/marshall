@@ -27,12 +27,12 @@ public class JsonFormatTest extends AbstractJsonFormatTest {
   @Test
   public void testWriteUnquoted() {
 
-    // given
+    // arrange
     StructuredWriter writer = newWriter(MarshallingConfig.DEFAULTS
         .with(MarshallingConfig.VAR_UNQUOTED_PROPERTIES, Boolean.TRUE).with(MarshallingConfig.VAR_INDENTATION, null));
-    // when
+    // act
     writeTestData(writer);
-    // then
+    // assert
     assertThat(getActualData()).isEqualTo(getExpectedJsonData("", "", false));
   }
 

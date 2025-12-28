@@ -16,11 +16,11 @@ public class EnumMappingsTest extends Assertions {
   @Test
   public void testMapping() {
 
-    // given
+    // arrange
     EnumMappings mappings = EnumMappings.get();
-    // when
+    // act
     EnumMapping<EnumFormat> mapping = mappings.getMapping(EnumFormat.class);
-    // then
+    // assert
     assertThat(mappings.getMapping(EnumFormat.class)).isSameAs(mapping);
     assertThat(mapping.fromString("ORDINAL")).isSameAs(EnumFormat.ORDINAL);
     assertThat(mapping.fromString("ordinal")).isSameAs(EnumFormat.ORDINAL);

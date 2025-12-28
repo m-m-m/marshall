@@ -78,14 +78,14 @@ public class YamlFormatTest extends AbstractYamlFormatTest {
   @Test
   public void testYaml2Json() {
 
-    // given
+    // arrange
     String yaml = getExpectedData();
     StructuredReader reader = newReader(yaml);
     StringBuilder sb = new StringBuilder();
     StructuredWriter writer = StandardFormat.json().writer(sb);
-    // when
+    // act
     writer.write(reader);
-    // then
+    // assert
     String json = sb.toString();
     // System.out.println(yaml);
     // System.out.println("--- was converted to ---");
