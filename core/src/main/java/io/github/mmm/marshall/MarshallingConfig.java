@@ -22,14 +22,14 @@ import io.github.mmm.marshall.id.StructuredIdMappingProvider;
 public final class MarshallingConfig extends VariableMap {
 
   /** {@link VariableDefinition} for the indentation used by {@link StructuredWriter} to format the output. */
-  public static final VariableDefinition<String> VAR_INDENTATION = new VariableDefinition<>("indentation", "  ");
+  public static final VariableDefinition<String> VAR_INDENTATION = VariableDefinition.ofString("indentation", "  ");
 
   /**
    * {@link VariableDefinition} to configure if {@link StructuredWriter#writeValueAsNull()} should actually write
    * {@code null} values (if configured to {@link Boolean#TRUE}) or omit {@code null} values (if configured to
    * {@link Boolean#FALSE}).
    */
-  public static final VariableDefinition<Boolean> VAR_WRITE_NULL_VALUES = new VariableDefinition<>("write-null",
+  public static final VariableDefinition<Boolean> VAR_WRITE_NULL_VALUES = VariableDefinition.ofBoolean("write-null",
       Boolean.TRUE);
 
   /**
@@ -45,14 +45,14 @@ public final class MarshallingConfig extends VariableMap {
    * {@code mmm-marshall-jsonp}. If you do not like quoted properties you should consider using YAML format that is an
    * extension of JSON and officially supports unquoted properties.
    */
-  public static final VariableDefinition<Boolean> VAR_UNQUOTED_PROPERTIES = new VariableDefinition<>(
-      "unquoted-properties", null);
+  public static final VariableDefinition<Boolean> VAR_UNQUOTED_PROPERTIES = VariableDefinition
+      .ofBoolean("unquoted-properties", null);
 
   /**
    * {@link VariableDefinition} to configure how {@link Enum} values are mapped. By default the {@link Enum#ordinal()
    * ordinal} is written while reading supports both ordinal and {@link Enum#toString() to-string}.
    */
-  public static final VariableDefinition<EnumFormat> VAR_ENUM_FORMAT = new VariableDefinition<>("enum-format",
+  public static final VariableDefinition<EnumFormat> VAR_ENUM_FORMAT = VariableDefinition.ofEnum("enum-format",
       EnumFormat.ORDINAL);
 
   /**
@@ -67,15 +67,17 @@ public final class MarshallingConfig extends VariableMap {
    * redundant information) or to omit it. This {@link VariableDefinition} is only supported by some
    * {@link StructuredBinaryFormat binary formats}.
    */
-  public static final VariableDefinition<Boolean> VAR_ENCODE_ROOT_OBJECT = new VariableDefinition<>("root-object",
-      Boolean.class);
+  public static final VariableDefinition<Boolean> VAR_ENCODE_ROOT_OBJECT = VariableDefinition.ofBoolean("root-object",
+      null);
 
   /**
    * {@link VariableDefinition} to configure {@link StructuredIdMappingProvider} what is required for
    * {@link StructuredFormat#isIdBased() ID based formats}.
    */
   public static final VariableDefinition<StructuredIdMappingProvider> VAR_ID_MAPPING_PROVIDER = new VariableDefinition<>(
-      "id-mapping-provider", null);
+      "id-mapping-provider", StructuredIdMappingProvider.class, null, _ -> {
+        throw new UnsupportedOperationException();
+      });
 
   /**
    * {@link VariableDefinition} to configure if the {@code target} of a {@code Link} should be included. Its value has
@@ -87,7 +89,7 @@ public final class MarshallingConfig extends VariableMap {
    * <li>{@code false}: Never read or write link targets.</li>
    * </ul>
    */
-  public static final VariableDefinition<Boolean> VAR_LINK_TARGET = new VariableDefinition<>("link-target", null);
+  public static final VariableDefinition<Boolean> VAR_LINK_TARGET = VariableDefinition.ofBoolean("link-target", null);
 
   /** Immutable instance of {@link MarshallingConfig} with the default values. */
   public static final MarshallingConfig DEFAULTS = new MarshallingConfig(Collections.emptyMap());

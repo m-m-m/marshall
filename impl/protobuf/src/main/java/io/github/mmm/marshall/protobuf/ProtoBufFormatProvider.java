@@ -25,7 +25,8 @@ public class ProtoBufFormatProvider extends AbstractStructuredFormatProvider
    * groups. Otherwise they will be encoded as length delimited objects. Even though groups have been deprecated they
    * are used by default as this is a much better fit for this generic marhsalling.
    */
-  public static final VariableDefinition<Boolean> VAR_USE_GROUPS = new VariableDefinition<>("use-groups", Boolean.TRUE);
+  public static final VariableDefinition<Boolean> VAR_USE_GROUPS = VariableDefinition.ofBoolean("use-groups",
+      Boolean.TRUE);
 
   @Override
   public String getId() {
