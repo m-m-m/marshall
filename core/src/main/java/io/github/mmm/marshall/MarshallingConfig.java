@@ -75,7 +75,7 @@ public final class MarshallingConfig extends VariableMap {
    * {@link StructuredFormat#isIdBased() ID based formats}.
    */
   public static final VariableDefinition<StructuredIdMappingProvider> VAR_ID_MAPPING_PROVIDER = new VariableDefinition<>(
-      "id-mapping-provider", StructuredIdMappingProvider.class, null, _ -> {
+      "id-mapping-provider", StructuredIdMappingProvider.class, null, true, _ -> {
         throw new UnsupportedOperationException();
       });
 
