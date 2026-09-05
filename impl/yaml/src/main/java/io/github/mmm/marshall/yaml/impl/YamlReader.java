@@ -3,6 +3,8 @@
 package io.github.mmm.marshall.yaml.impl;
 
 import java.io.Reader;
+import java.util.HashMap;
+import java.util.Map;
 
 import io.github.mmm.base.filter.CharFilter;
 import io.github.mmm.base.filter.ListCharFilter;
@@ -27,7 +29,7 @@ public class YamlReader extends AbstractStructuredScannerReader<YamlNode> {
 
   private static final CharFilter SPACE_FILTER = c -> (c == ' ') || (c == '\t');
 
-  private static final CharFilter VALUE_FILTER = new ListCharFilter(":,{[&\n\r");
+  private static final CharFilter VALUE_FILTER = new ListCharFilter(":,{[&|>\n\r");
 
   private String nextName;
 
@@ -44,6 +46,10 @@ public class YamlReader extends AbstractStructuredScannerReader<YamlNode> {
   private boolean end;
 
   private boolean stringValue;
+
+  private final Map<String, Object> anchors = new HashMap<>();
+
+  private String pendingAnchor;
 
   /** char like ',' or ':' that may not be repeated. */
   private char singleChar;
@@ -228,17 +234,57 @@ public class YamlReader extends AbstractStructuredScannerReader<YamlNode> {
 
     String string;
     final int col = this.reader.getColumn();
-    if (cp == '"') {
-      this.stringValue = true;
-      this.reader.next();
-      string = this.reader.readUntil('"', false, '\\');
-    } else if (cp == '\'') {
+    if (cp == '|') {
       requireYaml(cp);
-      this.stringValue = true;
+      nextValue(readBlockScalar(false));
+      return;
+    } else if (cp == '>') {
+      requireYaml(cp);
+      nextValue(readBlockScalar(true));
+      return;
+    } else if (cp == '&' || cp == '*') {
+      requireYaml(cp);
+      boolean alias = cp == '*';
       this.reader.next();
-      string = this.reader.readUntil('\'', false, '\'');
+      String anchor = this.reader.readUntil(c -> SPACE_FILTER.accept(c) || CharFilter.NEWLINE.accept(c), true);
+      if (alias) {
+        if (!this.anchors.containsKey(anchor)) {
+          throw error("Unknown YAML alias: " + anchor);
+        }
+        nextValue(this.anchors.get(anchor));
+      } else {
+        this.reader.skipWhile(SPACE_FILTER);
+        int valueStart = this.reader.peek();
+        this.pendingAnchor = anchor;
+        nextStringOrValue(valueStart);
+      }
+      return;
+    } else if (cp == '"') {
+      this.stringValue = true;
+      string = readQuoted('"', true);
+    } else if (cp == '\'') {
+      this.stringValue = true;
+      string = readQuoted('\'', false);
     } else {
-      string = this.reader.readUntil(VALUE_FILTER, true);
+      string = this.reader
+          .readUntil(c -> VALUE_FILTER.accept(c) || (this.node.json && ((c == ',') || (c == ']') || (c == '}'))), true);
+      if (!this.node.json && (this.reader.peek() == '\n' || this.reader.peek() == '\r')) {
+        StringBuilder folded = new StringBuilder(string);
+        while (true) {
+          skipNewlines();
+          int spaces = countIndentation();
+          if (spaces == 0) {
+            break;
+          }
+          skipIndentation(spaces);
+          String continuation = this.reader.readUntil(VALUE_FILTER, true);
+          folded.append(' ').append(continuation);
+          if (this.reader.peek() != '\n' && this.reader.peek() != '\r') {
+            break;
+          }
+        }
+        string = folded.toString();
+      }
     }
     int next = this.reader.peek();
     if (next == ':') {
@@ -265,6 +311,116 @@ public class YamlReader extends AbstractStructuredScannerReader<YamlNode> {
         nextValue(string);
       } else {
         nextValueFromString(string);
+      }
+    }
+  }
+
+  private String readBlockScalar(boolean folded) {
+
+    this.reader.next();
+    char chomping = 0;
+    if (this.reader.peek() == '+' || this.reader.peek() == '-') {
+      chomping = (char) this.reader.next();
+    }
+    skipLine();
+    StringBuilder result = new StringBuilder();
+    boolean previousContent = false;
+    while (this.reader.peek() != CharStreamScanner.EOS) {
+      int spaces = countIndentation();
+      if (spaces == 0 && this.reader.peek() != '\n' && this.reader.peek() != '\r') {
+        break;
+      }
+      skipIndentation(spaces);
+      String line = this.reader.readLine(false);
+      if (spaces > 0) {
+        if (folded && previousContent && !line.isEmpty()) {
+          result.append(' ');
+        } else if (previousContent) {
+          result.append('\n');
+        }
+        result.append(line);
+        previousContent = true;
+      } else {
+        result.append('\n');
+        previousContent = false;
+      }
+    }
+    if (chomping != '-') {
+      result.append('\n');
+    }
+    if (chomping == 0) {
+      while (result.length() > 1 && result.charAt(result.length() - 1) == '\n'
+          && result.charAt(result.length() - 2) == '\n') {
+        result.deleteCharAt(result.length() - 1);
+      }
+    }
+    return result.toString();
+  }
+
+  private int countIndentation() {
+
+    int count = 0;
+    int cp = this.reader.peek();
+    while (SPACE_FILTER.accept(cp)) {
+      count++;
+      cp = this.reader.peek(count);
+    }
+    return count;
+  }
+
+  private void skipIndentation(int count) {
+
+    while (count-- > 0) {
+      this.reader.next();
+    }
+  }
+
+  private String readQuoted(char quote, boolean doubleQuoted) {
+
+    StringBuilder result = new StringBuilder();
+    this.reader.next();
+    while (true) {
+      int cp = this.reader.next();
+      if (cp == CharStreamScanner.EOS) {
+        throw error("Unterminated quoted scalar.");
+      } else if (cp == quote) {
+        if (!doubleQuoted && this.reader.peek() == quote) {
+          this.reader.next();
+          result.append(quote);
+          continue;
+        }
+        return result.toString();
+      } else if (doubleQuoted && cp == '\\') {
+        int escaped = this.reader.next();
+        switch (escaped) {
+          case 'n':
+            result.append('\n');
+            break;
+          case 'r':
+            result.append('\r');
+            break;
+          case 't':
+            result.append('\t');
+            break;
+          case '"':
+            result.append('"');
+            break;
+          case '\\':
+            result.append('\\');
+            break;
+          default:
+            result.appendCodePoint(escaped);
+            break;
+        }
+      } else if (CharFilter.NEWLINE.accept(cp)) {
+        while (result.length() > 0 && result.charAt(result.length() - 1) == ' ') {
+          result.deleteCharAt(result.length() - 1);
+        }
+        result.append(' ');
+        skipNewlines();
+        this.reader.skipWhile(SPACE_FILTER);
+      } else {
+        result.appendCodePoint(cp);
       }
     }
   }
@@ -428,6 +584,10 @@ public class YamlReader extends AbstractStructuredScannerReader<YamlNode> {
   private void nextValue(Object v) {
 
     this.value = v;
+    if (this.pendingAnchor != null) {
+      this.anchors.put(this.pendingAnchor, v);
+      this.pendingAnchor = null;
+    }
     setState(StructuredState.VALUE);
     this.yamlArrayValue = false;
   }
