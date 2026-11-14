@@ -8,9 +8,7 @@ import io.github.mmm.marshall.StructuredFormatProvider;
 import io.github.mmm.marshall.StructuredReader;
 import io.github.mmm.marshall.StructuredTextFormat;
 
-/**
- * Abstract test of {@link StructuredTextFormat} for {@link StructuredFormat#ID_YAML YAML}.
- */
+/// Abstract test of [StructuredTextFormat] for [YAML][StructuredFormat#ID_YAML].
 public abstract class AbstractYamlFormatTest extends AbstractJsonBasedFormatTest {
 
   @Override
@@ -19,40 +17,34 @@ public abstract class AbstractYamlFormatTest extends AbstractJsonBasedFormatTest
     return getExpectedYamlData(indent, newline);
   }
 
-  /**
-   * @param indent the indentation (e.g. " ").
-   * @param newline the newline (e.g. "\n").
-   * @return the expected YAML result after marshalling or to use as input for unmarshalling when reading the expected
-   *         structure.
-   */
+  /// @param indent the indentation (e.g. " ").
+  /// @param newline the newline (e.g. "\n").
+  /// @return the expected YAML result after marshalling or to use as input for unmarshalling when reading the expected
+  ///         structure.
   protected String getExpectedYamlData(String indent, String newline) {
 
     return getExpectedYamlData(indent, newline, "", "'", "", isSmartYamlIndent(), isSupportingComments());
   }
 
-  /**
-   * @param indent the indentation (e.g. " ").
-   * @param newline the newline (e.g. "\n").
-   * @param quote the quote non trivial values (e.g. "'").
-   * @return the expected YAML result after marshalling or to use as input for unmarshalling when reading the expected
-   *         structure.
-   */
+  /// @param indent the indentation (e.g. " ").
+  /// @param newline the newline (e.g. "\n").
+  /// @param quote the quote non trivial values (e.g. "'").
+  /// @return the expected YAML result after marshalling or to use as input for unmarshalling when reading the expected
+  ///         structure.
   protected String getExpectedYamlData(String indent, String newline, String quote) {
 
     return getExpectedYamlData(indent, newline, quote, quote, quote, isSmartYamlIndent(), isSupportingComments());
   }
 
-  /**
-   * @param indent the indentation (e.g. " ").
-   * @param newline the newline (e.g. "\n").
-   * @param quoteString the quote for {@link String} values (e.g. "'").
-   * @param quoteInstant the quote for {@link java.time.Instant} values (e.g. "'").
-   * @param quoteBigNum the quote for {@link java.math.BigDecimal} or {@link java.math.BigInteger} values (e.g. "'").
-   * @param smartIndent the {@link #isSmartYamlIndent() smart YAML indentation flag}.
-   * @param comments the {@link StructuredFormat#isSupportingComments() supporting comments flag}.
-   * @return the expected YAML result after marshalling or to use as input for unmarshalling when reading the expected
-   *         structure.
-   */
+  /// @param indent the indentation (e.g. " ").
+  /// @param newline the newline (e.g. "\n").
+  /// @param quoteString the quote for [String] values (e.g. "'").
+  /// @param quoteInstant the quote for [java.time.Instant] values (e.g. "'").
+  /// @param quoteBigNum the quote for [java.math.BigDecimal] or [java.math.BigInteger] values (e.g. "'").
+  /// @param smartIndent the [smart YAML indentation flag][#isSmartYamlIndent()].
+  /// @param comments the [supporting comments flag][StructuredFormat#isSupportingComments()].
+  /// @return the expected YAML result after marshalling or to use as input for unmarshalling when reading the expected
+  ///         structure.
   protected String getExpectedYamlData(String indent, String newline, String quoteString, String quoteInstant,
       String quoteBigNum, boolean smartIndent, boolean comments) {
 
@@ -89,17 +81,13 @@ public abstract class AbstractYamlFormatTest extends AbstractJsonBasedFormatTest
         + "empty: []";
   }
 
-  /**
-   * @return {@code true} for smart YAML indentation, {@code false} otherwise.
-   */
+  /// @return `true` for smart YAML indentation, `false` otherwise.
   protected boolean isSmartYamlIndent() {
 
     return true;
   }
 
-  /**
-   * Test with {@link StructuredFormat#ID_YAML}.
-   */
+  /// Test with [StructuredFormat#ID_YAML].
   @Test
   void testYamlFormat() {
 
@@ -109,17 +97,13 @@ public abstract class AbstractYamlFormatTest extends AbstractJsonBasedFormatTest
     assertThat(format.isSupportingComments()).isEqualTo(isSupportingComments());
   }
 
-  /**
-   * @return the expected value of {@link StructuredFormat#isSupportingComments()}.
-   */
+  /// @return the expected value of [StructuredFormat#isSupportingComments()].
   protected boolean isSupportingComments() {
 
     return true;
   }
 
-  /**
-   * Test of {@link StructuredReader} using JSON as this is also YAML.
-   */
+  /// Test of [StructuredReader] using JSON as this is also YAML.
   @Test
   void testReadJson() {
 

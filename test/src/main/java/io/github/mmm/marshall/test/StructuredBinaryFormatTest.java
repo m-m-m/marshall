@@ -15,9 +15,7 @@ import io.github.mmm.marshall.StructuredReader;
 import io.github.mmm.marshall.StructuredState;
 import io.github.mmm.marshall.StructuredWriter;
 
-/**
- * Abstract test of {@link StructuredBinaryFormat}.
- */
+/// Abstract test of [StructuredBinaryFormat].
 public abstract class StructuredBinaryFormatTest extends StructuredFormatTest {
 
   private ByteArrayOutputStream baos;
@@ -25,28 +23,22 @@ public abstract class StructuredBinaryFormatTest extends StructuredFormatTest {
   @Override
   protected abstract StructuredBinaryFormatProvider getProvider();
 
-  /**
-   * @return a new instance of {@link StructuredBinaryFormat} for testing.
-   */
+  /// @return a new instance of [StructuredBinaryFormat] for testing.
   protected StructuredFormat newFormat() {
 
     return newFormat(MarshallingConfig.DEFAULTS);
   }
 
-  /**
-   * @param config the {@link MarshallingConfig}.
-   * @return a new instance of {@link StructuredBinaryFormat} for testing.
-   */
+  /// @param config the [MarshallingConfig].
+  /// @return a new instance of [StructuredBinaryFormat] for testing.
   protected StructuredFormat newFormat(MarshallingConfig config) {
 
     return newFormat(getProvider(), config);
   }
 
-  /**
-   * @param config the {@link MarshallingConfig}.
-   * @param provider the {@link StructuredBinaryFormatProvider} to test.
-   * @return a new instance of {@link StructuredBinaryFormat} for testing.
-   */
+  /// @param config the [MarshallingConfig].
+  /// @param provider the [StructuredBinaryFormatProvider] to test.
+  /// @return a new instance of [StructuredBinaryFormat] for testing.
   protected StructuredFormat newFormat(StructuredFormatProvider provider, MarshallingConfig config) {
 
     return provider.create(config);
@@ -90,9 +82,7 @@ public abstract class StructuredBinaryFormatTest extends StructuredFormatTest {
     reader.require(state);
   }
 
-  /**
-   * Test of {@link StructuredBinaryFormat#isBinary()}.
-   */
+  /// Test of [StructuredBinaryFormat#isBinary()].
   @Test
   void testFormatFlags() {
 

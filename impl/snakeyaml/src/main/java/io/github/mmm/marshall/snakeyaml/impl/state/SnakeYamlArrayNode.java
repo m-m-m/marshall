@@ -6,22 +6,18 @@ import java.util.Iterator;
 import io.github.mmm.marshall.StructuredState;
 import io.github.mmm.marshall.spi.StructuredNodeType;
 
-/**
- * {@link SnakeYamlParentNode} for {@link StructuredNodeType#ARRAY}.
- */
+/// [SnakeYamlParentNode] for [StructuredNodeType#ARRAY].
 public class SnakeYamlArrayNode extends SnakeYamlParentNode {
 
   final Collection<Object> array;
 
   private Iterator<?> iterator;
 
-  /**
-   * The constructor.
-   *
-   * @param parent the {@link #parent}.
-   * @param name the property name.
-   * @param array the {@link Collection} representing the {@link #getValue() value} of the array.
-   */
+  /// The constructor.
+  ///
+  /// @param parent the [#parent].
+  /// @param name the property name.
+  /// @param array the [Collection] representing the [value][#getValue()] of the array.
   public SnakeYamlArrayNode(SnakeYamlNode parent, String name, Collection<Object> array) {
 
     super(parent, StructuredNodeType.ARRAY, name);

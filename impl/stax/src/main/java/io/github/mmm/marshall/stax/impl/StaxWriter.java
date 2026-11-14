@@ -15,21 +15,17 @@ import io.github.mmm.marshall.spi.AbstractStructuredWriter;
 import io.github.mmm.marshall.spi.StructuredNodeDefault;
 import io.github.mmm.marshall.spi.StructuredNodeType;
 
-/**
- * Implementation of {@link StructuredWriter} for XML using {@link XMLStreamWriter}.
- *
- * @since 1.0.0
- */
+/// Implementation of [StructuredWriter] for XML using [XMLStreamWriter].
+///
+/// @since 1.0.0
 public class StaxWriter extends AbstractStructuredWriter<StructuredNodeDefault> {
 
   private XMLStreamWriter xml;
 
-  /**
-   * The constructor.
-   *
-   * @param xml the {@link XMLStreamWriter} to wrap.
-   * @param format the {@link #getFormat() format}.
-   */
+  /// The constructor.
+  ///
+  /// @param xml the [XMLStreamWriter] to wrap.
+  /// @param format the [format][#getFormat()].
   public StaxWriter(XMLStreamWriter xml, StructuredFormat format) {
 
     super(format);

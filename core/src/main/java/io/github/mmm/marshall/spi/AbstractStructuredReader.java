@@ -24,12 +24,10 @@ import io.github.mmm.marshall.id.StructuredIdMappingObject;
 import io.github.mmm.marshall.impl.EnumMapping;
 import io.github.mmm.marshall.impl.EnumMappings;
 
-/**
- * Abstract base implementation of {@link StructuredReader}.
- *
- * @param <S> type of the {@link StructuredNode}.
- * @since 1.0.0
- */
+/// Abstract base implementation of [StructuredReader].
+///
+/// @param <S> type of the [StructuredNode].
+/// @since 1.0.0
 public abstract class AbstractStructuredReader<S extends StructuredNode<S>> extends AbstractStructuredProcessor<S>
     implements StructuredReader {
 
@@ -37,11 +35,9 @@ public abstract class AbstractStructuredReader<S extends StructuredNode<S>> exte
 
   private boolean done;
 
-  /**
-   * The constructor.
-   *
-   * @param format the {@link #getFormat() format}.
-   */
+  /// The constructor.
+  ///
+  /// @param format the [format][#getFormat()].
   public AbstractStructuredReader(StructuredFormat format) {
 
     super(format);
@@ -94,10 +90,8 @@ public abstract class AbstractStructuredReader<S extends StructuredNode<S>> exte
     return (this.state == StructuredState.DONE);
   }
 
-  /**
-   * @param type the {@link StructuredNodeType} for the {@link StructuredNode} to start.
-   * @return the new {@link StructuredState} we just entered ({@link StructuredNodeType#getStart()}).
-   */
+  /// @param type the [StructuredNodeType] for the [StructuredNode] to start.
+  /// @return the new [StructuredState] we just entered ([StructuredNodeType#getStart()]).
   protected StructuredState start(StructuredNodeType type) {
 
     StructuredState newState = type.getStart();
@@ -106,10 +100,8 @@ public abstract class AbstractStructuredReader<S extends StructuredNode<S>> exte
     return newState;
   }
 
-  /**
-   * @param type the {@link StructuredNodeType} of the {@link StructuredNode} to end.
-   * @return the new {@link StructuredState} we just entered ({@link StructuredNodeType#getEnd()}).
-   */
+  /// @param type the [StructuredNodeType] of the [StructuredNode] to end.
+  /// @return the new [StructuredState] we just entered ([StructuredNodeType#getEnd()]).
   protected StructuredState end(StructuredNodeType type) {
 
     if ((type != null) && (this.node.type != type)) {
@@ -127,12 +119,10 @@ public abstract class AbstractStructuredReader<S extends StructuredNode<S>> exte
     return newState;
   }
 
-  /**
-   * Verifies that the {@link #getState() current state} is one of the given states.
-   *
-   * @param expected first accepted state.
-   * @param expected2 second accepted state.
-   */
+  /// Verifies that the [current state][#getState()] is one of the given states.
+  ///
+  /// @param expected first accepted state.
+  /// @param expected2 second accepted state.
   protected void require(StructuredState expected, StructuredState expected2) {
 
     if ((this.state != expected) && (this.state != expected2)) {
@@ -140,13 +130,11 @@ public abstract class AbstractStructuredReader<S extends StructuredNode<S>> exte
     }
   }
 
-  /**
-   * Verifies that the {@link #getState() current state} is one of the given states.
-   *
-   * @param expected first accepted state.
-   * @param expected2 second accepted state.
-   * @param expected3 third accepted state.
-   */
+  /// Verifies that the [current state][#getState()] is one of the given states.
+  ///
+  /// @param expected first accepted state.
+  /// @param expected2 second accepted state.
+  /// @param expected3 third accepted state.
   protected void require(StructuredState expected, StructuredState expected2, StructuredState expected3) {
 
     if ((this.state != expected) && (this.state != expected2) && (this.state != expected3)) {
@@ -154,11 +142,9 @@ public abstract class AbstractStructuredReader<S extends StructuredNode<S>> exte
     }
   }
 
-  /**
-   * Verifies that the {@link #getState() current state} is not the same as the given state.
-   *
-   * @param unexpected the unexpected state.
-   */
+  /// Verifies that the [current state][#getState()] is not the same as the given state.
+  ///
+  /// @param unexpected the unexpected state.
   protected void requireNot(StructuredState unexpected) {
 
     if (this.state == unexpected) {
@@ -263,17 +249,13 @@ public abstract class AbstractStructuredReader<S extends StructuredNode<S>> exte
     return readValueAsNumber(NumberType.BIG_DECIMAL);
   }
 
-  /**
-   * @param <N> type of the number to read.
-   * @param type the {@link NumberType} to read.
-   * @return the read and parsed number value. May be {@code null}.
-   */
+  /// @param <N> type of the number to read.
+  /// @param type the [NumberType] to read.
+  /// @return the read and parsed number value. May be `null`.
   protected abstract <N extends Number> N readValueAsNumber(NumberType<N> type);
 
-  /**
-   * @param string the number as {@link String}.
-   * @return the parsed {@link Number}.
-   */
+  /// @param string the number as [String].
+  /// @return the parsed [Number].
   protected Number parseNumber(String string) {
 
     boolean decimal = (string.indexOf('.') >= 0);
@@ -296,10 +278,8 @@ public abstract class AbstractStructuredReader<S extends StructuredNode<S>> exte
     }
   }
 
-  /**
-   * @param string the boolean value as {@link String}.
-   * @return the parsed {@link Boolean}.
-   */
+  /// @param string the boolean value as [String].
+  /// @return the parsed [Boolean].
   protected Boolean parseBoolean(String string) {
 
     if (string == null) {
@@ -471,21 +451,17 @@ public abstract class AbstractStructuredReader<S extends StructuredNode<S>> exte
     return result;
   }
 
-  /**
-   * @param currentComment the raw {@link #readComment() comment}.
-   * @return the given comment unescaped from XML.
-   * @see AbstractStructuredWriter#escapeXmlComment(String)
-   */
+  /// @param currentComment the raw [comment][#readComment()].
+  /// @return the given comment unescaped from XML.
+  /// @see AbstractStructuredWriter#escapeXmlComment(String)
   protected String unescapeXmlComment(String currentComment) {
 
     return currentComment.replace(AbstractStructuredWriter.XML_COMMENT_DASHES_ESCAPED,
         AbstractStructuredWriter.XML_COMMENT_DASHES);
   }
 
-  /**
-   * @param newComment the new comment to append.
-   * @see #readComment()
-   */
+  /// @param newComment the new comment to append.
+  /// @see #readComment()
   protected void addComment(String newComment) {
 
     if (this.comment == null) {
@@ -501,14 +477,12 @@ public abstract class AbstractStructuredReader<S extends StructuredNode<S>> exte
     return next(false);
   }
 
-  /**
-   * Proceeds to the next {@link StructuredState} skipping the current information.
-   *
-   * @param skip {@code false} for regular {@link #next()} usage, and {@code true} to {@link #skipValue() skip} from the
-   *        start of an array or object.
-   * @return the new {@link StructuredState}.
-   * @see #next()
-   */
+  /// Proceeds to the next [StructuredState] skipping the current information.
+  ///
+  /// @param skip `false` for regular [#next()] usage, and `true` to [skip][#skipValue()] from the
+  ///        start of an array or object.
+  /// @return the new [StructuredState].
+  /// @see #next()
   protected abstract StructuredState next(boolean skip);
 
   @Override
@@ -522,37 +496,29 @@ public abstract class AbstractStructuredReader<S extends StructuredNode<S>> exte
     next(true);
   }
 
-  /**
-   * @return nothing, just to ensure exit you may throw result of this method.
-   */
+  /// @return nothing, just to ensure exit you may throw result of this method.
   protected RuntimeException errorIllegalState() {
 
     return error("Illegal state");
   }
 
-  /**
-   * @param message the error message.
-   * @return nothing, just to ensure exit you may throw result of this method.
-   */
+  /// @param message the error message.
+  /// @return nothing, just to ensure exit you may throw result of this method.
   protected RuntimeException error(String message) {
 
     return error(message, (Throwable) null);
   }
 
-  /**
-   * @param message the error message.
-   * @param cause the optional {@link Throwable} causing this error.
-   * @return nothing, just to ensure exit you may throw result of this method.
-   */
+  /// @param message the error message.
+  /// @param cause the optional [Throwable] causing this error.
+  /// @return nothing, just to ensure exit you may throw result of this method.
   protected RuntimeException error(String message, Throwable cause) {
 
     throw new IllegalStateException(appendContextDetails(message), cause);
   }
 
-  /**
-   * @param message the message to report (e.g. error or warning).
-   * @return the given {@code message} with contextual details appended (e.g. the line number in the content to parse).
-   */
+  /// @param message the message to report (e.g. error or warning).
+  /// @return the given `message` with contextual details appended (e.g. the line number in the content to parse).
   protected String appendContextDetails(String message) {
 
     if (this.name == null) {
@@ -561,24 +527,20 @@ public abstract class AbstractStructuredReader<S extends StructuredNode<S>> exte
     return message + "(at property '" + this.name + "')";
   }
 
-  /**
-   * @param value the value that was read.
-   * @param typeClass the expected type.
-   * @return nothing. Will always throw {@link IllegalStateException}. However to signal the compiler that the program
-   *         flow will exit with the call of this function you may prefix it with "{@code throw}".
-   */
+  /// @param value the value that was read.
+  /// @param typeClass the expected type.
+  /// @return nothing. Will always throw [IllegalStateException]. However to signal the compiler that the program
+  ///         flow will exit with the call of this function you may prefix it with "`throw`".
   protected RuntimeException error(Object value, Class<?> typeClass) {
 
     return error(value, typeClass, null);
   }
 
-  /**
-   * @param value the value that was read.
-   * @param typeClass the expected type.
-   * @param cause a potential error that occurred or {@code null} if no cause.
-   * @return nothing. Will always throw {@link IllegalStateException}. However to signal the compiler that the program
-   *         flow will exit with the call of this function you may prefix it with "{@code throw}".
-   */
+  /// @param value the value that was read.
+  /// @param typeClass the expected type.
+  /// @param cause a potential error that occurred or `null` if no cause.
+  /// @return nothing. Will always throw [IllegalStateException]. However to signal the compiler that the program
+  ///         flow will exit with the call of this function you may prefix it with "`throw`".
   protected RuntimeException error(Object value, Class<?> typeClass, Throwable cause) {
 
     StringBuilder message = new StringBuilder("Failed to parse ");

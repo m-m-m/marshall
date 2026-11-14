@@ -7,12 +7,10 @@ import org.junit.jupiter.api.Test;
 
 import io.github.mmm.marshall.EnumFormat;
 
-/**
- * Test of {@link EnumMappings}.
- */
+/// Test of [EnumMappings].
 class EnumMappingsTest extends Assertions {
 
-  /** Test of {@link EnumMappings} and {@link EnumMapping}. */
+  /// Test of [EnumMappings] and [EnumMapping].
   @Test
   void testMapping() {
 

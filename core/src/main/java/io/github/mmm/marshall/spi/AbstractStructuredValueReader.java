@@ -5,19 +5,15 @@ package io.github.mmm.marshall.spi;
 import io.github.mmm.base.number.NumberType;
 import io.github.mmm.marshall.StructuredFormat;
 
-/**
- * {@link AbstractStructuredReader} that {@link #readValue() reads values} as {@link Object}.
- *
- * @param <S> type of the {@link StructuredNode}.
- * @since 1.0.0
- */
+/// [AbstractStructuredReader] that [reads values][#readValue()] as [Object].
+///
+/// @param <S> type of the [StructuredNode].
+/// @since 1.0.0
 public abstract class AbstractStructuredValueReader<S extends StructuredNode<S>> extends AbstractStructuredReader<S> {
 
-  /**
-   * The constructor.
-   *
-   * @param format the {@link #getFormat() format}.
-   */
+  /// The constructor.
+  ///
+  /// @param format the [format][#getFormat()].
   public AbstractStructuredValueReader(StructuredFormat format) {
 
     super(format);

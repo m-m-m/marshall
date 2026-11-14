@@ -19,13 +19,11 @@ import io.github.mmm.marshall.protobuf.ProtoBufFormatProvider;
 import io.github.mmm.marshall.spi.AbstractStructuredBinaryReader;
 import io.github.mmm.marshall.spi.StructuredNodeType;
 
-/**
- * Implementation of {@link StructuredReader} for gRPC/ProtoBuf.
- *
- * @see ProtoBufFormat
- *
- * @since 1.0.0
- */
+/// Implementation of [StructuredReader] for gRPC/ProtoBuf.
+///
+/// @see ProtoBufFormat
+///
+/// @since 1.0.0
 public class ProtoBufReader extends AbstractStructuredBinaryReader<ProtoBufNode> {
 
   private final boolean useGroups;
@@ -40,12 +38,10 @@ public class ProtoBufReader extends AbstractStructuredBinaryReader<ProtoBufNode>
 
   private int wireType;
 
-  /**
-   * The constructor.
-   *
-   * @param is the {@link InputStream} with the ProtoBuf content to parse.
-   * @param format the {@link #getFormat() format}.
-   */
+  /// The constructor.
+  ///
+  /// @param is the [InputStream] with the ProtoBuf content to parse.
+  /// @param format the [format][#getFormat()].
   public ProtoBufReader(InputStream is, ProtoBufFormat format) {
 
     super(format);

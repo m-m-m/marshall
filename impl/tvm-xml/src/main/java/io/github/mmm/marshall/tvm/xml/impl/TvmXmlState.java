@@ -7,19 +7,15 @@ import java.util.Objects;
 import io.github.mmm.marshall.spi.StructuredNodeType;
 import io.github.mmm.marshall.spi.StructuredNode;
 
-/**
- * Simple node of a stack.
- */
+/// Simple node of a stack.
 class TvmXmlState extends StructuredNode<TvmXmlState> {
 
   final String tag;
 
-  /**
-   * The constructor.
-   *
-   * @param parent the parent node.
-   * @param tag the closing tag.
-   */
+  /// The constructor.
+  ///
+  /// @param parent the parent node.
+  /// @param tag the closing tag.
   TvmXmlState(TvmXmlState parent, StructuredNodeType type, String tag) {
 
     super(parent, type);

@@ -14,13 +14,11 @@ import io.github.mmm.marshall.spi.StructuredNodeDefault;
 import io.github.mmm.marshall.spi.StructuredNodeType;
 import io.github.mmm.scanner.CharStreamScanner;
 
-/**
- * Implementation of {@link StructuredReader} for JSON from scratch.
- *
- * @see JsonFormat
- *
- * @since 1.0.0
- */
+/// Implementation of [StructuredReader] for JSON from scratch.
+///
+/// @see JsonFormat
+///
+/// @since 1.0.0
 public class JsonReader extends AbstractStructuredScannerReader<StructuredNodeDefault> {
 
   private static final CharFilter NUMBER_START_FILTER = c -> ((c >= '0') && (c <= '9')) || (c == '+') || (c == '-')
@@ -37,15 +35,13 @@ public class JsonReader extends AbstractStructuredScannerReader<StructuredNodeDe
 
   private boolean stringValue;
 
-  /** 0 if no comma read, 1 if comma read, else illegal state. */
+  /// 0 if no comma read, 1 if comma read, else illegal state.
   private int commaCount;
 
-  /**
-   * The constructor.
-   *
-   * @param scanner the {@link Reader} with the JSON to parse.
-   * @param format the {@link #getFormat() format}.
-   */
+  /// The constructor.
+  ///
+  /// @param scanner the [Reader] with the JSON to parse.
+  /// @param format the [format][#getFormat()].
   public JsonReader(CharStreamScanner scanner, JsonFormat format) {
 
     super(scanner, format);

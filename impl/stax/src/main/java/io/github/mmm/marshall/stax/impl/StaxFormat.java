@@ -21,11 +21,9 @@ import io.github.mmm.marshall.StructuredReader;
 import io.github.mmm.marshall.StructuredWriter;
 import io.github.mmm.marshall.spi.AbstractStructuredTextFormat;
 
-/**
- * Implementation of {@link StructuredFormat} for XML using StAX.
- *
- * @since 1.0.0
- */
+/// Implementation of [StructuredFormat] for XML using StAX.
+///
+/// @since 1.0.0
 public class StaxFormat extends AbstractStructuredTextFormat {
 
   private static final Logger LOG = LoggerFactory.getLogger(StaxFormat.class);
@@ -43,13 +41,11 @@ public class StaxFormat extends AbstractStructuredTextFormat {
     DEFAULT = new StaxFormat(inFactory, outFactory, MarshallingConfig.DEFAULTS);
   }
 
-  /**
-   * The constructor.
-   *
-   * @param readerFactory the {@link XMLInputFactory} to create readers.
-   * @param writerFactory the {@link XMLOutputFactory} to create writers.
-   * @param config the {@link MarshallingConfig}.
-   */
+  /// The constructor.
+  ///
+  /// @param readerFactory the [XMLInputFactory] to create readers.
+  /// @param writerFactory the [XMLOutputFactory] to create writers.
+  /// @param config the [MarshallingConfig].
   public StaxFormat(XMLInputFactory readerFactory, XMLOutputFactory writerFactory, MarshallingConfig config) {
 
     super(config);
@@ -57,11 +53,9 @@ public class StaxFormat extends AbstractStructuredTextFormat {
     this.writerFactory = writerFactory;
   }
 
-  /**
-   * The constructor.
-   *
-   * @param config the {@link MarshallingConfig}.
-   */
+  /// The constructor.
+  ///
+  /// @param config the [MarshallingConfig].
   public StaxFormat(MarshallingConfig config) {
 
     super(config);
@@ -129,9 +123,7 @@ public class StaxFormat extends AbstractStructuredTextFormat {
     return true;
   }
 
-  /**
-   * @return the default instance of {@link StaxFormat}.
-   */
+  /// @return the default instance of [StaxFormat].
   public static StaxFormat of() {
 
     return DEFAULT;

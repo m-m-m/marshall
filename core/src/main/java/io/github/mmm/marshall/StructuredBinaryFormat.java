@@ -2,11 +2,9 @@
  * http://www.apache.org/licenses/LICENSE-2.0 */
 package io.github.mmm.marshall;
 
-/**
- * {@link StructuredFormat} that is {@link #isBinary() binary}.
- *
- * @since 1.0.0
- */
+/// [StructuredFormat] that is [binary][#isBinary()].
+///
+/// @since 1.0.0
 public interface StructuredBinaryFormat extends StructuredFormat {
 
   @Override

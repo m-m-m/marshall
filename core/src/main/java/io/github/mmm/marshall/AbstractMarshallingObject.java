@@ -4,9 +4,7 @@ package io.github.mmm.marshall;
 
 import io.github.mmm.marshall.id.StructuredIdMappingObject;
 
-/**
- * Abstract base implementation of {@link MarshallingObject} for objects
- */
+/// Abstract base implementation of [MarshallingObject] for objects
 public abstract class AbstractMarshallingObject implements MarshallingObject, StructuredIdMappingObject {
 
   @Override
@@ -17,11 +15,9 @@ public abstract class AbstractMarshallingObject implements MarshallingObject, St
     writer.writeEnd();
   }
 
-  /**
-   * Writes all properties of this {@link MarshallingObject}.
-   *
-   * @param writer the {@link StructuredWriter} to write to.
-   */
+  /// Writes all properties of this [MarshallingObject].
+  ///
+  /// @param writer the [StructuredWriter] to write to.
   protected abstract void writeProperties(StructuredWriter writer);
 
   @Override
@@ -35,12 +31,10 @@ public abstract class AbstractMarshallingObject implements MarshallingObject, St
     return this;
   }
 
-  /**
-   * Reads the property with the given {@code name} and applies it to this {@link MarshallingObject}.
-   *
-   * @param reader the {@link StructuredReader} to read from.
-   * @param name the name of the property to read.
-   */
+  /// Reads the property with the given `name` and applies it to this [MarshallingObject].
+  ///
+  /// @param reader the [StructuredReader] to read from.
+  /// @param name the name of the property to read.
   protected abstract void readProperty(StructuredReader reader, String name);
 
 }

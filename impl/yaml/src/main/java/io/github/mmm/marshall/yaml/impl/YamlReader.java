@@ -16,13 +16,11 @@ import io.github.mmm.marshall.spi.AbstractStructuredScannerReader;
 import io.github.mmm.marshall.spi.StructuredNodeType;
 import io.github.mmm.scanner.CharStreamScanner;
 
-/**
- * Implementation of {@link StructuredReader} for JSON from scratch.
- *
- * @see YamlFormat
- *
- * @since 1.0.0
- */
+/// Implementation of [StructuredReader] for JSON from scratch.
+///
+/// @see YamlFormat
+///
+/// @since 1.0.0
 public class YamlReader extends AbstractStructuredScannerReader<YamlNode> {
 
   private static final CharFilter NOT_NEWLINE_FILTER = CharFilter.NEWLINE.negate();
@@ -51,15 +49,13 @@ public class YamlReader extends AbstractStructuredScannerReader<YamlNode> {
 
   private String pendingAnchor;
 
-  /** char like ',' or ':' that may not be repeated. */
+  /// char like ',' or ':' that may not be repeated.
   private char singleChar;
 
-  /**
-   * The constructor.
-   *
-   * @param reader the {@link Reader} with the JSON to parse.
-   * @param format the {@link #getFormat() format}.
-   */
+  /// The constructor.
+  ///
+  /// @param reader the [Reader] with the JSON to parse.
+  /// @param format the [format][#getFormat()].
   public YamlReader(CharStreamScanner reader, StructuredFormat format) {
 
     super(reader, format);

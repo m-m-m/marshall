@@ -8,25 +8,21 @@ import io.github.mmm.marshall.StructuredReader;
 import io.github.mmm.marshall.id.StructuredIdMappingProvider;
 import io.github.mmm.marshall.id.impl.StructuredIdMappingProviderDefault;
 
-/**
- * Abstract base implementation of {@link StructuredReader}.
- *
- * @param <S> type of the {@link StructuredNode}.
- * @since 1.0.0
- */
+/// Abstract base implementation of [StructuredReader].
+///
+/// @param <S> type of the [StructuredNode].
+/// @since 1.0.0
 public abstract class AbstractStructuredBinaryReader<S extends StructuredNode<S>> extends AbstractStructuredReader<S> {
 
-  /** @see MarshallingConfig#VAR_ENCODE_ROOT_OBJECT */
+  /// @see MarshallingConfig#VAR_ENCODE_ROOT_OBJECT
   protected final boolean encodeRootObject;
 
-  /** The {@link StructuredIdMappingProvider} - see {@link MarshallingConfig#VAR_ID_MAPPING_PROVIDER}. */
+  /// The [StructuredIdMappingProvider] - see [MarshallingConfig#VAR_ID_MAPPING_PROVIDER].
   protected final StructuredIdMappingProvider idMappingProvider;
 
-  /**
-   * The constructor.
-   *
-   * @param format the {@link #getFormat() format}.
-   */
+  /// The constructor.
+  ///
+  /// @param format the [format][#getFormat()].
   public AbstractStructuredBinaryReader(StructuredFormat format) {
 
     super(format);
@@ -39,9 +35,7 @@ public abstract class AbstractStructuredBinaryReader<S extends StructuredNode<S>
     this.idMappingProvider = provider;
   }
 
-  /**
-   * @return the default value for {@link MarshallingConfig#VAR_ENCODE_ROOT_OBJECT}.
-   */
+  /// @return the default value for [MarshallingConfig#VAR_ENCODE_ROOT_OBJECT].
   protected boolean isEncodeRootObjectDefault() {
 
     return false;

@@ -2,14 +2,10 @@ package io.github.mmm.marshall.id;
 
 import io.github.mmm.marshall.StructuredProcessor;
 
-/**
- * Abstract base implementation of {@link StructuredIdMapping}.
- */
+/// Abstract base implementation of [StructuredIdMapping].
 public abstract class AbstractStructuredIdMapping implements StructuredIdMapping {
 
-  /**
-   * The constructor.
-   */
+  /// The constructor.
   protected AbstractStructuredIdMapping() {
 
     super();

@@ -2,16 +2,12 @@
  * http://www.apache.org/licenses/LICENSE-2.0 */
 package io.github.mmm.marshall;
 
-/**
- * Abstract base implementation of {@link StructuredFormatProvider}.
- */
+/// Abstract base implementation of [StructuredFormatProvider].
 public abstract class AbstractStructuredFormatProvider implements StructuredFormatProvider {
 
-  /**
-   * @return an array of aliases of this provider.
-   * @see #getId()
-   * @see StructuredFormatFactory#getProvider(String)
-   */
+  /// @return an array of aliases of this provider.
+  /// @see #getId()
+  /// @see StructuredFormatFactory#getProvider(String)
   public abstract String[] getAliases();
 
 }

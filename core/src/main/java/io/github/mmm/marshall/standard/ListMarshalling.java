@@ -11,23 +11,19 @@ import io.github.mmm.marshall.Marshalling;
 import io.github.mmm.marshall.StructuredReader;
 import io.github.mmm.marshall.StructuredWriter;
 
-/**
- * Implementation of {@link Marshalling} for simple standard datatypes as specified by {@link io.github.mmm.marshall}.
- *
- * @param <T> type of the datatype.
- * @since 1.0.0
- * @see StructuredReader#readValue(Class)
- * @see StructuredWriter#writeValue(Object)
- */
+/// Implementation of [Marshalling] for simple standard datatypes as specified by [io.github.mmm.marshall].
+///
+/// @param <T> type of the datatype.
+/// @since 1.0.0
+/// @see StructuredReader#readValue(Class)
+/// @see StructuredWriter#writeValue(Object)
 public class ListMarshalling<T> implements Marshalling<Collection<T>> {
 
   private final Marshalling<T> itemMarshalling;
 
-  /**
-   * The constructor.
-   *
-   * @param itemMarshalling the {@link Marshalling} for the items in the {@link List}.
-   */
+  /// The constructor.
+  ///
+  /// @param itemMarshalling the [Marshalling] for the items in the [List].
   public ListMarshalling(Marshalling<T> itemMarshalling) {
 
     super();

@@ -7,17 +7,13 @@ import java.util.Objects;
 import io.github.mmm.marshall.MarshallingConfig;
 import io.github.mmm.marshall.StructuredBinaryFormat;
 
-/**
- * Abstract base implementation of {@link StructuredBinaryFormat}.
- */
+/// Abstract base implementation of [StructuredBinaryFormat].
 public abstract class AbstractStructuredBinaryFormat extends AbstractStructuredFormat
     implements StructuredBinaryFormat {
 
-  /**
-   * The constructor.
-   *
-   * @param config the {@link MarshallingConfig}.
-   */
+  /// The constructor.
+  ///
+  /// @param config the [MarshallingConfig].
   public AbstractStructuredBinaryFormat(MarshallingConfig config) {
 
     super(config);

@@ -7,37 +7,31 @@ import java.io.IOException;
 import io.github.mmm.marshall.spi.AbstractStructuredWriter;
 import io.github.mmm.marshall.spi.StructuredNode;
 
-/**
- * {@link AbstractStructuredWriter} for writing data as {@link String} to {@link Appendable}.
- *
- * @param <S> type of the {@link StructuredNode}.
- * @since 1.0.0
- */
+/// [AbstractStructuredWriter] for writing data as [String] to [Appendable].
+///
+/// @param <S> type of the [StructuredNode].
+/// @since 1.0.0
 public abstract class AbstractStructuredStringWriter<S extends StructuredNode<S>> extends AbstractStructuredWriter<S> {
 
-  /** The {@link Appendable} where to {@link Appendable#append(CharSequence) write} the data to. */
+  /// The [Appendable] where to [write][Appendable#append(CharSequence)] the data to.
   protected Appendable out;
 
-  /** @see #writeComment(String) */
+  /// @see #writeComment(String)
   private String comment;
 
   private boolean newlineWritten;
 
-  /**
-   * The constructor.
-   *
-   * @param out the {@link Appendable} to write the data to.
-   * @param format the {@link #getFormat() format}.
-   */
+  /// The constructor.
+  ///
+  /// @param out the [Appendable] to write the data to.
+  /// @param format the [format][#getFormat()].
   public AbstractStructuredStringWriter(Appendable out, StructuredFormat format) {
 
     super(format);
     this.out = out;
   }
 
-  /**
-   * Writes a new indentation.
-   */
+  /// Writes a new indentation.
   protected void writeIndent() {
 
     if ((this.comment != null) && getFormat().isSupportingComments()) {
@@ -48,11 +42,9 @@ public abstract class AbstractStructuredStringWriter<S extends StructuredNode<S>
     writeIndent(this.indentCount);
   }
 
-  /**
-   * Writes a new indentation.
-   *
-   * @param count the number of indentations to write.
-   */
+  /// Writes a new indentation.
+  ///
+  /// @param count the number of indentations to write.
   private void writeIndent(int count) {
 
     if (this.indentation == null) {
@@ -72,9 +64,7 @@ public abstract class AbstractStructuredStringWriter<S extends StructuredNode<S>
     }
   }
 
-  /**
-   * @param data the {@code char} to write.
-   */
+  /// @param data the `char` to write.
   protected void write(char data) {
 
     try {
@@ -84,9 +74,7 @@ public abstract class AbstractStructuredStringWriter<S extends StructuredNode<S>
     }
   }
 
-  /**
-   * @param data the {@link String} to write.
-   */
+  /// @param data the [String] to write.
   protected void write(String data) {
 
     try {
@@ -109,9 +97,7 @@ public abstract class AbstractStructuredStringWriter<S extends StructuredNode<S>
     }
   }
 
-  /**
-   * @param currentComment the comment to write physically at the current position.
-   */
+  /// @param currentComment the comment to write physically at the current position.
   protected void doWriteComment(String currentComment) {
 
   }

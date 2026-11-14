@@ -4,11 +4,9 @@ import java.nio.channels.IllegalSelectorException;
 
 import io.github.mmm.marshall.StructuredState;
 
-/**
- * {@link SnakeYamlNode} for {@link StructuredState#VALUE}.
- *
- * @since 1.0.0
- */
+/// [SnakeYamlNode] for [StructuredState#VALUE].
+///
+/// @since 1.0.0
 public class SnakeYamlValueNode extends SnakeYamlNode {
 
   private final Object value;

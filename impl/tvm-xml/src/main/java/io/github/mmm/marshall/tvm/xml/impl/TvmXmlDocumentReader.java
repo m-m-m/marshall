@@ -16,21 +16,17 @@ import io.github.mmm.marshall.spi.AbstractStructuredStringReader;
 import io.github.mmm.marshall.spi.StructuredNodeDefault;
 import io.github.mmm.marshall.spi.StructuredNodeType;
 
-/**
- * Implementation of {@link StructuredReader} for XML using TeaVM.
- *
- * @since 1.0.0
- */
+/// Implementation of [StructuredReader] for XML using TeaVM.
+///
+/// @since 1.0.0
 public class TvmXmlDocumentReader extends AbstractStructuredStringReader<StructuredNodeDefault> {
 
   private Node xmlNode;
 
-  /**
-   * The constructor.
-   *
-   * @param xmlNode the root {@link Node}.
-   * @param format the {@link #getFormat() format}.
-   */
+  /// The constructor.
+  ///
+  /// @param xmlNode the root [Node].
+  /// @param format the [format][#getFormat()].
   public TvmXmlDocumentReader(Node xmlNode, StructuredFormat format) {
 
     super(format);

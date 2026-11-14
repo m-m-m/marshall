@@ -10,11 +10,9 @@ import io.github.mmm.marshall.StructuredTextFormat;
 import io.github.mmm.marshall.StructuredTextFormatProvider;
 import io.github.mmm.marshall.json.impl.JsonFormat;
 
-/**
- * Implementation of {@link StructuredFormatProvider} for JSON.
- *
- * @since 1.0.0
- */
+/// Implementation of [StructuredFormatProvider] for JSON.
+///
+/// @since 1.0.0
 public class JsonFormatProvider extends AbstractStructuredFormatProvider implements StructuredTextFormatProvider {
 
   @Override

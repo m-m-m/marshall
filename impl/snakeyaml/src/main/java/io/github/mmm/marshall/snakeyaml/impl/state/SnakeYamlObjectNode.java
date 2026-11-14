@@ -7,24 +7,20 @@ import java.util.Map.Entry;
 import io.github.mmm.marshall.StructuredState;
 import io.github.mmm.marshall.spi.StructuredNodeType;
 
-/**
- * {@link SnakeYamlParentNode} for objects as key/value pairs.
- *
- * @since 1.0.0
- */
+/// [SnakeYamlParentNode] for objects as key/value pairs.
+///
+/// @since 1.0.0
 public class SnakeYamlObjectNode extends SnakeYamlParentNode {
 
   final Map<String, Object> map;
 
   private Iterator<Entry<String, Object>> iterator;
 
-  /**
-   * The constructor.
-   *
-   * @param parent the {@link #parent}.
-   * @param name the property name.
-   * @param map the {@link Map} representing the {@link #getValue() value} of the object.
-   */
+  /// The constructor.
+  ///
+  /// @param parent the [#parent].
+  /// @param name the property name.
+  /// @param map the [Map] representing the [value][#getValue()] of the object.
   public SnakeYamlObjectNode(SnakeYamlNode parent, String name, Map<String, Object> map) {
 
     super(parent, StructuredNodeType.OBJECT, name);

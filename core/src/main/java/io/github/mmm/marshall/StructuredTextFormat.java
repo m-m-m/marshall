@@ -10,23 +10,17 @@ import java.io.Reader;
 import java.io.StringReader;
 import java.nio.charset.StandardCharsets;
 
-/**
- * {@link StructuredFormat} that is {@link #isBinary() binary}.
- *
- * @since 1.0.0
- */
+/// [StructuredFormat] that is [binary][#isBinary()].
+///
+/// @since 1.0.0
 public interface StructuredTextFormat extends StructuredFormat {
 
-  /**
-   * @param reader the {@link Reader} pointing to the structured data to read and parse.
-   * @return the {@link StructuredReader}.
-   */
+  /// @param reader the [Reader] pointing to the structured data to read and parse.
+  /// @return the [StructuredReader].
   StructuredReader reader(Reader reader);
 
-  /**
-   * @param data the structured data as {@link String}.
-   * @return the {@link StructuredReader}.
-   */
+  /// @param data the structured data as [String].
+  /// @return the [StructuredReader].
   default StructuredReader reader(String data) {
 
     return reader(new StringReader(data));
@@ -47,13 +41,11 @@ public interface StructuredTextFormat extends StructuredFormat {
     return StructuredFormat.super.reader(data);
   }
 
-  /**
-   * @param <T> type of the {@link UnmarshallableObject}.
-   * @param data the structured data as {@link String}.
-   * @param object the {@link UnmarshallableObject} to read.
-   * @return typically this object itself (however, for polymorphic unmarshalling it may also be a sub-type instance).
-   * @see UnmarshallableObject#read(StructuredReader)
-   */
+  /// @param <T> type of the [UnmarshallableObject].
+  /// @param data the structured data as [String].
+  /// @param object the [UnmarshallableObject] to read.
+  /// @return typically this object itself (however, for polymorphic unmarshalling it may also be a sub-type instance).
+  /// @see UnmarshallableObject#read(StructuredReader)
   @SuppressWarnings("unchecked")
   default <T extends UnmarshallableObject> T read(String data, T object) {
 
@@ -62,11 +54,9 @@ public interface StructuredTextFormat extends StructuredFormat {
     }
   }
 
-  /**
-   * @param writer the {@link Appendable} ({@link java.io.Writer} or {@link StringBuilder}) where to write the
-   *        structured data to.
-   * @return the wrapped {@link StructuredWriter}.
-   */
+  /// @param writer the [Appendable] ([java.io.Writer] or [StringBuilder]) where to write the
+  ///        structured data to.
+  /// @return the wrapped [StructuredWriter].
   StructuredWriter writer(Appendable writer);
 
   @Override
@@ -75,10 +65,8 @@ public interface StructuredTextFormat extends StructuredFormat {
     return writer(new OutputStreamWriter(out, StandardCharsets.UTF_8));
   }
 
-  /**
-   * @param object the {@link MarshallableObject} to serialize.
-   * @return the serialized data as {@link String}.
-   */
+  /// @param object the [MarshallableObject] to serialize.
+  /// @return the serialized data as [String].
   default String write(MarshallableObject object) {
 
     if (object == null) {

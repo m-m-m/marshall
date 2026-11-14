@@ -2,15 +2,13 @@
  * http://www.apache.org/licenses/LICENSE-2.0 */
 package io.github.mmm.marshall;
 
-/**
- * A combination of {@link Marshaller} and {@link Unmarshaller}.
- *
- * @param <T> type of the object to {@link #readObject(StructuredReader) read} or
- *        {@link #writeObject(StructuredWriter, Object) write}.
- * @see Unmarshaller
- * @see MarshallableObject
- * @since 1.0.0
- */
+/// A combination of [Marshaller] and [Unmarshaller].
+///
+/// @param <T> type of the object to [read][#readObject(StructuredReader)] or
+///        [write][#writeObject(StructuredWriter, Object)].
+/// @see Unmarshaller
+/// @see MarshallableObject
+/// @since 1.0.0
 public interface Marshalling<T> extends Marshaller<T>, Unmarshaller<T> {
 
 }

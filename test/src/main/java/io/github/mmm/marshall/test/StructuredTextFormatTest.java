@@ -14,9 +14,7 @@ import io.github.mmm.marshall.StructuredTextFormat;
 import io.github.mmm.marshall.StructuredTextFormatProvider;
 import io.github.mmm.marshall.StructuredWriter;
 
-/**
- * Abstract test of {@link StructuredTextFormat}.
- */
+/// Abstract test of [StructuredTextFormat].
 public abstract class StructuredTextFormatTest extends StructuredFormatTest {
 
   private StringBuilder sb;
@@ -27,36 +25,28 @@ public abstract class StructuredTextFormatTest extends StructuredFormatTest {
     return getExpectedData(getIndentation(), getNewline());
   }
 
-  /**
-   * @return the indentation sequence.
-   */
+  /// @return the indentation sequence.
   protected String getIndentation() {
 
     return "  ";
   }
 
-  /**
-   * @return the line separator sequence.
-   */
+  /// @return the line separator sequence.
   protected String getNewline() {
 
     return "\n";
   }
 
-  /**
-   * @param read - {@code true} for data to read, {@code false} for expected written data.
-   * @return the expected raw (unformatted) payload data.
-   */
+  /// @param read - `true` for data to read, `false` for expected written data.
+  /// @return the expected raw (unformatted) payload data.
   protected String getExpectedDataRaw(boolean read) {
 
     return getExpectedData("", "");
   }
 
-  /**
-   * @param indent the {@link #getIndentation() indentation}.
-   * @param newline the {@link #getNewline() newline}.
-   * @return the expected payload data.
-   */
+  /// @param indent the [indentation][#getIndentation()].
+  /// @param newline the [newline][#getNewline()].
+  /// @return the expected payload data.
   protected abstract String getExpectedData(String indent, String newline);
 
   @Override
@@ -94,9 +84,7 @@ public abstract class StructuredTextFormatTest extends StructuredFormatTest {
     return this.sb.toString();
   }
 
-  /**
-   * Test of {@link StructuredReader} without indendation.
-   */
+  /// Test of [StructuredReader] without indendation.
   @Test
   protected void testReadWithoutIndentation() {
 
@@ -104,9 +92,7 @@ public abstract class StructuredTextFormatTest extends StructuredFormatTest {
     readTestData(reader);
   }
 
-  /**
-   * Test of {@link StructuredWriter} without indendation.
-   */
+  /// Test of [StructuredWriter] without indendation.
   @Test
   protected void testWriteWithoutIndentation() {
 
@@ -115,9 +101,7 @@ public abstract class StructuredTextFormatTest extends StructuredFormatTest {
     assertThat(getActualData()).isEqualTo(getExpectedDataRaw(false));
   }
 
-  /**
-   * Test of {@link StructuredTextFormat#isText()}.
-   */
+  /// Test of [StructuredTextFormat#isText()].
   @Test
   protected void testFormatFlags() {
 
@@ -126,9 +110,7 @@ public abstract class StructuredTextFormatTest extends StructuredFormatTest {
     assertThat(format.isBinary()).isFalse();
   }
 
-  /**
-   * Test of {@link StructuredReader#readValue(boolean)}.
-   */
+  /// Test of [StructuredReader#readValue(boolean)].
   @SuppressWarnings("unchecked")
   @Test
   protected void testReadValueRecursive() {
@@ -159,11 +141,9 @@ public abstract class StructuredTextFormatTest extends StructuredFormatTest {
     assertThat((List<Object>) map.get("empty")).isEmpty();
   }
 
-  /**
-   * @param value the expected value.
-   * @return the expected value or a generic form of it if the value is read in a generic way without type information
-   *         available.
-   */
+  /// @param value the expected value.
+  /// @return the expected value or a generic form of it if the value is read in a generic way without type information
+  ///         available.
   protected Object getGenericValue(Object value) {
 
     if ((value instanceof Byte) || (value instanceof Short)) {

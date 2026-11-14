@@ -10,9 +10,7 @@ import io.github.mmm.marshall.StructuredTextFormatProvider;
 import io.github.mmm.marshall.StructuredWriter;
 import io.github.mmm.marshall.test.AbstractJsonFormatTest;
 
-/**
- * Test of {@link io.github.mmm.marshall.json.impl.JsonFormat} via {@link JsonFormatProvider}.
- */
+/// Test of [io.github.mmm.marshall.json.impl.JsonFormat] via [JsonFormatProvider].
 class JsonFormatTest extends AbstractJsonFormatTest {
 
   @Override
@@ -21,9 +19,7 @@ class JsonFormatTest extends AbstractJsonFormatTest {
     return new JsonFormatProvider();
   }
 
-  /**
-   * Test of writing JSON with unquoted properties.
-   */
+  /// Test of writing JSON with unquoted properties.
   @Test
   void testWriteUnquoted() {
 
@@ -36,9 +32,7 @@ class JsonFormatTest extends AbstractJsonFormatTest {
     assertThat(getActualData()).isEqualTo(getExpectedJsonData("", "", false));
   }
 
-  /**
-   * Test of reading JSON with unquoted properties.
-   */
+  /// Test of reading JSON with unquoted properties.
   @Test
   void testReadUnquoted() {
 

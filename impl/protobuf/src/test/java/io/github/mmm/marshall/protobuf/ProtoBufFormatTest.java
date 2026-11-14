@@ -22,9 +22,7 @@ import io.github.mmm.marshall.id.StructuredIdMapping;
 import io.github.mmm.marshall.protobuf.impl.ProtoBufFormat;
 import io.github.mmm.marshall.test.StructuredBinaryFormatTest;
 
-/**
- * Test of {@link ProtoBufFormatProvider} and {@link io.github.mmm.marshall.protobuf.impl.ProtoBufFormat}.
- */
+/// Test of [ProtoBufFormatProvider] and [io.github.mmm.marshall.protobuf.impl.ProtoBufFormat].
 class ProtoBufFormatTest extends StructuredBinaryFormatTest {
 
   @Override
@@ -52,11 +50,9 @@ class ProtoBufFormatTest extends StructuredBinaryFormatTest {
     super.checkState(reader, state);
   }
 
-  /**
-   * Internal test to keep {@link #getExpectedData()} transparent and maintainable.
-   *
-   * @throws Exception on error.
-   */
+  /// Internal test to keep [#getExpectedData()] transparent and maintainable.
+  ///
+  /// @throws Exception on error.
   @Test
   void testExcpectedValue() throws Exception {
 
@@ -85,9 +81,7 @@ class ProtoBufFormatTest extends StructuredBinaryFormatTest {
     assertThat(actual).isEqualTo(expectedData);
   }
 
-  /**
-   * Test that {@link ProtoBufFormatProvider} is registered.
-   */
+  /// Test that [ProtoBufFormatProvider] is registered.
   @Test
   void testProtoBufFormat() {
 
@@ -96,11 +90,9 @@ class ProtoBufFormatTest extends StructuredBinaryFormatTest {
     assertThat(newFormat(provider, MarshallingConfig.DEFAULTS)).isInstanceOf(ProtoBufFormat.class);
   }
 
-  /**
-   * Ensure that {@link StructuredIdMapping#TYPE} fits in a tag of 2 bytes.
-   *
-   * @throws IOException on error.
-   */
+  /// Ensure that [StructuredIdMapping#TYPE] fits in a tag of 2 bytes.
+  ///
+  /// @throws IOException on error.
   @Test
   void testTagTypeSize() throws IOException {
 

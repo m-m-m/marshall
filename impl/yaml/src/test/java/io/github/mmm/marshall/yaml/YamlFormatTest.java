@@ -16,9 +16,7 @@ import io.github.mmm.marshall.StructuredTextFormatProvider;
 import io.github.mmm.marshall.StructuredWriter;
 import io.github.mmm.marshall.test.AbstractYamlFormatTest;
 
-/**
- * Test of {@link io.github.mmm.marshall.yaml.impl.YamlFormat} via {@link YamlFormatProvider}.
- */
+/// Test of [io.github.mmm.marshall.yaml.impl.YamlFormat] via [YamlFormatProvider].
 class YamlFormatTest extends AbstractYamlFormatTest {
 
   private static final Offset<BigDecimal> EPSILON = Offset.offset(new BigDecimal("0.00000000000000001"));
@@ -74,9 +72,7 @@ class YamlFormatTest extends AbstractYamlFormatTest {
     return super.getGenericValue(value);
   }
 
-  /**
-   * Test of {@link StructuredWriter#write(StructuredReader)} to convert YAML to JSON.
-   */
+  /// Test of [StructuredWriter#write(StructuredReader)] to convert YAML to JSON.
   @Test
   void testYaml2Json() {
 
@@ -95,9 +91,7 @@ class YamlFormatTest extends AbstractYamlFormatTest {
     assertThat(json).isEqualTo(getExpectedJsonData("  ", "\n", true));
   }
 
-  /**
-   * Test reading a YAML literal block scalar ({@code |}) with default (clip) chomping.
-   */
+  /// Test reading a YAML literal block scalar (`|`) with default (clip) chomping.
   @Test
   public void testReadBlockScalarLiteralClip() {
 
@@ -112,9 +106,7 @@ class YamlFormatTest extends AbstractYamlFormatTest {
     assertThat(map.get("text")).isEqualTo("line1\nline2\n");
   }
 
-  /**
-   * Test reading a YAML literal block scalar ({@code |-}) with strip chomping (no trailing newline).
-   */
+  /// Test reading a YAML literal block scalar (`|-`) with strip chomping (no trailing newline).
   @Test
   public void testReadBlockScalarLiteralStrip() {
 
@@ -129,9 +121,7 @@ class YamlFormatTest extends AbstractYamlFormatTest {
     assertThat(map.get("text")).isEqualTo("line1\nline2");
   }
 
-  /**
-   * Test reading a YAML literal block scalar ({@code |+}) with keep chomping (preserve all trailing newlines).
-   */
+  /// Test reading a YAML literal block scalar (`|+`) with keep chomping (preserve all trailing newlines).
   @Test
   public void testReadBlockScalarLiteralKeep() {
 
@@ -149,9 +139,7 @@ class YamlFormatTest extends AbstractYamlFormatTest {
     assertThat(map.get("other")).isEqualTo("value");
   }
 
-  /**
-   * Test reading a YAML folded block scalar ({@code >}) that folds newlines to spaces.
-   */
+  /// Test reading a YAML folded block scalar (`>`) that folds newlines to spaces.
   @Test
   public void testReadBlockScalarFolded() {
 
@@ -166,9 +154,7 @@ class YamlFormatTest extends AbstractYamlFormatTest {
     assertThat(map.get("text")).isEqualTo("line1 line2\n");
   }
 
-  /**
-   * Test reading a YAML flow mapping (e.g. {@code {a: 1, b: 2}}) nested in block context.
-   */
+  /// Test reading a YAML flow mapping (e.g. `{a: 1, b: 2}`) nested in block context.
   @Test
   public void testReadFlowMapping() {
 
@@ -184,9 +170,7 @@ class YamlFormatTest extends AbstractYamlFormatTest {
     assertThat(inner.get("b")).isEqualTo(Integer.valueOf(2));
   }
 
-  /**
-   * Test reading a YAML flow sequence (e.g. {@code [1, 2, 3]}) nested in block context.
-   */
+  /// Test reading a YAML flow sequence (e.g. `[1, 2, 3]`) nested in block context.
   @Test
   @SuppressWarnings("unchecked")
   public void testReadFlowSequence() {
@@ -201,9 +185,7 @@ class YamlFormatTest extends AbstractYamlFormatTest {
         Integer.valueOf(3));
   }
 
-  /**
-   * Test plain, double-quoted, and single-quoted scalars in a YAML flow sequence.
-   */
+  /// Test plain, double-quoted, and single-quoted scalars in a YAML flow sequence.
   @Test
   @SuppressWarnings("unchecked")
   public void testReadFlowScalars() {
@@ -217,9 +199,7 @@ class YamlFormatTest extends AbstractYamlFormatTest {
     assertThat((List<String>) map.get("values")).containsExactly("plain", "quoted, value", "single: value");
   }
 
-  /**
-   * Test multiline quoted flow scalars with different continuation indentation.
-   */
+  /// Test multiline quoted flow scalars with different continuation indentation.
   @Test
   @SuppressWarnings("unchecked")
   public void testReadMultilineQuotedFlowScalars() {
@@ -235,9 +215,7 @@ class YamlFormatTest extends AbstractYamlFormatTest {
     assertThat((List<String>) map.get("values")).containsExactly("first second", "third second");
   }
 
-  /**
-   * Test reading a YAML anchor ({@code &}) and referencing it via an alias ({@code *}).
-   */
+  /// Test reading a YAML anchor (`&`) and referencing it via an alias (`*`).
   @Test
   public void testReadAnchorAndAlias() {
 
@@ -252,9 +230,7 @@ class YamlFormatTest extends AbstractYamlFormatTest {
     assertThat(map.get("b")).isEqualTo("value");
   }
 
-  /**
-   * Test reading a multi-line plain scalar that gets folded into a single line separated by spaces.
-   */
+  /// Test reading a multi-line plain scalar that gets folded into a single line separated by spaces.
   @Test
   public void testReadMultilinePlainScalar() {
 
@@ -269,9 +245,7 @@ class YamlFormatTest extends AbstractYamlFormatTest {
     assertThat(map.get("text")).isEqualTo("this is a folded plain scalar");
   }
 
-  /**
-   * Test reading a double quoted string with escape sequences.
-   */
+  /// Test reading a double quoted string with escape sequences.
   @Test
   public void testReadDoubleQuotedEscapes() {
 
@@ -284,9 +258,7 @@ class YamlFormatTest extends AbstractYamlFormatTest {
     assertThat(map.get("text")).isEqualTo("line1\nline2\ttab");
   }
 
-  /**
-   * Test reading a single quoted string with an escaped single quote ({@code ''}).
-   */
+  /// Test reading a single quoted string with an escaped single quote (`''`).
   @Test
   public void testReadSingleQuotedEscapes() {
 

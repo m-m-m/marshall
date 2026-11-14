@@ -4,11 +4,9 @@ import javax.xml.namespace.NamespaceContext;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
-/**
- * {@link XMLStreamWriter} with indentation support.
- *
- * @since 1.0.0
- */
+/// [XMLStreamWriter] with indentation support.
+///
+/// @since 1.0.0
 public class IndentingXmlStreamWriter implements XMLStreamWriter {
 
   private final XMLStreamWriter xml;
@@ -19,12 +17,10 @@ public class IndentingXmlStreamWriter implements XMLStreamWriter {
 
   private int indentCount;
 
-  /**
-   * The constructor.
-   *
-   * @param xml the {@link XMLStreamWriter} to wrap and delegate to.
-   * @param indentation the {@link io.github.mmm.marshall.MarshallingConfig#VAR_INDENTATION indentation}.
-   */
+  /// The constructor.
+  ///
+  /// @param xml the [XMLStreamWriter] to wrap and delegate to.
+  /// @param indentation the [indentation][io.github.mmm.marshall.MarshallingConfig#VAR_INDENTATION].
   public IndentingXmlStreamWriter(XMLStreamWriter xml, String indentation) {
 
     super();

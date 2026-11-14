@@ -12,22 +12,18 @@ import io.github.mmm.marshall.spi.AbstractStructuredTextFormat;
 import io.github.mmm.scanner.CharReaderScanner;
 import io.github.mmm.scanner.CharSequenceScanner;
 
-/**
- * Implementation of {@link StructuredFormat} for YAML (YAML Ain't Markup Language) that extends JSON with nice and
- * advanced features.
- *
- * @since 1.0.0
- */
+/// Implementation of [StructuredFormat] for YAML (YAML Ain't Markup Language) that extends JSON with nice and
+/// advanced features.
+///
+/// @since 1.0.0
 public class YamlFormat extends AbstractStructuredTextFormat {
 
   private static final YamlFormat DEFAULT = of(MarshallingConfig.DEFAULTS);
 
-  /**
-   * The constructor.
-   *
-   * @param config the {@link MarshallingConfig}.
-   * @see io.github.mmm.marshall.StructuredFormatFactory#create(String, MarshallingConfig)
-   */
+  /// The constructor.
+  ///
+  /// @param config the [MarshallingConfig].
+  /// @see io.github.mmm.marshall.StructuredFormatFactory#create(String, MarshallingConfig)
   public YamlFormat(MarshallingConfig config) {
 
     super(config);
@@ -63,18 +59,14 @@ public class YamlFormat extends AbstractStructuredTextFormat {
     return true;
   }
 
-  /**
-   * @return the default instance of {@link YamlFormat}.
-   */
+  /// @return the default instance of [YamlFormat].
   public static YamlFormat of() {
 
     return DEFAULT;
   }
 
-  /**
-   * @param config the {@link MarshallingConfig} for the JSON vendor implementation.
-   * @return the new instance of {@link YamlFormat} with the given {@code config}.
-   */
+  /// @param config the [MarshallingConfig] for the JSON vendor implementation.
+  /// @return the new instance of [YamlFormat] with the given `config`.
   public static YamlFormat of(MarshallingConfig config) {
 
     if (config == null) {

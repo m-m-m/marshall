@@ -9,21 +9,17 @@ import io.github.mmm.marshall.StructuredWriter;
 import io.github.mmm.marshall.id.StructuredIdMappingObject;
 import io.github.mmm.marshall.spi.StructuredNodeType;
 
-/**
- * Implementation of {@link StructuredWriter} for XML using TeaVM.
- *
- * @since 1.0.0
- */
+/// Implementation of [StructuredWriter] for XML using TeaVM.
+///
+/// @since 1.0.0
 public class TvmXmlStringWriter extends AbstractStructuredStringWriter<TvmXmlState> {
 
   private String closingTag;
 
-  /**
-   * The constructor.
-   *
-   * @param out the {@link Appendable} to write the XML to.
-   * @param format the {@link #getFormat() format}.
-   */
+  /// The constructor.
+  ///
+  /// @param out the [Appendable] to write the XML to.
+  /// @param format the [format][#getFormat()].
   public TvmXmlStringWriter(Appendable out, TvmXmlFormat format) {
 
     super(out, format);

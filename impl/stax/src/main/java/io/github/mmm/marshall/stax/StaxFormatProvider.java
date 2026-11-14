@@ -13,11 +13,9 @@ import io.github.mmm.marshall.StructuredTextFormat;
 import io.github.mmm.marshall.StructuredTextFormatProvider;
 import io.github.mmm.marshall.stax.impl.StaxFormat;
 
-/**
- * {@link StructuredFormatProvider} for XML using StAX.
- *
- * @since 1.0.0
- */
+/// [StructuredFormatProvider] for XML using StAX.
+///
+/// @since 1.0.0
 public class StaxFormatProvider extends AbstractStructuredFormatProvider implements StructuredTextFormatProvider {
 
   @Override
@@ -47,11 +45,9 @@ public class StaxFormatProvider extends AbstractStructuredFormatProvider impleme
     return new StaxFormat(config);
   }
 
-  /**
-   * @param readerFactory the {@link XMLInputFactory}.
-   * @param writerFactory the {@link XMLOutputFactory}.
-   * @return a new instance of {@link StructuredFormat} for "JSON-style" XML based on StAX.
-   */
+  /// @param readerFactory the [XMLInputFactory].
+  /// @param writerFactory the [XMLOutputFactory].
+  /// @return a new instance of [StructuredFormat] for "JSON-style" XML based on StAX.
   public static StructuredTextFormat of(XMLInputFactory readerFactory, XMLOutputFactory writerFactory) {
 
     return new StaxFormat(readerFactory, writerFactory, MarshallingConfig.DEFAULTS);

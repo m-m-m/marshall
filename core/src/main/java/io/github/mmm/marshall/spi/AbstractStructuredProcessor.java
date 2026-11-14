@@ -14,39 +14,33 @@ import io.github.mmm.marshall.StructuredState;
 import io.github.mmm.marshall.StructuredWriter;
 import io.github.mmm.marshall.id.StructuredIdMappingObject;
 
-/**
- * Abstract base implementation of {@link StructuredReader}.
- *
- * @param <S> type of the {@link StructuredNode}.
- * @since 1.0.0
- */
+/// Abstract base implementation of [StructuredReader].
+///
+/// @param <S> type of the [StructuredNode].
+/// @since 1.0.0
 public abstract class AbstractStructuredProcessor<S extends StructuredNode<S>> implements StructuredProcessor {
 
   private final StructuredFormat format;
 
-  /** The {@link MarshallingConfig}. */
+  /// The [MarshallingConfig].
   protected final MarshallingConfig config;
 
-  /** @see MarshallingConfig#VAR_ENUM_FORMAT */
+  /// @see MarshallingConfig#VAR_ENUM_FORMAT
   protected final EnumFormat enumFormat;
 
-  /**
-   * @see StructuredReader#readName()
-   * @see StructuredWriter#writeName(String)
-   */
+  /// @see StructuredReader#readName()
+  /// @see StructuredWriter#writeName(String)
   protected String name;
 
-  /** @see #getState() */
+  /// @see #getState()
   StructuredState state;
 
-  /** The current {@link StructuredNode}. */
+  /// The current [StructuredNode].
   protected S node;
 
-  /**
-   * The constructor.
-   *
-   * @param format the {@link #getFormat() format}.
-   */
+  /// The constructor.
+  ///
+  /// @param format the [format][#getFormat()].
   public AbstractStructuredProcessor(StructuredFormat format) {
 
     super();
@@ -57,11 +51,9 @@ public abstract class AbstractStructuredProcessor<S extends StructuredNode<S>> i
     this.node = newNode(null, null); // root state
   }
 
-  /**
-   * @param type the {@link StructuredNodeType}.
-   * @param object the {@link StructuredIdMappingObject}. Will be {@code null} for {@link StructuredNodeType#ARRAY}.
-   * @return the new child {@link StructuredNode}.
-   */
+  /// @param type the [StructuredNodeType].
+  /// @param object the [StructuredIdMappingObject]. Will be `null` for [StructuredNodeType#ARRAY].
+  /// @return the new child [StructuredNode].
   protected abstract S newNode(StructuredNodeType type, StructuredIdMappingObject object);
 
   @Override
@@ -76,13 +68,11 @@ public abstract class AbstractStructuredProcessor<S extends StructuredNode<S>> i
     return this.state;
   }
 
-  /**
-   * Set the new {@link #getState() state} and checks if the
-   * {@link StructuredState#isValidTransition(StructuredState, StructuredNodeType) transition is valid}.
-   *
-   * @param newState the new {@link #getState() state} to set.
-   * @return the given {@link StructuredState} that has been set. May be used for fluent API calls.
-   */
+  /// Set the new [state][#getState()] and checks if the
+  /// [transition is valid][StructuredState#isValidTransition(StructuredState, StructuredNodeType)].
+  ///
+  /// @param newState the new [state][#getState()] to set.
+  /// @return the given [StructuredState] that has been set. May be used for fluent API calls.
   protected StructuredState setState(StructuredState newState) {
 
     // accept intermediate transitions from to NULL (edge-case for gRPC)
@@ -123,11 +113,9 @@ public abstract class AbstractStructuredProcessor<S extends StructuredNode<S>> i
     return this.name;
   }
 
-  /**
-   * @return the potential ID corresponding to the {@link #getName() name} for the current property of
-   *         {@link StructuredFormat#isIdBased() ID based} {@link StructuredFormat formats}. For other formats this
-   *         method will always return {@code 0}.
-   */
+  /// @return the potential ID corresponding to the [name][#getName()] for the current property of
+  ///         [ID based][StructuredFormat#isIdBased()] [formats][StructuredFormat]. For other formats this
+  ///         method will always return `0`.
   public int getId() {
 
     return 0;
@@ -148,11 +136,9 @@ public abstract class AbstractStructuredProcessor<S extends StructuredNode<S>> i
     this.node = null;
   }
 
-  /**
-   * Called once to close this writer and free resources.
-   *
-   * @throws IOException on error.
-   */
+  /// Called once to close this writer and free resources.
+  ///
+  /// @throws IOException on error.
   protected abstract void doClose() throws IOException;
 
 }

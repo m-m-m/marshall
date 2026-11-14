@@ -4,28 +4,21 @@ package io.github.mmm.marshall;
 
 import java.nio.file.Path;
 
-/**
- * Helper to {@link #getProvider(Path) get} a {@link StructuredFormatProvider} from a {@link Path} or its filename.
- *
- * @since 1.0.0
- */
+/// Helper to [get][#getProvider(Path)] a [StructuredFormatProvider] from a [Path] or its filename.
+///
+/// @since 1.0.0
 public interface StructuredFormatHelper {
 
-  /**
-   * @param path the {@link Path} pointing to a file where to store {@link StructuredFormat} payload (a marshalled
-   *        object).
-   * @return the {@link StructuredFormatProvider} determined from the file extension.
-   */
+  /// @param path the [Path] pointing to a file where to store [StructuredFormat] payload (a marshalled
+  ///        object).
+  /// @return the [StructuredFormatProvider] determined from the file extension.
   static StructuredFormatProvider getProvider(Path path) {
 
     return getProvider(path.getFileName().toString());
   }
 
-  /**
-   *
-   * @param filename the {@link Path#getFileName() file name} as {@link String}.
-   * @return the {@link StructuredFormatProvider} determined from the file extension.
-   */
+  /// @param filename the [file name][Path#getFileName()] as [String].
+  /// @return the [StructuredFormatProvider] determined from the file extension.
   static StructuredFormatProvider getProvider(String filename) {
 
     int lastDot = filename.lastIndexOf('.');

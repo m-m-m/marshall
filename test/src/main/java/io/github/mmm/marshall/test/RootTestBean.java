@@ -7,9 +7,7 @@ import io.github.mmm.marshall.id.StructuredIdMapping;
 import io.github.mmm.marshall.id.StructuredIdMappingMap;
 import io.github.mmm.marshall.id.StructuredIdMappingObject;
 
-/**
- * Dummy bean for testing.
- */
+/// Dummy bean for testing.
 class RootTestBean implements StructuredIdMappingObject {
 
   static final String PROPERTY_FOO = "foo";
@@ -28,65 +26,49 @@ class RootTestBean implements StructuredIdMappingObject {
 
   private List<Object> empty;
 
-  /**
-   * @return foo
-   */
+  /// @return foo
   public String getFoo() {
 
     return this.foo;
   }
 
-  /**
-   * @param foo new value of {@link #getFoo()}.
-   */
+  /// @param foo new value.
   public void setFoo(String foo) {
 
     this.foo = foo;
   }
 
-  /**
-   * @return instant
-   */
+  /// @return instant
   public Instant getInstant() {
 
     return this.instant;
   }
 
-  /**
-   * @param instant new value of {@link #getInstant()}.
-   */
+  /// @param instant new value.
   public void setInstant(Instant instant) {
 
     this.instant = instant;
   }
 
-  /**
-   * @return list
-   */
+  /// @return list
   public List<Object> getList() {
 
     return this.list;
   }
 
-  /**
-   * @param list new value of {@link #getList()}.
-   */
+  /// @param list new value.
   public void setList(List<Object> list) {
 
     this.list = list;
   }
 
-  /**
-   * @return empty
-   */
+  /// @return empty
   public List<Object> getEmpty() {
 
     return this.empty;
   }
 
-  /**
-   * @param empty new value of {@link #getEmpty()}.
-   */
+  /// @param empty new value.
   public void setEmpty(List<Object> empty) {
 
     this.empty = empty;

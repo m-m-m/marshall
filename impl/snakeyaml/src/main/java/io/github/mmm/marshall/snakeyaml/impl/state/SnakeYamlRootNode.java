@@ -2,20 +2,16 @@ package io.github.mmm.marshall.snakeyaml.impl.state;
 
 import java.nio.channels.IllegalSelectorException;
 
-/**
- * {@link SnakeYamlParentNode} for the root when writing to snake-yaml.
- *
- * @since 1.0.0
- */
+/// [SnakeYamlParentNode] for the root when writing to snake-yaml.
+///
+/// @since 1.0.0
 public class SnakeYamlRootNode extends SnakeYamlParentNode {
 
   private static final SnakeYamlRootNode INSTANCE = new SnakeYamlRootNode();
 
   private Object value;
 
-  /**
-   * The constructor.
-   */
+  /// The constructor.
   public SnakeYamlRootNode() {
 
     super(null, null, null);
@@ -50,9 +46,7 @@ public class SnakeYamlRootNode extends SnakeYamlParentNode {
     return null;
   }
 
-  /**
-   * @return the singleton instance.
-   */
+  /// @return the singleton instance.
   public static SnakeYamlRootNode get() {
 
     return INSTANCE;

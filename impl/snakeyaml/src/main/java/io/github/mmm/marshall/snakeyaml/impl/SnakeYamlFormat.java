@@ -14,23 +14,19 @@ import io.github.mmm.marshall.StructuredReader;
 import io.github.mmm.marshall.StructuredWriter;
 import io.github.mmm.marshall.spi.AbstractStructuredTextFormat;
 
-/**
- * Implementation of {@link StructuredFormat} for JSON (JavaScript Object Notation).
- *
- * @since 1.0.0
- */
+/// Implementation of [StructuredFormat] for JSON (JavaScript Object Notation).
+///
+/// @since 1.0.0
 public class SnakeYamlFormat extends AbstractStructuredTextFormat {
 
   private static final SnakeYamlFormat DEFAULT = of(MarshallingConfig.DEFAULTS);
 
   private final Yaml yaml;
 
-  /**
-   * The constructor.
-   *
-   * @param config the {@link MarshallingConfig}.
-   * @see io.github.mmm.marshall.StructuredFormatFactory#create(String, MarshallingConfig)
-   */
+  /// The constructor.
+  ///
+  /// @param config the [MarshallingConfig].
+  /// @see io.github.mmm.marshall.StructuredFormatFactory#create(String, MarshallingConfig)
   public SnakeYamlFormat(MarshallingConfig config) {
 
     super(config);
@@ -64,18 +60,14 @@ public class SnakeYamlFormat extends AbstractStructuredTextFormat {
     return new SnakeYamlWriter(writer, this, this.yaml);
   }
 
-  /**
-   * @return the default instance of {@link SnakeYamlFormat}.
-   */
+  /// @return the default instance of [SnakeYamlFormat].
   public static SnakeYamlFormat of() {
 
     return DEFAULT;
   }
 
-  /**
-   * @param config the {@link MarshallingConfig} for the JSON vendor implementation.
-   * @return the new instance of {@link SnakeYamlFormat} with the given {@code config}.
-   */
+  /// @param config the [MarshallingConfig] for the JSON vendor implementation.
+  /// @return the new instance of [SnakeYamlFormat] with the given `config`.
   public static SnakeYamlFormat of(MarshallingConfig config) {
 
     if (config == null) {

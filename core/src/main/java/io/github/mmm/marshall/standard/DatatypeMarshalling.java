@@ -10,25 +10,21 @@ import io.github.mmm.marshall.StructuredReader;
 import io.github.mmm.marshall.StructuredWriter;
 import io.github.mmm.marshall.impl.MashallingDatatypes;
 
-/**
- * Implementation of {@link Marshalling} for simple standard datatypes as specified by {@link io.github.mmm.marshall}.
- *
- * @param <T> type of the datatype.
- * @since 1.0.0
- * @see StructuredReader#readValue(Class)
- * @see StructuredWriter#writeValue(Object)
- */
+/// Implementation of [Marshalling] for simple standard datatypes as specified by [io.github.mmm.marshall].
+///
+/// @param <T> type of the datatype.
+/// @since 1.0.0
+/// @see StructuredReader#readValue(Class)
+/// @see StructuredWriter#writeValue(Object)
 public class DatatypeMarshalling<T> implements Marshalling<T> {
 
   private static final Map<Class<?>, DatatypeMarshalling<?>> MARSHALLING_MAP = new HashMap<>();
 
   private final Class<T> type;
 
-  /**
-   * The constructor.
-   *
-   * @param type the {@link Class} reflecting the datatype.
-   */
+  /// The constructor.
+  ///
+  /// @param type the [Class] reflecting the datatype.
   protected DatatypeMarshalling(Class<T> type) {
 
     super();
@@ -47,11 +43,9 @@ public class DatatypeMarshalling<T> implements Marshalling<T> {
     return reader.readValue(this.type);
   }
 
-  /**
-   * @param <T> type of the datatype.
-   * @param type {@link Class} reflecting the datatype.
-   * @return the {@link DatatypeMarshalling} for the given {@link Class}.
-   */
+  /// @param <T> type of the datatype.
+  /// @param type [Class] reflecting the datatype.
+  /// @return the [DatatypeMarshalling] for the given [Class].
   @SuppressWarnings("unchecked")
   public static <T> DatatypeMarshalling<T> of(Class<T> type) {
 

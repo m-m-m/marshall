@@ -6,13 +6,10 @@ import org.junit.jupiter.api.Test;
 import io.github.mmm.marshall.StructuredProcessor;
 import io.github.mmm.marshall.id.StructuredIdMapping;
 
-/**
- * Test of {@link StructuredIdMappingDefault}.
- */
+/// Test of [StructuredIdMappingDefault].
 class StructuredIdMappingDefaultTest extends Assertions {
 
-  /** Test of {@link StructuredIdMappingDefault#computeSize(int)}. */
-  @SuppressWarnings("javadoc")
+  /// Test of [StructuredIdMappingDefault#computeSize(int)].
   @Test
   void testComputeSize() {
 
@@ -42,7 +39,7 @@ class StructuredIdMappingDefaultTest extends Assertions {
     assertThat(StructuredIdMappingDefault.computeSize(4096)).isEqualTo(2048);
   }
 
-  /** Test of {@link StructuredIdMappingDefault} (put mappings and read them). */
+  /// Test of [StructuredIdMappingDefault] (put mappings and read them).
   @Test
   void testMapping() {
 
@@ -59,7 +56,7 @@ class StructuredIdMappingDefaultTest extends Assertions {
     assertThat(mapping.name(StructuredIdMapping.TYPE)).isEqualTo(StructuredProcessor.TYPE);
   }
 
-  /** Test of {@link StructuredIdMappingDefault#put(int, String)} with illegal mapping. */
+  /// Test of [StructuredIdMappingDefault#put(int, String)] with illegal mapping.
   @Test
   void testIllegalMapping() {
 
@@ -78,7 +75,7 @@ class StructuredIdMappingDefaultTest extends Assertions {
     }
   }
 
-  /** Test of {@link StructuredIdMappingDefault} (put mappings and read them). */
+  /// Test of [StructuredIdMappingDefault] (put mappings and read them).
   @Test
   void testMappingAutoId() {
 

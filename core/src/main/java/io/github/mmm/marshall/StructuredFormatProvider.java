@@ -2,30 +2,21 @@
  * http://www.apache.org/licenses/LICENSE-2.0 */
 package io.github.mmm.marshall;
 
-/**
- * Factory to create instances of {@link StructuredFormat}.
- *
- * @since 1.0.0
- */
+/// Factory to create instances of [StructuredFormat].
+///
+/// @since 1.0.0
 public interface StructuredFormatProvider {
 
-  /**
-   * @return the {@link StructuredFormat#getId() ID} of the {@link StructuredFormat} to {@link #create()}. E.g.
-   *         {@link StructuredFormat#ID_JSON JSON}, {@link StructuredFormat#ID_XML XML}, {@link StructuredFormat#ID_YAML
-   *         YAML}, or {@link StructuredFormat#ID_PROTOBUF}.
-   * @see StructuredFormat#getId()
-   */
+  /// @return the [ID][StructuredFormat#getId()] of the [StructuredFormat] to [#create()]. E.g.
+  ///         [JSON][StructuredFormat#ID_JSON], [XML][StructuredFormat#ID_XML], [YAML][StructuredFormat#ID_YAML], or [StructuredFormat#ID_PROTOBUF].
+  /// @see StructuredFormat#getId()
   String getId();
 
-  /**
-   * @return a new {@link StructuredFormat} for {@link #getId() this} format using default configuration.
-   */
+  /// @return a new [StructuredFormat] for [this][#getId()] format using default configuration.
   StructuredFormat create();
 
-  /**
-   * @param config the {@link MarshallingConfig} to customize the format.
-   * @return a new {@link StructuredFormat} for {@link #getId() this} format using the given {@code config}.
-   */
+  /// @param config the [MarshallingConfig] to customize the format.
+  /// @return a new [StructuredFormat] for [this][#getId()] format using the given `config`.
   StructuredFormat create(MarshallingConfig config);
 
 }

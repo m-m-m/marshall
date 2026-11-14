@@ -10,12 +10,10 @@ import io.github.mmm.marshall.StructuredState;
 import io.github.mmm.marshall.StructuredWriter;
 import io.github.mmm.marshall.id.StructuredIdMappingObject;
 
-/**
- * Abstract base implementation of {@link StructuredWriter}.
- *
- * @param <S> type of the {@link StructuredNode}.
- * @since 1.0.0
- */
+/// Abstract base implementation of [StructuredWriter].
+///
+/// @param <S> type of the [StructuredNode].
+/// @since 1.0.0
 public abstract class AbstractStructuredWriter<S extends StructuredNode<S>> extends AbstractStructuredProcessor<S>
     implements StructuredWriter {
 
@@ -23,20 +21,18 @@ public abstract class AbstractStructuredWriter<S extends StructuredNode<S>> exte
 
   static final String XML_COMMENT_DASHES_ESCAPED = "\\-_-/";
 
-  /** @see #writeValueAsNull() */
+  /// @see #writeValueAsNull()
   protected final boolean writeNullValues;
 
-  /** @see MarshallingConfig#VAR_INDENTATION */
+  /// @see MarshallingConfig#VAR_INDENTATION
   protected final String indentation;
 
-  /** The current indentation count. */
+  /// The current indentation count.
   protected int indentCount;
 
-  /**
-   * The constructor.
-   *
-   * @param format the {@link #getFormat() format}.
-   */
+  /// The constructor.
+  ///
+  /// @param format the [format][#getFormat()].
   public AbstractStructuredWriter(StructuredFormat format) {
 
     super(format);
@@ -64,12 +60,10 @@ public abstract class AbstractStructuredWriter<S extends StructuredNode<S>> exte
     this.indentCount++;
   }
 
-  /**
-   * Called from {@link #writeStartArray()} and {@link #writeStartObject(StructuredIdMappingObject)}.
-   *
-   * @param type the {@link StructuredNodeType}.
-   * @param object the {@link StructuredIdMappingObject}. Will be {@code null} for {@link StructuredNodeType#ARRAY}.
-   */
+  /// Called from [#writeStartArray()] and [#writeStartObject(StructuredIdMappingObject)].
+  ///
+  /// @param type the [StructuredNodeType].
+  /// @param object the [StructuredIdMappingObject]. Will be `null` for [StructuredNodeType#ARRAY].
   protected abstract void doWriteStart(StructuredNodeType type, StructuredIdMappingObject object);
 
   @Override
@@ -84,26 +78,20 @@ public abstract class AbstractStructuredWriter<S extends StructuredNode<S>> exte
     this.node = this.node.end();
   }
 
-  /**
-   * Called from {@link #writeEnd()}.
-   *
-   * @param type the {@link StructuredNodeType} to end.
-   */
+  /// Called from [#writeEnd()].
+  ///
+  /// @param type the [StructuredNodeType] to end.
   protected abstract void doWriteEnd(StructuredNodeType type);
 
-  /**
-   * @param indent the {@link MarshallingConfig#VAR_INDENTATION indentation}.
-   * @return the given {@code indent} or a normalized form (e.g. if {@code null} was given).
-   */
+  /// @param indent the [indentation][MarshallingConfig#VAR_INDENTATION].
+  /// @return the given `indent` or a normalized form (e.g. if `null` was given).
   protected String normalizeIndentation(String indent) {
 
     return indent;
   }
 
-  /**
-   * @param currentComment the {@link #writeComment(String) comment}.
-   * @return the given comment escaped for XML.
-   */
+  /// @param currentComment the [comment][#writeComment(String)].
+  /// @return the given comment escaped for XML.
   protected String escapeXmlComment(String currentComment) {
 
     return currentComment.replace(XML_COMMENT_DASHES, XML_COMMENT_DASHES_ESCAPED);
@@ -115,11 +103,9 @@ public abstract class AbstractStructuredWriter<S extends StructuredNode<S>> exte
     writeName(newName, 0);
   }
 
-  /**
-   * @param newName the name of the property.
-   * @param newId the ID of the property.
-   * @see StructuredFormat#isIdBased()
-   */
+  /// @param newName the name of the property.
+  /// @param newId the ID of the property.
+  /// @see StructuredFormat#isIdBased()
   protected void writeName(String newName, int newId) {
 
     if (this.name != null) {

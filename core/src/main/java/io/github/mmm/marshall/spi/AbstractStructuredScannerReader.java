@@ -5,25 +5,21 @@ package io.github.mmm.marshall.spi;
 import io.github.mmm.marshall.StructuredFormat;
 import io.github.mmm.scanner.CharStreamScanner;
 
-/**
- * {@link AbstractStructuredReader} that {@link #readValue() reads values} as {@link Object}.
- *
- * @param <S> type of the {@link StructuredNode}.
- * @since 1.0.0
- */
+/// [AbstractStructuredReader] that [reads values][#readValue()] as [Object].
+///
+/// @param <S> type of the [StructuredNode].
+/// @since 1.0.0
 @SuppressWarnings("exports")
 public abstract class AbstractStructuredScannerReader<S extends StructuredNode<S>>
     extends AbstractStructuredValueReader<S> {
 
-  /** The {@link CharStreamScanner} to read from. */
+  /// The [CharStreamScanner] to read from.
   protected final CharStreamScanner reader;
 
-  /**
-   * The constructor.
-   *
-   * @param scanner the {@link CharStreamScanner} to read from.
-   * @param format the {@link #getFormat() format}.
-   */
+  /// The constructor.
+  ///
+  /// @param scanner the [CharStreamScanner] to read from.
+  /// @param format the [format][#getFormat()].
   public AbstractStructuredScannerReader(CharStreamScanner scanner, StructuredFormat format) {
 
     super(format);

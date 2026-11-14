@@ -7,11 +7,9 @@ import java.util.Objects;
 import io.github.mmm.marshall.StructuredState;
 import io.github.mmm.marshall.id.StructuredIdMapping;
 
-/**
- * State object for reading or writing ProtoBuf/gRPC.
- *
- * @since 1.0.0
- */
+/// State object for reading or writing ProtoBuf/gRPC.
+///
+/// @since 1.0.0
 public class ProtoBufState {
 
   final ProtoBufState parent;

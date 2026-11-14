@@ -21,13 +21,11 @@ import io.github.mmm.marshall.protobuf.ProtoBufFormatProvider;
 import io.github.mmm.marshall.spi.AbstractStructuredBinaryWriter;
 import io.github.mmm.marshall.spi.StructuredNodeType;
 
-/**
- * Implementation of {@link StructuredWriter} for ProtoBuf/gRPC.
- *
- * @see ProtoBufFormat
- *
- * @since 1.0.0
- */
+/// Implementation of [StructuredWriter] for ProtoBuf/gRPC.
+///
+/// @see ProtoBufFormat
+///
+/// @since 1.0.0
 public class ProtoBufWriter extends AbstractStructuredBinaryWriter<ProtoBufNode> {
 
   private static final byte ZERO = 0;
@@ -46,12 +44,10 @@ public class ProtoBufWriter extends AbstractStructuredBinaryWriter<ProtoBufNode>
 
   private final SizeFix firstFix;
 
-  /**
-   * The constructor.
-   *
-   * @param os the {@link OutputStream} to write the data to.
-   * @param format the {@link #getFormat()}.
-   */
+  /// The constructor.
+  ///
+  /// @param os the [OutputStream] to write the data to.
+  /// @param format the [#getFormat()].
   public ProtoBufWriter(OutputStream os, ProtoBufFormat format) {
 
     super(format);

@@ -5,38 +5,30 @@ package io.github.mmm.marshall.impl;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-/**
- * Container for {@link EnumMapping}s. Supports thread-safe unmarshalling of any {@link Enum}.
- */
+/// Container for [EnumMapping]s. Supports thread-safe unmarshalling of any [Enum].
 public class EnumMappings {
 
   private static final EnumMappings INSTANCE = new EnumMappings();
 
   private Map<Class<? extends Enum<?>>, EnumMapping<?>> mappings;
 
-  /**
-   * The constructor.
-   */
+  /// The constructor.
   public EnumMappings() {
 
     super();
     this.mappings = new ConcurrentHashMap<>();
   }
 
-  /**
-   * @param <E> type of the {@link Enum}.
-   * @param enumType the {@link Class} reflecting the {@link Enum}.
-   * @return the requested {@link EnumMapping}.
-   */
+  /// @param <E> type of the [Enum].
+  /// @param enumType the [Class] reflecting the [Enum].
+  /// @return the requested [EnumMapping].
   @SuppressWarnings({ "rawtypes", "unchecked" })
   public <E extends Enum<E>> EnumMapping<E> getMapping(Class<E> enumType) {
 
-    return (EnumMapping) this.mappings.computeIfAbsent(enumType, e -> new EnumMapping<>(enumType));
+    return (EnumMapping) this.mappings.computeIfAbsent(enumType, _ -> new EnumMapping<>(enumType));
   }
 
-  /**
-   * @return the singleton instance of {@link EnumMappings}.
-   */
+  /// @return the singleton instance of [EnumMappings].
   public static EnumMappings get() {
 
     return INSTANCE;

@@ -9,17 +9,15 @@ import io.github.mmm.marshall.StructuredState;
 import io.github.mmm.marshall.spi.StructuredNode;
 import io.github.mmm.marshall.spi.StructuredNodeType;
 
-/**
- * State object for reading or writing JSON.
- *
- * @since 1.0.0
- */
+/// State object for reading or writing JSON.
+///
+/// @since 1.0.0
 public abstract class SnakeYamlNode extends StructuredNode<SnakeYamlNode> {
 
-  /** The name of this state as property. */
+  /// The name of this state as property.
   protected final String name;
 
-  /** @see #getState() */
+  /// @see #getState()
   public StructuredState state;
 
   SnakeYamlNode(SnakeYamlNode parent, StructuredNodeType type, String name) {
@@ -31,11 +29,9 @@ public abstract class SnakeYamlNode extends StructuredNode<SnakeYamlNode> {
     }
   }
 
-  /**
-   * Proceeds to the next {@link StructuredState}.
-   *
-   * @return the next {@link SnakeYamlNode}. Can be this {@link SnakeYamlNode} itself, a child or its parent.
-   */
+  /// Proceeds to the next [StructuredState].
+  ///
+  /// @return the next [SnakeYamlNode]. Can be this [SnakeYamlNode] itself, a child or its parent.
   public abstract SnakeYamlNode next();
 
   @Override
@@ -48,52 +44,38 @@ public abstract class SnakeYamlNode extends StructuredNode<SnakeYamlNode> {
     return super.getType();
   }
 
-  /**
-   * @return the current {@link StructuredState}.
-   */
+  /// @return the current [StructuredState].
   public StructuredState getState() {
 
     return this.state;
   }
 
-  /**
-   * @return name the name of this property or {@code null} if no name.
-   */
+  /// @return name the name of this property or `null` if no name.
   public String getName() {
 
     return this.name;
   }
 
-  /**
-   * @return the value contained in this state.
-   */
+  /// @return the value contained in this state.
   public abstract Object getValue();
 
-  /**
-   * @return {@code true} if {@link SnakeYamlArrayNode}, {@code false} otherwise.
-   */
+  /// @return `true` if [SnakeYamlArrayNode], `false` otherwise.
   public boolean isArray() {
 
     return false;
   }
 
-  /**
-   * @return {@code true} if {@link SnakeYamlObjectNode}, {@code false} otherwise.
-   */
+  /// @return `true` if [SnakeYamlObjectNode], `false` otherwise.
   public boolean isObject() {
 
     return false;
   }
 
-  /**
-   * @param childName the name of the child value.
-   * @param childValue the value to add to this object or array.
-   */
+  /// @param childName the name of the child value.
+  /// @param childValue the value to add to this object or array.
   public abstract void addValue(String childName, Object childValue);
 
-  /**
-   * @return {@code true} if {@link SnakeYamlValueNode}, {@code false} otherwise.
-   */
+  /// @return `true` if [SnakeYamlValueNode], `false` otherwise.
   public boolean isValue() {
 
     return false;
@@ -111,10 +93,8 @@ public abstract class SnakeYamlNode extends StructuredNode<SnakeYamlNode> {
     }
   }
 
-  /**
-   * @param value the initial {@link #getValue() value}.
-   * @return the initial {@link SnakeYamlNode}.
-   */
+  /// @param value the initial [value][#getValue()].
+  /// @return the initial [SnakeYamlNode].
   public static SnakeYamlNode of(Object value) {
 
     return of(null, SnakeYamlRootNode.get(), value);

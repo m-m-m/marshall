@@ -16,7 +16,7 @@ final class ProtoBufNode extends StructuredNode<ProtoBufNode> {
 
   int sizeOverhead;
 
-  /** {@code true} if this is an explicitly encoded object or array that needs to be terminated with END_GROUP. */
+  /// `true` if this is an explicitly encoded object or array that needs to be terminated with END_GROUP.
   boolean explicit;
 
   ProtoBufNode(ProtoBufNode parent, StructuredNodeType type, StructuredIdMapping idMapping) {
@@ -31,9 +31,7 @@ final class ProtoBufNode extends StructuredNode<ProtoBufNode> {
     this.end = end;
   }
 
-  /**
-   * @return the {@link StructuredIdMapping}.
-   */
+  /// @return the [StructuredIdMapping].
   public StructuredIdMapping getIdMapping() {
 
     ProtoBufNode node = this;

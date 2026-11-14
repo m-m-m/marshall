@@ -13,11 +13,9 @@ import io.github.mmm.marshall.StructuredTextFormat;
 import io.github.mmm.marshall.StructuredTextFormatProvider;
 import io.github.mmm.marshall.jsonp.impl.JsonpFormat;
 
-/**
- * Implementation of {@link StructuredFormatProvider} for JSON-P.
- *
- * @since 1.0.0
- */
+/// Implementation of [StructuredFormatProvider] for JSON-P.
+///
+/// @since 1.0.0
 public class JsonpFormatProvider extends AbstractStructuredFormatProvider implements StructuredTextFormatProvider {
 
   @Override
@@ -44,12 +42,10 @@ public class JsonpFormatProvider extends AbstractStructuredFormatProvider implem
     return JsonpFormat.of(config);
   }
 
-  /**
-   * @param readerFactory the {@link JsonParserFactory}.
-   * @param writerFactory the {@link JsonGeneratorFactory}.
-   * @param config the {@link MarshallingConfig} for the JSON vendor implementation.
-   * @return a new instance of {@link StructuredFormat} for JSON based on JSON-P.
-   */
+  /// @param readerFactory the [JsonParserFactory].
+  /// @param writerFactory the [JsonGeneratorFactory].
+  /// @param config the [MarshallingConfig] for the JSON vendor implementation.
+  /// @return a new instance of [StructuredFormat] for JSON based on JSON-P.
   public static StructuredTextFormat of(JsonParserFactory readerFactory, JsonGeneratorFactory writerFactory,
       MarshallingConfig config) {
 

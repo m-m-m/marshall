@@ -13,13 +13,11 @@ import io.github.mmm.marshall.id.StructuredIdMappingObject;
 import io.github.mmm.marshall.spi.StructuredNodeDefault;
 import io.github.mmm.marshall.spi.StructuredNodeType;
 
-/**
- * Implementation of {@link StructuredWriter} for JSON from scratch.
- *
- * @see JsonFormat
- *
- * @since 1.0.0
- */
+/// Implementation of [StructuredWriter] for JSON from scratch.
+///
+/// @see JsonFormat
+///
+/// @since 1.0.0
 public class JsonWriter extends AbstractStructuredStringWriter<StructuredNodeDefault> {
 
   private static final long JS_NUMBER_MAX = (2L << 52) - 1;
@@ -28,12 +26,10 @@ public class JsonWriter extends AbstractStructuredStringWriter<StructuredNodeDef
 
   private final boolean quoteProperties;
 
-  /**
-   * The constructor.
-   *
-   * @param out the {@link Appendable} to write the data to.
-   * @param format the {@link #getFormat() format}.
-   */
+  /// The constructor.
+  ///
+  /// @param out the [Appendable] to write the data to.
+  /// @param format the [format][#getFormat()].
   public JsonWriter(Appendable out, JsonFormat format) {
 
     super(out, format);

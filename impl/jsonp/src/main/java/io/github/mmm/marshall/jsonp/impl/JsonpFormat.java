@@ -19,11 +19,9 @@ import io.github.mmm.marshall.StructuredReader;
 import io.github.mmm.marshall.StructuredWriter;
 import io.github.mmm.marshall.spi.AbstractStructuredTextFormat;
 
-/**
- * Implementation of {@link StructuredFormat} for JSON (JavaScript Object Notation).
- *
- * @since 1.0.0
- */
+/// Implementation of [StructuredFormat] for JSON (JavaScript Object Notation).
+///
+/// @since 1.0.0
 public class JsonpFormat extends AbstractStructuredTextFormat {
 
   private static final JsonpFormat DEFAULT = of(MarshallingConfig.DEFAULTS);
@@ -32,14 +30,12 @@ public class JsonpFormat extends AbstractStructuredTextFormat {
 
   private final JsonParserFactory readerFactory;
 
-  /**
-   * The constructor.
-   *
-   * @param readerFactory the {@link JsonParserFactory}.
-   * @param writerFactory the {@link JsonGeneratorFactory}.
-   * @param config the {@link MarshallingConfig}.
-   * @see io.github.mmm.marshall.StructuredFormatFactory#create(String, MarshallingConfig)
-   */
+  /// The constructor.
+  ///
+  /// @param readerFactory the [JsonParserFactory].
+  /// @param writerFactory the [JsonGeneratorFactory].
+  /// @param config the [MarshallingConfig].
+  /// @see io.github.mmm.marshall.StructuredFormatFactory#create(String, MarshallingConfig)
   public JsonpFormat(JsonParserFactory readerFactory, JsonGeneratorFactory writerFactory, MarshallingConfig config) {
 
     super(config);
@@ -67,18 +63,14 @@ public class JsonpFormat extends AbstractStructuredTextFormat {
     return new JsonpWriter(json, this);
   }
 
-  /**
-   * @return the default instance of {@link JsonpFormat}.
-   */
+  /// @return the default instance of [JsonpFormat].
   public static JsonpFormat of() {
 
     return DEFAULT;
   }
 
-  /**
-   * @param config the {@link MarshallingConfig} for the JSON vendor implementation.
-   * @return the new instance of {@link JsonpFormat} with the given {@code config}.
-   */
+  /// @param config the [MarshallingConfig] for the JSON vendor implementation.
+  /// @return the new instance of [JsonpFormat] with the given `config`.
   public static JsonpFormat of(MarshallingConfig config) {
 
     if (config == null) {

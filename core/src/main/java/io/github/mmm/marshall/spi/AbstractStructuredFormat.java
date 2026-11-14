@@ -7,19 +7,15 @@ import java.util.Objects;
 import io.github.mmm.marshall.MarshallingConfig;
 import io.github.mmm.marshall.StructuredFormat;
 
-/**
- * Abstract base implementation of {@link StructuredFormat}.
- */
+/// Abstract base implementation of [StructuredFormat].
 public abstract class AbstractStructuredFormat implements StructuredFormat {
 
   private final MarshallingConfig config;
 
-  /**
-   * The constructor.
-   *
-   * @param config the {@link MarshallingConfig}.
-   * @see io.github.mmm.marshall.StructuredFormatFactory#create(String, MarshallingConfig)
-   */
+  /// The constructor.
+  ///
+  /// @param config the [MarshallingConfig].
+  /// @see io.github.mmm.marshall.StructuredFormatFactory#create(String, MarshallingConfig)
   public AbstractStructuredFormat(MarshallingConfig config) {
 
     super();

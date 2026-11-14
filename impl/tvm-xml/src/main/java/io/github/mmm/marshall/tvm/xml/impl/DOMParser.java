@@ -6,23 +6,17 @@ import org.teavm.jso.JSBody;
 import org.teavm.jso.JSObject;
 import org.teavm.jso.dom.xml.Document;
 
-/**
- * {@link JSObject} for {@code DOMParser}.
- *
- * @since 1.0.0
- */
+/// [JSObject] for `DOMParser`.
+///
+/// @since 1.0.0
 public abstract class DOMParser implements JSObject {
 
-  /**
-   * @param xml the XML to parse.
-   * @param mimeType the mimetype (typically "application/xml").
-   * @return the parsed {@link Document}.
-   */
+  /// @param xml the XML to parse.
+  /// @param mimeType the mimetype (typically "application/xml").
+  /// @return the parsed [Document].
   public abstract Document parseFromString(String xml, String mimeType);
 
-  /**
-   * @return a new instance of {@link DOMParser}.
-   */
+  /// @return a new instance of [DOMParser].
   @JSBody(script = "return new DOMParser();")
   public static native DOMParser of();
 

@@ -3,9 +3,7 @@ package io.github.mmm.marshall.id.impl;
 import io.github.mmm.marshall.id.AbstractStructuredIdMapping;
 import io.github.mmm.marshall.id.StructuredIdMapping;
 
-/**
- * Implementation of {@link StructuredIdMapping} using identity mapping ({@code  1 <-> "1"}).
- */
+/// Implementation of [StructuredIdMapping] using identity mapping (` 1 <-> "1"`).
 public final class StructuredIdMappingIdentity extends AbstractStructuredIdMapping {
 
   private static final StructuredIdMappingIdentity INSTANCE = new StructuredIdMappingIdentity();
@@ -47,9 +45,7 @@ public final class StructuredIdMappingIdentity extends AbstractStructuredIdMappi
     return id;
   }
 
-  /**
-   * @return the singleton instance.
-   */
+  /// @return the singleton instance.
   public static StructuredIdMappingIdentity get() {
 
     return INSTANCE;

@@ -13,21 +13,17 @@ import io.github.mmm.marshall.snakeyaml.impl.state.SnakeYamlRootNode;
 import io.github.mmm.marshall.spi.AbstractStructuredValueReader;
 import io.github.mmm.marshall.spi.StructuredNodeType;
 
-/**
- * Implementation of {@link StructuredReader} for JSON from scratch.
- *
- * @see SnakeYamlFormat
- *
- * @since 1.0.0
- */
+/// Implementation of [StructuredReader] for JSON from scratch.
+///
+/// @see SnakeYamlFormat
+///
+/// @since 1.0.0
 public class SnakeYamlReader extends AbstractStructuredValueReader<SnakeYamlNode> {
 
-  /**
-   * The constructor.
-   *
-   * @param value the value parsed from from snake-yaml.
-   * @param format the {@link #getFormat() format}.
-   */
+  /// The constructor.
+  ///
+  /// @param value the value parsed from from snake-yaml.
+  /// @param format the [format][#getFormat()].
   public SnakeYamlReader(Object value, StructuredFormat format) {
 
     super(format);

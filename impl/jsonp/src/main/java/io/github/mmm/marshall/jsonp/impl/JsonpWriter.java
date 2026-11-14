@@ -17,13 +17,11 @@ import io.github.mmm.marshall.spi.AbstractStructuredWriter;
 import io.github.mmm.marshall.spi.StructuredNodeDefault;
 import io.github.mmm.marshall.spi.StructuredNodeType;
 
-/**
- * Implementation of {@link StructuredWriter} for JSON using {@link JsonGenerator}.
- *
- * @see JsonpFormat
- *
- * @since 1.0.0
- */
+/// Implementation of [StructuredWriter] for JSON using [JsonGenerator].
+///
+/// @see JsonpFormat
+///
+/// @since 1.0.0
 public class JsonpWriter extends AbstractStructuredWriter<StructuredNodeDefault> {
 
   private static final long JS_NUMBER_MAX = (2L << 52) - 1;
@@ -32,13 +30,11 @@ public class JsonpWriter extends AbstractStructuredWriter<StructuredNodeDefault>
 
   private final JsonGenerator json;
 
-  /**
-   * The constructor.
-   *
-   * @param json the underlying {@link JsonGenerator} to write to.
-   * @param format the {@link #getFormat() format}.
-   * @see io.github.mmm.marshall.StructuredFormatFactory#create(String, MarshallingConfig)
-   */
+  /// The constructor.
+  ///
+  /// @param json the underlying [JsonGenerator] to write to.
+  /// @param format the [format][#getFormat()].
+  /// @see io.github.mmm.marshall.StructuredFormatFactory#create(String, MarshallingConfig)
   public JsonpWriter(JsonGenerator json, StructuredFormat format) {
 
     super(format);

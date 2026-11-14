@@ -15,25 +15,21 @@ import io.github.mmm.marshall.AbstractStructuredFormatProvider;
 import io.github.mmm.marshall.StructuredFormatFactory;
 import io.github.mmm.marshall.StructuredFormatProvider;
 
-/**
- * Implementation of {@link StructuredFormatFactory}.
- *
- * @since 1.0.0
- */
+/// Implementation of [StructuredFormatFactory].
+///
+/// @since 1.0.0
 public class StructuredFormatFactoryImpl implements StructuredFormatFactory {
 
   private static final Logger LOG = LoggerFactory.getLogger(StructuredFormatFactoryImpl.class);
 
-  /** The singleton instance. */
+  /// The singleton instance.
   public static final StructuredFormatFactoryImpl INSTANCE = new StructuredFormatFactoryImpl();
 
   private final Map<String, StructuredFormatProvider> providerMap;
 
   private final Map<String, StructuredFormatProvider> aliasMap;
 
-  /**
-   * The constructor.
-   */
+  /// The constructor.
   protected StructuredFormatFactoryImpl() {
 
     super();

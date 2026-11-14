@@ -12,119 +12,96 @@ import io.github.mmm.base.variable.VariableDefinition;
 import io.github.mmm.base.variable.VariableMap;
 import io.github.mmm.marshall.id.StructuredIdMappingProvider;
 
-/**
- * {@link VariableMap} for marshalling. It defines the standard {@link VariableDefinition variables} to configure as
- * constants using the {@code VAR_} prefix. Please note that specific formats may also define additional variables. In
- * such case, they can be found in the format specific implementation of {@link StructuredFormatProvider}.
- *
- * @since 1.0.0
- */
+/// [VariableMap] for marshalling. It defines the standard [variables][VariableDefinition] to configure as
+/// constants using the `VAR_` prefix. Please note that specific formats may also define additional variables. In
+/// such case, they can be found in the format specific implementation of [StructuredFormatProvider].
+///
+/// @since 1.0.0
 public final class MarshallingConfig extends VariableMap {
 
-  /** {@link VariableDefinition} for the indentation used by {@link StructuredWriter} to format the output. */
+  /// [VariableDefinition] for the indentation used by [StructuredWriter] to format the output.
   public static final VariableDefinition<String> VAR_INDENTATION = VariableDefinition.ofString("indentation", "  ");
 
-  /**
-   * {@link VariableDefinition} to configure if {@link StructuredWriter#writeValueAsNull()} should actually write
-   * {@code null} values (if configured to {@link Boolean#TRUE}) or omit {@code null} values (if configured to
-   * {@link Boolean#FALSE}).
-   */
+  /// [VariableDefinition] to configure if [StructuredWriter#writeValueAsNull()] should actually write
+  /// `null` values (if configured to [Boolean#TRUE]) or omit `null` values (if configured to
+  /// [Boolean#FALSE]).
   public static final VariableDefinition<Boolean> VAR_WRITE_NULL_VALUES = VariableDefinition.ofBoolean("write-null",
       Boolean.TRUE);
 
-  /**
-   * {@link VariableDefinition} to configure if names can be unquoted in JSON. The default is to write names quoted and
-   * to read them with or without quotes. A value of {@link Boolean#TRUE} will make
-   * {@link StructuredWriter#writeName(String)} to actually write the property name without quotes ("{ property: true
-   * }"). A value of {@link Boolean#FALSE} disables that {@link StructuredReader#readName()} also accepts unquoted
-   * property names.<br>
-   * ATTENTION: Please note that unquoted property names are invalid according to official JSON specification and many
-   * parsers will not accept this. However, for internal usage and formats this may be interesting as the quotes are
-   * actually pointless (since a property name should never contain a colon) and produce waste. This option is only
-   * supported by {@code mmm-marshall-json} and is ignored by all other implementations including
-   * {@code mmm-marshall-jsonp}. If you do not like quoted properties you should consider using YAML format that is an
-   * extension of JSON and officially supports unquoted properties.
-   */
+  /// [VariableDefinition] to configure if names can be unquoted in JSON. The default is to write names quoted and
+  /// to read them with or without quotes. A value of [Boolean#TRUE] will make
+  /// [StructuredWriter#writeName(String)] to actually write the property name without quotes ("{ property: true
+  /// }"). A value of [Boolean#FALSE] disables that [StructuredReader#readName()] also accepts unquoted
+  /// property names.
+  /// ATTENTION: Please note that unquoted property names are invalid according to official JSON specification and many
+  /// parsers will not accept this. However, for internal usage and formats this may be interesting as the quotes are
+  /// actually pointless (since a property name should never contain a colon) and produce waste. This option is only
+  /// supported by `mmm-marshall-json` and is ignored by all other implementations including
+  /// `mmm-marshall-jsonp`. If you do not like quoted properties you should consider using YAML format that is an
+  /// extension of JSON and officially supports unquoted properties.
   public static final VariableDefinition<Boolean> VAR_UNQUOTED_PROPERTIES = VariableDefinition
       .ofBoolean("unquoted-properties", null);
 
-  /**
-   * {@link VariableDefinition} to configure how {@link Enum} values are mapped. By default the {@link Enum#ordinal()
-   * ordinal} is written while reading supports both ordinal and {@link Enum#toString() to-string}.
-   */
+  /// [VariableDefinition] to configure how [Enum] values are mapped. By default the [ordinal][Enum#ordinal()] is written while reading supports both ordinal and [to-string][Enum#toString()].
   public static final VariableDefinition<EnumFormat> VAR_ENUM_FORMAT = VariableDefinition.ofEnum("enum-format",
       EnumFormat.ORDINAL);
 
-  /**
-   * {@link VariableDefinition} to configure if the root {@link StructuredState#START_OBJECT object} should be encoded
-   * explicitly (if the value is {@code true}). Otherwise if the value is {@code false} a potential root
-   * {@link StructuredState#START_OBJECT object} is assumed and it will be omitted in the payload. The
-   * {@link VariableDefinition#getDefaultValue() default value} is {@code null} and depends on the {@link StandardFormat
-   * format}. For common {@link StructuredTextFormat text formats} such as {@link StructuredFormat#ID_JSON},
-   * {@link StructuredFormat#ID_YAML}, or {@link StructuredFormat#ID_XML}, the default is obviously {@code true}.
-   * However e.g. the format protobuf has {@code false} as default here. This option allows to override this default and
-   * force the root object to be encoded explicitly (not recommended as it increases the message length with rather
-   * redundant information) or to omit it. This {@link VariableDefinition} is only supported by some
-   * {@link StructuredBinaryFormat binary formats}.
-   */
+  /// [VariableDefinition] to configure if the root [object][StructuredState#START_OBJECT] should be encoded
+  /// explicitly (if the value is `true`). Otherwise if the value is `false` a potential root
+  /// [object][StructuredState#START_OBJECT] is assumed and it will be omitted in the payload. The
+  /// [default value][VariableDefinition#getDefaultValue()] is `null` and depends on the [format][StandardFormat]. For common [text formats][StructuredTextFormat] such as [StructuredFormat#ID_JSON],
+  /// [StructuredFormat#ID_YAML], or [StructuredFormat#ID_XML], the default is obviously `true`.
+  /// However e.g. the format protobuf has `false` as default here. This option allows to override this default and
+  /// force the root object to be encoded explicitly (not recommended as it increases the message length with rather
+  /// redundant information) or to omit it. This [VariableDefinition] is only supported by some
+  /// [binary formats][StructuredBinaryFormat].
   public static final VariableDefinition<Boolean> VAR_ENCODE_ROOT_OBJECT = VariableDefinition.ofBoolean("root-object",
       null);
 
-  /**
-   * {@link VariableDefinition} to configure {@link StructuredIdMappingProvider} what is required for
-   * {@link StructuredFormat#isIdBased() ID based formats}.
-   */
+  /// [VariableDefinition] to configure [StructuredIdMappingProvider] what is required for
+  /// [ID based formats][StructuredFormat#isIdBased()].
   public static final VariableDefinition<StructuredIdMappingProvider> VAR_ID_MAPPING_PROVIDER = new VariableDefinition<>(
       "id-mapping-provider", StructuredIdMappingProvider.class, null, true, _ -> {
         throw new UnsupportedOperationException();
       });
 
-  /**
-   * {@link VariableDefinition} to configure if the {@code target} of a {@code Link} should be included. Its value has
-   * the following meaning:
-   * <ul>
-   * <li>{@code null}: If the {@code Id} is {@code null} or transient, the link target will be written. If the target is
-   * present, it will always be read. (default)</li>
-   * <li>{@code true}: Always include link target. (mainly for debugging)</li>
-   * <li>{@code false}: Never read or write link targets.</li>
-   * </ul>
-   */
+  /// [VariableDefinition] to configure if the `target` of a `Link` should be included. Its value has
+  /// the following meaning:
+  ///
+  /// - `null`: If the `Id` is `null` or transient, the link target will be written. If the target is
+  /// present, it will always be read. (default)
+  /// - `true`: Always include link target. (mainly for debugging)
+  /// - `false`: Never read or write link targets.
   public static final VariableDefinition<Boolean> VAR_LINK_TARGET = VariableDefinition.ofBoolean("link-target", null);
 
-  /** Immutable instance of {@link MarshallingConfig} with the default values. */
+  /// Immutable instance of [MarshallingConfig] with the default values.
   public static final MarshallingConfig DEFAULTS = new MarshallingConfig(Collections.emptyMap());
 
-  /** Immutable instance of {@link MarshallingConfig} with {@link #VAR_INDENTATION} disabled. */
+  /// Immutable instance of [MarshallingConfig] with [#VAR_INDENTATION] disabled.
   public static final MarshallingConfig NO_INDENTATION = DEFAULTS.with(VAR_INDENTATION, null);
 
   private static final Set<String> STANDARD_KEYS = Set.of(VAR_INDENTATION.getName(), VAR_WRITE_NULL_VALUES.getName(),
       VAR_ENUM_FORMAT.getName(), VAR_UNQUOTED_PROPERTIES.getName());
 
-  /**
-   * The constructor.
-   */
+  /// The constructor.
   public MarshallingConfig() {
 
     super();
   }
 
-  /**
-   * The constructor.
-   *
-   * @param map the raw {@link Map} with the configuration values.
-   */
+  /// The constructor.
+  ///
+  /// @param map the raw [Map] with the configuration values.
   public MarshallingConfig(Map<String, Object> map) {
 
     super(map);
   }
 
-  /**
-   * @param <T> type of the value.
-   * @param option the {@link VariableDefinition} to set.
-   * @param value the value for the given {@link VariableDefinition}.
-   * @return a new {@link MarshallingConfig} with the given {@link VariableDefinition} set to the given {@code value} or
-   *         this {@link MarshallingConfig} if the given {@code value} is already configured.
-   */
+  /// @param <T> type of the value.
+  /// @param option the [VariableDefinition] to set.
+  /// @param value the value for the given [VariableDefinition].
+  /// @return a new [MarshallingConfig] with the given [VariableDefinition] set to the given `value` or
+  ///         this [MarshallingConfig] if the given `value` is already configured.
   public <T> MarshallingConfig with(VariableDefinition<T> option, T value) {
 
     T oldValue = get(option);
@@ -136,12 +113,10 @@ public final class MarshallingConfig extends VariableMap {
     return new MarshallingConfig(map);
   }
 
-  /**
-   * @param key the key of the proprietary and vendor specific property.
-   * @param value the value for the given {@code key}.
-   * @return a new {@link MarshallingConfig} with the given {@code key} set to the given {@code value} or this
-   *         {@link MarshallingConfig} if the given {@code value} is already configured.
-   */
+  /// @param key the key of the proprietary and vendor specific property.
+  /// @param value the value for the given `key`.
+  /// @return a new [MarshallingConfig] with the given `key` set to the given `value` or this
+  ///         [MarshallingConfig] if the given `value` is already configured.
   public MarshallingConfig with(String key, Object value) {
 
     Object oldValue = getMap().get(key);
@@ -153,10 +128,8 @@ public final class MarshallingConfig extends VariableMap {
     return new MarshallingConfig(map);
   }
 
-  /**
-   * @param key the {@link VariableDefinition#getName() key} of the option to check.
-   * @return {@code true} if proprietary (vendor specific) and {@code false} otherwise.
-   */
+  /// @param key the [key][VariableDefinition#getName()] of the option to check.
+  /// @return `true` if proprietary (vendor specific) and `false` otherwise.
   public static boolean isProprietary(String key) {
 
     return !STANDARD_KEYS.contains(key);

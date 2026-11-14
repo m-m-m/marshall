@@ -17,9 +17,7 @@ import io.github.mmm.marshall.StructuredReader;
 import io.github.mmm.marshall.StructuredState;
 import io.github.mmm.marshall.StructuredWriter;
 
-/**
- * Abstract test for {@link StructuredFormat}.
- */
+/// Abstract test for [StructuredFormat].
 @SuppressWarnings("javadoc")
 public abstract class StructuredFormatTest extends Assertions {
 
@@ -58,56 +56,40 @@ public abstract class StructuredFormatTest extends Assertions {
   private static final String[] PROPERTIES = { RootTestBean.PROPERTY_FOO, RootTestBean.PROPERTY_INSTANT,
   RootTestBean.PROPERTY_LIST, RootTestBean.PROPERTY_EMPTY };
 
-  /**
-   * @return the payload data expected by this test in the {@link #getProvider() format} to test.
-   * @see #testWrite()
-   * @see #testRead()
-   */
+  /// @return the payload data expected by this test in the [format][#getProvider()] to test.
+  /// @see #testWrite()
+  /// @see #testRead()
   protected abstract String getExpectedData();
 
-  /**
-   * @return the actual payload data after being written to {@link #newWriter()}.
-   */
+  /// @return the actual payload data after being written to [#newWriter()].
   protected abstract String getActualData();
 
-  /**
-   * @return the {@link StructuredFormatProvider} to test.
-   */
+  /// @return the [StructuredFormatProvider] to test.
   protected abstract StructuredFormatProvider getProvider();
 
-  /**
-   * @return a new {@link StringWriter} for the {@link #getProvider() format} to test.
-   * @see #getActualData()
-   */
+  /// @return a new [StringWriter] for the [format][#getProvider()] to test.
+  /// @see #getActualData()
   protected StructuredWriter newWriter() {
 
     return newWriter(null);
   }
 
-  /**
-   * @param config the {@link MarshallingConfig} to use.
-   * @return a new {@link StringWriter} for the {@link #getProvider() format} to test.
-   * @see #getActualData()
-   */
+  /// @param config the [MarshallingConfig] to use.
+  /// @return a new [StringWriter] for the [format][#getProvider()] to test.
+  /// @see #getActualData()
   protected abstract StructuredWriter newWriter(MarshallingConfig config);
 
-  /**
-   * @return a new {@link StructuredReader} reading the {@link #getExpectedData() expected data}.
-   */
+  /// @return a new [StructuredReader] reading the [expected data][#getExpectedData()].
   protected StructuredReader newReader() {
 
     return newReader(getExpectedData());
   }
 
-  /**
-   * @param data the data to read.
-   * @return a new {@link StructuredReader} reading the given data.
-   */
+  /// @param data the data to read.
+  /// @return a new [StructuredReader] reading the given data.
   protected abstract StructuredReader newReader(String data);
 
-  /**
-   * Test of {@link StructuredWriter}.
-   */
+  /// Test of [StructuredWriter].
   @Test
   protected void testWrite() {
 
@@ -116,9 +98,7 @@ public abstract class StructuredFormatTest extends Assertions {
     assertThat(getActualData()).isEqualTo(getExpectedData());
   }
 
-  /**
-   * @param writer the {@link StringWriter} where to write the test-data to.
-   */
+  /// @param writer the [StringWriter] where to write the test-data to.
   protected void writeTestData(StructuredWriter writer) {
 
     // arrange (dummy objects)
@@ -188,9 +168,7 @@ public abstract class StructuredFormatTest extends Assertions {
     assertThat(writer.getState()).isSameAs(StructuredState.DONE);
   }
 
-  /**
-   * Test of {@link StructuredReader}.
-   */
+  /// Test of [StructuredReader].
   @Test
   protected void testRead() {
 
@@ -222,9 +200,7 @@ public abstract class StructuredFormatTest extends Assertions {
     return root;
   }
 
-  /**
-   * @param reader the {@link StructuredReader} where to read the test-data from.
-   */
+  /// @param reader the [StructuredReader] where to read the test-data from.
   protected void readTestData(StructuredReader reader) {
 
     // arrange (dummy objects)
@@ -314,9 +290,7 @@ public abstract class StructuredFormatTest extends Assertions {
     assertThat(reader.getState()).isSameAs(state);
   }
 
-  /**
-   * Test of {@link StructuredReader#skipValue()}.
-   */
+  /// Test of [StructuredReader#skipValue()].
   @Test
   protected void testSkipValueAll() {
 
@@ -326,9 +300,7 @@ public abstract class StructuredFormatTest extends Assertions {
     assertThat(reader.isDone()).isTrue();
   }
 
-  /**
-   * Test of {@link StructuredReader#skipValue()}.
-   */
+  /// Test of [StructuredReader#skipValue()].
   @Test
   protected void testSkipValuePerProperty() {
 
@@ -352,12 +324,10 @@ public abstract class StructuredFormatTest extends Assertions {
     assertThat(reader.isDone()).isTrue();
   }
 
-  /**
-   * @return the payload data expected for the atomic long value 42 in the {@link #getProvider() format} to test.
-   */
+  /// @return the payload data expected for the atomic long value 42 in the [format][#getProvider()] to test.
   protected abstract String getExpectedDataForAtomicLong();
 
-  /** Test of {@link StructuredWriter#writeValue(Object)} in atomic way (without start object). */
+  /// Test of [StructuredWriter#writeValue(Object)] in atomic way (without start object).
   @Test
   protected void testWriteAtomicLong() {
 
@@ -367,7 +337,7 @@ public abstract class StructuredFormatTest extends Assertions {
     assertThat(getActualData()).isEqualTo(getExpectedDataForAtomicLong());
   }
 
-  /** Test of {@link StructuredReader#readValue()} in atomic way (without start object). */
+  /// Test of [StructuredReader#readValue()] in atomic way (without start object).
   @Test
   protected void testReadAtomicLong() {
 

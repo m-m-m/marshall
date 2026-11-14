@@ -14,20 +14,16 @@ import io.github.mmm.marshall.StructuredReader;
 import io.github.mmm.marshall.StructuredWriter;
 import io.github.mmm.marshall.spi.AbstractStructuredTextFormat;
 
-/**
- * Implementation of {@link StructuredFormat} for XML using TeaVM.
- *
- * @since 1.0.0
- */
+/// Implementation of [StructuredFormat] for XML using TeaVM.
+///
+/// @since 1.0.0
 public class TvmXmlFormat extends AbstractStructuredTextFormat {
 
   private static final TvmXmlFormat DEFAULT = new TvmXmlFormat(MarshallingConfig.DEFAULTS);
 
-  /**
-   * The constructor.
-   *
-   * @param config the {@link MarshallingConfig}.
-   */
+  /// The constructor.
+  ///
+  /// @param config the [MarshallingConfig].
   public TvmXmlFormat(MarshallingConfig config) {
 
     super(config);
@@ -98,9 +94,7 @@ public class TvmXmlFormat extends AbstractStructuredTextFormat {
     return true;
   }
 
-  /**
-   * @return the default instance of {@link TvmXmlFormat}.
-   */
+  /// @return the default instance of [TvmXmlFormat].
   public static TvmXmlFormat of() {
 
     return DEFAULT;

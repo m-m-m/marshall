@@ -11,15 +11,11 @@ import io.github.mmm.marshall.StructuredFormatFactory;
 import io.github.mmm.marshall.StructuredFormatProvider;
 import io.github.mmm.marshall.StructuredTextFormat;
 
-/**
- * Abstract test of {@link StructuredTextFormat} for {@link StructuredFormat#ID_JSON JSON}.
- */
+/// Abstract test of [StructuredTextFormat] for [JSON][StructuredFormat#ID_JSON].
 public abstract class AbstractJsonFormatTest extends AbstractJsonBasedFormatTest {
 
-  /**
-   * @return {@code true} for smart indentation, {@code false} otherwise (stupid indentation that also wraps empty
-   *         arrays, etc.).
-   */
+  /// @return `true` for smart indentation, `false` otherwise (stupid indentation that also wraps empty
+  ///         arrays, etc.).
   @Override
   protected boolean isSmartJsonIndent() {
 
@@ -32,12 +28,10 @@ public abstract class AbstractJsonFormatTest extends AbstractJsonBasedFormatTest
     return getExpectedJsonData(indent, newline, true);
   }
 
-  /**
-   * @param indent the {@link #getIndentation() indentation}.
-   * @param newline the {@link #getNewline() newline}.
-   * @param quoteProperties - {@code true} to quote properties, {@code false} otherwise.
-   * @return the expected payload data.
-   */
+  /// @param indent the [indentation][#getIndentation()].
+  /// @param newline the [newline][#getNewline()].
+  /// @param quoteProperties - `true` to quote properties, `false` otherwise.
+  /// @return the expected payload data.
   @Override
   protected String getExpectedJsonData(String indent, String newline, boolean quoteProperties) {
 
@@ -86,9 +80,7 @@ public abstract class AbstractJsonFormatTest extends AbstractJsonBasedFormatTest
     return super.getGenericValue(value);
   }
 
-  /**
-   * Test with {@link StructuredFormat#ID_JSON} and {@link StandardFormat#xml()}.
-   */
+  /// Test with [StructuredFormat#ID_JSON] and [StandardFormat#xml()].
   @Test
   void testJsonFormat() {
 

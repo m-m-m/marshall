@@ -5,9 +5,7 @@ package io.github.mmm.marshall.jsonp;
 import io.github.mmm.marshall.StructuredTextFormatProvider;
 import io.github.mmm.marshall.test.AbstractJsonFormatTest;
 
-/**
- * Test of {@link io.github.mmm.marshall.jsonp.impl.JsonpFormat} via {@link JsonpFormatProvider}.
- */
+/// Test of [io.github.mmm.marshall.jsonp.impl.JsonpFormat] via [JsonpFormatProvider].
 class JsonpFormatTest extends AbstractJsonFormatTest {
 
   @Override

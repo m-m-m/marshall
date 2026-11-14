@@ -8,9 +8,7 @@ import io.github.mmm.marshall.StructuredFormatFactory;
 import io.github.mmm.marshall.StructuredFormatProvider;
 import io.github.mmm.marshall.StructuredTextFormat;
 
-/**
- * Abstract test of {@link StructuredTextFormat}.
- */
+/// Abstract test of [StructuredTextFormat].
 public abstract class AbstractXmlFormatTest extends StructuredTextFormatTest {
 
   @Override
@@ -52,9 +50,7 @@ public abstract class AbstractXmlFormatTest extends StructuredTextFormatTest {
     return "<?xml version=\"1.0\" ?><json n=\"42\"/>";
   }
 
-  /**
-   * Test with {@link StructuredFormat#ID_XML} and {@link StandardFormat#xml()}.
-   */
+  /// Test with [StructuredFormat#ID_XML] and [StandardFormat#xml()].
   @Test
   protected void testXmlFormat() {
 

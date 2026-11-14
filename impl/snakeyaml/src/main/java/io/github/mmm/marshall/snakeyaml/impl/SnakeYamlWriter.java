@@ -22,26 +22,22 @@ import io.github.mmm.marshall.snakeyaml.impl.state.SnakeYamlRootNode;
 import io.github.mmm.marshall.spi.AbstractStructuredWriter;
 import io.github.mmm.marshall.spi.StructuredNodeType;
 
-/**
- * Implementation of {@link StructuredWriter} for JSON from scratch.
- *
- * @see SnakeYamlFormat
- *
- * @since 1.0.0
- */
+/// Implementation of [StructuredWriter] for JSON from scratch.
+///
+/// @see SnakeYamlFormat
+///
+/// @since 1.0.0
 public class SnakeYamlWriter extends AbstractStructuredWriter<SnakeYamlNode> {
 
   private final Yaml yaml;
 
   private Writer out;
 
-  /**
-   * The constructor.
-   *
-   * @param out the {@link Writer} to write the data to.
-   * @param format the {@link #getFormat() format}.
-   * @param yaml the {@link Yaml} instance.
-   */
+  /// The constructor.
+  ///
+  /// @param out the [Writer] to write the data to.
+  /// @param format the [format][#getFormat()].
+  /// @param yaml the [Yaml] instance.
   public SnakeYamlWriter(Writer out, StructuredFormat format, Yaml yaml) {
 
     super(format);

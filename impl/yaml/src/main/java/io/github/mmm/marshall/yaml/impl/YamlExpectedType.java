@@ -5,12 +5,10 @@ package io.github.mmm.marshall.yaml.impl;
 import io.github.mmm.marshall.StructuredState;
 import io.github.mmm.marshall.spi.StructuredNodeType;
 
-/**
- * Enum with groups of expected {@link StructuredState}s.
- */
+/// Enum with groups of expected [StructuredState]s.
 public enum YamlExpectedType {
 
-  /** {@link StructuredState#NAME} or {@link StructuredState#END_OBJECT}. */
+  /// [StructuredState#NAME] or [StructuredState#END_OBJECT].
   NAME_OR_END {
     @Override
     public boolean accepts(StructuredState state) {
@@ -19,7 +17,7 @@ public enum YamlExpectedType {
     }
   },
 
-  /** {@link StructuredState#VALUE} */
+  /// [StructuredState#VALUE]
   VALUE {
     @Override
     public boolean accepts(StructuredState state) {
@@ -28,7 +26,7 @@ public enum YamlExpectedType {
     }
   },
 
-  /** {@link StructuredState#VALUE}, {@link StructuredState#START_ARRAY}, or {@link StructuredState#START_OBJECT}. */
+  /// [StructuredState#VALUE], [StructuredState#START_ARRAY], or [StructuredState#START_OBJECT].
   ANY_VALUE {
     @Override
     public boolean accepts(StructuredState state) {
@@ -37,10 +35,8 @@ public enum YamlExpectedType {
     }
   },
 
-  /**
-   * {@link StructuredState#VALUE}, {@link StructuredState#START_ARRAY}, {@link StructuredState#START_OBJECT},
-   * {@link StructuredState#END_ARRAY}, or {@link StructuredState#END_OBJECT}.
-   */
+  /// [StructuredState#VALUE], [StructuredState#START_ARRAY], [StructuredState#START_OBJECT],
+  /// [StructuredState#END_ARRAY], or [StructuredState#END_OBJECT].
   ANY_VALUE_OR_END {
     @Override
     public boolean accepts(StructuredState state) {
@@ -49,7 +45,7 @@ public enum YamlExpectedType {
     }
   },
 
-  /** {@link StructuredState#DONE} */
+  /// [StructuredState#DONE]
   DONE {
     @Override
     public boolean accepts(StructuredState state) {
@@ -60,9 +56,7 @@ public enum YamlExpectedType {
 
   abstract boolean accepts(StructuredState state);
 
-  /**
-   * @param actualState the actual {@link StructuredState} to verify.
-   */
+  /// @param actualState the actual [StructuredState] to verify.
   public void verify(StructuredState actualState) {
 
     if (!accepts(actualState)) {
@@ -70,11 +64,9 @@ public enum YamlExpectedType {
     }
   }
 
-  /**
-   * @param yamlState the current {@link YamlNode}.
-   * @param state the current {@link StructuredState}.
-   * @return the resulting {@link YamlExpectedType} for the next {@link StructuredState}.
-   */
+  /// @param yamlState the current [YamlNode].
+  /// @param state the current [StructuredState].
+  /// @return the resulting [YamlExpectedType] for the next [StructuredState].
   public static YamlExpectedType of(YamlNode yamlState, StructuredState state) {
 
     if (yamlState.type == StructuredNodeType.ARRAY) {

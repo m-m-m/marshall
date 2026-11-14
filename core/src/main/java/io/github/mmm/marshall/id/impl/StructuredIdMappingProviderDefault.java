@@ -7,18 +7,14 @@ import io.github.mmm.marshall.id.StructuredIdMapping;
 import io.github.mmm.marshall.id.StructuredIdMappingObject;
 import io.github.mmm.marshall.id.StructuredIdMappingProvider;
 
-/**
- * Default implementation of {@link StructuredIdMappingProvider}.
- */
+/// Default implementation of [StructuredIdMappingProvider].
 public class StructuredIdMappingProviderDefault implements StructuredIdMappingProvider {
 
   private static final StructuredIdMappingProviderDefault INSTANCE = new StructuredIdMappingProviderDefault();
 
   private final Map<Object, StructuredIdMapping> idMappings;
 
-  /**
-   * The constructor.
-   */
+  /// The constructor.
   public StructuredIdMappingProviderDefault() {
 
     super();
@@ -32,13 +28,11 @@ public class StructuredIdMappingProviderDefault implements StructuredIdMappingPr
     if (key == null) {
       return object.defineIdMapping();
     }
-    StructuredIdMapping idMapping = this.idMappings.computeIfAbsent(key, k -> object.defineIdMapping());
+    StructuredIdMapping idMapping = this.idMappings.computeIfAbsent(key, _ -> object.defineIdMapping());
     return idMapping;
   }
 
-  /**
-   * @return the singleton instance.
-   */
+  /// @return the singleton instance.
   public static StructuredIdMappingProviderDefault get() {
 
     return INSTANCE;

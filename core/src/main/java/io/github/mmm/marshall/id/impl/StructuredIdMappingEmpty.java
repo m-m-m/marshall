@@ -2,9 +2,7 @@ package io.github.mmm.marshall.id.impl;
 
 import io.github.mmm.marshall.id.StructuredIdMapping;
 
-/**
- * Default implementation of {@link StructuredIdMapping}.
- */
+/// Default implementation of [StructuredIdMapping].
 public final class StructuredIdMappingEmpty implements StructuredIdMapping {
 
   private static final StructuredIdMappingEmpty INSTANCE = new StructuredIdMappingEmpty();
@@ -26,9 +24,7 @@ public final class StructuredIdMappingEmpty implements StructuredIdMapping {
     return 0;
   }
 
-  /**
-   * @return the singleton instance.
-   */
+  /// @return the singleton instance.
   public static StructuredIdMappingEmpty get() {
 
     return INSTANCE;

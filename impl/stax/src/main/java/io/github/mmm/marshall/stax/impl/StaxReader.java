@@ -17,23 +17,19 @@ import io.github.mmm.marshall.spi.AbstractStructuredStringReader;
 import io.github.mmm.marshall.spi.StructuredNodeDefault;
 import io.github.mmm.marshall.spi.StructuredNodeType;
 
-/**
- * Implementation of {@link StructuredReader} for XML using {@link XMLStreamReader}.
- *
- * @since 1.0.0
- */
+/// Implementation of [StructuredReader] for XML using [XMLStreamReader].
+///
+/// @since 1.0.0
 public class StaxReader extends AbstractStructuredStringReader<StructuredNodeDefault> {
 
   private XMLStreamReader xml;
 
   private long arrayStack;
 
-  /**
-   * The constructor.
-   *
-   * @param xml the {@link XMLStreamReader}.
-   * @param format the {@link #getFormat() format}.
-   */
+  /// The constructor.
+  ///
+  /// @param xml the [XMLStreamReader].
+  /// @param format the [format][#getFormat()].
   public StaxReader(XMLStreamReader xml, StructuredFormat format) {
 
     super(format);

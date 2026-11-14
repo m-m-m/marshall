@@ -4,18 +4,16 @@ package io.github.mmm.marshall.spi;
 
 import io.github.mmm.marshall.StructuredState;
 
-/**
- * Type of a node for JSON or YAML.
- *
- * @see io.github.mmm.marshall.StructuredFormat
- * @since 1.0.0
- */
+/// Type of a node for JSON or YAML.
+///
+/// @see io.github.mmm.marshall.StructuredFormat
+/// @since 1.0.0
 public enum StructuredNodeType {
 
-  /** JSON Object: {} */
+  /// JSON Object: {}
   OBJECT('{', '}', StructuredState.START_OBJECT, StructuredState.END_OBJECT),
 
-  /** JSON Array: [] */
+  /// JSON Array: []
   ARRAY('[', ']', StructuredState.START_ARRAY, StructuredState.END_ARRAY);
 
   private final char open;
@@ -34,33 +32,25 @@ public enum StructuredNodeType {
     this.end = end;
   }
 
-  /**
-   * @return the JSON character to open this type.
-   */
+  /// @return the JSON character to open this type.
   public char getOpen() {
 
     return this.open;
   }
 
-  /**
-   * @return the JSON character to close this type.
-   */
+  /// @return the JSON character to close this type.
   public char getClose() {
 
     return this.close;
   }
 
-  /**
-   * @return the {@link StructuredState} to {@link StructuredState#isStart() start} this type.
-   */
+  /// @return the [StructuredState] to [start][StructuredState#isStart()] this type.
   public StructuredState getStart() {
 
     return this.start;
   }
 
-  /**
-   * @return the {@link StructuredState} to {@link StructuredState#isEnd end} this type.
-   */
+  /// @return the [StructuredState] to [end][StructuredState#isEnd] this type.
   public StructuredState getEnd() {
 
     return this.end;

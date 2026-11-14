@@ -12,19 +12,15 @@ import io.github.mmm.marshall.StructuredState;
 import io.github.mmm.marshall.protobuf.impl.ProtoBufFormat;
 import io.github.mmm.marshall.spi.StructuredBinaryIdBasedFormatProvider;
 
-/**
- * Implementation of {@link StructuredFormatProvider} for ProtoBuf/gRPC.
- *
- * @since 1.0.0
- */
+/// Implementation of [StructuredFormatProvider] for ProtoBuf/gRPC.
+///
+/// @since 1.0.0
 public class ProtoBufFormatProvider extends AbstractStructuredFormatProvider
     implements StructuredBinaryIdBasedFormatProvider {
 
-  /**
-   * {@link VariableDefinition} to configure if {@link StructuredState#START_OBJECT objects} should be encoded as
-   * groups. Otherwise they will be encoded as length delimited objects. Even though groups have been deprecated they
-   * are used by default as this is a much better fit for this generic marhsalling.
-   */
+  /// [VariableDefinition] to configure if [objects][StructuredState#START_OBJECT] should be encoded as
+  /// groups. Otherwise they will be encoded as length delimited objects. Even though groups have been deprecated they
+  /// are used by default as this is a much better fit for this generic marhsalling.
   public static final VariableDefinition<Boolean> VAR_USE_GROUPS = VariableDefinition.ofBoolean("use-groups",
       Boolean.TRUE);
 

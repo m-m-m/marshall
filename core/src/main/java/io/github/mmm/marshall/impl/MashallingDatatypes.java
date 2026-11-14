@@ -5,13 +5,11 @@ package io.github.mmm.marshall.impl;
 import java.util.Collections;
 import java.util.Set;
 
-/**
- * Defines the supported Java standard datatypes as specified in {@link io.github.mmm.marshall}.
- *
- * @since 1.0.0
- * @see io.github.mmm.marshall.StructuredReader#readValue(Class)
- * @see io.github.mmm.marshall.StructuredWriter#writeValue(Object)
- */
+/// Defines the supported Java standard datatypes as specified in [io.github.mmm.marshall].
+///
+/// @since 1.0.0
+/// @see io.github.mmm.marshall.StructuredReader#readValue(Class)
+/// @see io.github.mmm.marshall.StructuredWriter#writeValue(Object)
 public class MashallingDatatypes {
 
   private static final Set<String> TYPES = Collections
@@ -20,10 +18,8 @@ public class MashallingDatatypes {
           "java.math.BigDecimal", "java.time.Instant", "java.time.LocalDateTime", "java.time.LocalDate",
           "java.time.LocalTime", "java.time.ZonedDateTime", "java.time.OffsetDateTime", "java.time.OffsetTime"));
 
-  /**
-   * @param type thee {@link Class} to test.
-   * @return {@code true} if a supported standard datatype, {@code false} otherwise.
-   */
+  /// @param type thee [Class] to test.
+  /// @return `true` if a supported standard datatype, `false` otherwise.
   public static boolean isSupported(Class<?> type) {
 
     if (type == null) {

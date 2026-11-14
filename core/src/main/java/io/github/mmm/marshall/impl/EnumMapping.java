@@ -8,22 +8,18 @@ import java.util.Map;
 import io.github.mmm.base.text.CaseHelper;
 import io.github.mmm.base.text.CaseSyntax;
 
-/**
- * Container with the mapping for an individual {@link Enum} optimized for performance.
- *
- * @param <E> type of the {@link Enum}.
- */
+/// Container with the mapping for an individual [Enum] optimized for performance.
+///
+/// @param <E> type of the [Enum].
 public class EnumMapping<E extends Enum<E>> {
 
   private final Map<String, E> string2enumMap;
 
   private final Map<Integer, E> ordinal2enumMap;
 
-  /**
-   * The constructor.
-   *
-   * @param enumType the {@link Class} reflecting the {@link Enum}.
-   */
+  /// The constructor.
+  ///
+  /// @param enumType the [Class] reflecting the [Enum].
   public EnumMapping(Class<E> enumType) {
 
     super();
@@ -39,19 +35,15 @@ public class EnumMapping<E extends Enum<E>> {
     }
   }
 
-  /**
-   * @param value the {@link Enum} as {@link String}.
-   * @return the according {@link Enum} value.
-   */
+  /// @param value the [Enum] as [String].
+  /// @return the according [Enum] value.
   public E fromString(String value) {
 
     return this.string2enumMap.get(value);
   }
 
-  /**
-   * @param ordinal the {@link Enum} as {@link Enum#ordinal() ordinal}.
-   * @return the according {@link Enum} value.
-   */
+  /// @param ordinal the [Enum] as [ordinal][Enum#ordinal()].
+  /// @return the according [Enum] value.
   public E fromOrdinal(Integer ordinal) {
 
     return this.ordinal2enumMap.get(ordinal);

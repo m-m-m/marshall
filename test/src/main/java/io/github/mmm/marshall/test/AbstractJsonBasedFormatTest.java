@@ -2,15 +2,11 @@ package io.github.mmm.marshall.test;
 
 import io.github.mmm.marshall.StructuredTextFormat;
 
-/**
- * Abstract test of {@link StructuredTextFormat}.
- */
+/// Abstract test of [StructuredTextFormat].
 public abstract class AbstractJsonBasedFormatTest extends StructuredTextFormatTest {
 
-  /**
-   * @return {@code true} for smart indentation, {@code false} otherwise (stupid indentation that also wraps empty
-   *         arrays, etc.).
-   */
+  /// @return `true` for smart indentation, `false` otherwise (stupid indentation that also wraps empty
+  ///         arrays, etc.).
   protected boolean isSmartJsonIndent() {
 
     return true;
@@ -22,12 +18,10 @@ public abstract class AbstractJsonBasedFormatTest extends StructuredTextFormatTe
     return getExpectedJsonData(indent, newline, true);
   }
 
-  /**
-   * @param indent the {@link #getIndentation() indentation}.
-   * @param newline the {@link #getNewline() newline}.
-   * @param quoteProperties - {@code true} to quote properties, {@code false} otherwise.
-   * @return the expected payload data.
-   */
+  /// @param indent the [indentation][#getIndentation()].
+  /// @param newline the [newline][#getNewline()].
+  /// @param quoteProperties - `true` to quote properties, `false` otherwise.
+  /// @return the expected payload data.
   protected String getExpectedJsonData(String indent, String newline, boolean quoteProperties) {
 
     String space = " ";

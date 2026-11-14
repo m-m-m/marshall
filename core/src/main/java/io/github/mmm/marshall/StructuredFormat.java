@@ -5,123 +5,98 @@ package io.github.mmm.marshall;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-/**
- * Interface providing a structured format such as JSON or XML.
- *
- * @since 1.0.0
- */
+/// Interface providing a structured format such as JSON or XML.
+///
+/// @since 1.0.0
 public interface StructuredFormat {
 
-  /** {@link StructuredFormatProvider#getId() Name} of <a href="https://www.json.org/j">JSON format</a>. */
+  /// [Name][StructuredFormatProvider#getId()] of <a href="https://www.json.org/j">JSON format</a>.
   String ID_JSON = "application/json";
 
-  /** {@link StructuredFormatProvider#getId() Name} of <a href="https://www.w3.org/XML/">XML format</a>. */
+  /// [Name][StructuredFormatProvider#getId()] of <a href="https://www.w3.org/XML/">XML format</a>.
   String ID_XML = "text/xml";
 
-  /**
-   * {@link StructuredFormatProvider#getId() Name} of <a href="https://en.wikipedia.org/wiki/YAML">YAML format</a>.
-   */
+  /// [Name][StructuredFormatProvider#getId()] of <a href="https://en.wikipedia.org/wiki/YAML">YAML format</a>.
   String ID_YAML = "text/yaml";
 
-  /** {@link StructuredFormatProvider#getId() Name} of <a href="https://grpc.io/">gRPC/protobuf format</a>. */
+  /// [Name][StructuredFormatProvider#getId()] of <a href="https://grpc.io/">gRPC/protobuf format</a>.
   String ID_PROTOBUF = "application/x-protobuf";
 
-  /**
-   * {@link StructuredFormatProvider#getId() Name} of
-   * <a href="https://github.com/m-m-m/marshall/blob/master/impl/mrpc/">mRPC format</a>.
-   */
+  /// [Name][StructuredFormatProvider#getId()] of
+  /// <a href="https://github.com/m-m-m/marshall/blob/master/impl/mrpc/">mRPC format</a>.
   String ID_MRPC = "application/x-mrpc";
 
-  /** The (XML) namespace prefix for an object. */
+  /// The (XML) namespace prefix for an object.
   String NS_PREFIX_OBJECT = "o";
 
-  /** The (XML) namespace URI for an object. */
+  /// The (XML) namespace URI for an object.
   String NS_URI_OBJECT = "object";
 
-  /** The (XML) namespace prefix for an array. */
+  /// The (XML) namespace prefix for an array.
   String NS_PREFIX_ARRAY = "a";
 
-  /** The (XML) namespace URI for an array. */
+  /// The (XML) namespace URI for an array.
   String NS_URI_ARRAY = "array";
 
-  /** The (XML) root tag. */
+  /// The (XML) root tag.
   String TAG_ROOT = "json";
 
-  /** The (XML) tag for an array item. */
+  /// The (XML) tag for an array item.
   String TAG_ITEM = "i";
 
-  /** The (XML) attribute for a string value. */
+  /// The (XML) attribute for a string value.
   String ATR_STRING_VALUE = "s";
 
-  /** The (XML) attribute for a boolean value. */
+  /// The (XML) attribute for a boolean value.
   String ATR_BOOLEAN_VALUE = "b";
 
-  /** The (XML) attribute for a numeric value. */
+  /// The (XML) attribute for a numeric value.
   String ATR_NUMBER_VALUE = "n";
 
-  /**
-   * @return the name of this format. E.g. {@link #ID_JSON JSON}, {@link #ID_XML XML}, {@link #ID_YAML YAML}, or
-   *         {@link #ID_PROTOBUF gRPC/ProtoBuf}.
-   */
+  /// @return the name of this format. E.g. [JSON][#ID_JSON], [XML][#ID_XML], [YAML][#ID_YAML], or
+  ///         [gRPC/ProtoBuf][#ID_PROTOBUF].
   String getId();
 
-  /**
-   * @param in the {@link InputStream} pointing to the structured data to read (in UTF-8) and parse.
-   * @return the {@link StructuredReader}.
-   */
+  /// @param in the [InputStream] pointing to the structured data to read (in UTF-8) and parse.
+  /// @return the [StructuredReader].
   StructuredReader reader(InputStream in);
 
-  /**
-   * @param data the data as a potentially proprietary implementation-specific type.
-   * @return the {@link StructuredReader}.
-   */
+  /// @param data the data as a potentially proprietary implementation-specific type.
+  /// @return the [StructuredReader].
   default StructuredReader reader(Object data) {
 
     throw new UnsupportedOperationException();
   }
 
-  /**
-   * @param out the {@link OutputStream} where to write the structured data to (in UTF-8).
-   * @return the wrapped {@link StructuredWriter}.
-   */
+  /// @param out the [OutputStream] where to write the structured data to (in UTF-8).
+  /// @return the wrapped [StructuredWriter].
   StructuredWriter writer(OutputStream out);
 
-  /**
-   * @return the {@link MarshallingConfig} of this format.
-   */
+  /// @return the [MarshallingConfig] of this format.
   MarshallingConfig getConfig();
 
-  /**
-   * @return {@code true} if this is a {@link StructuredBinaryFormat binary format}, {@code false} if
-   *         {@link StructuredTextFormat text format}.
-   */
+  /// @return `true` if this is a [binary format][StructuredBinaryFormat], `false` if
+  ///         [text format][StructuredTextFormat].
   boolean isBinary();
 
-  /**
-   * @return {@code true} if this is a {@link StructuredTextFormat text format} , {@code false} if
-   *         {@link StructuredBinaryFormat binary format}.
-   */
+  /// @return `true` if this is a [text format][StructuredTextFormat] , `false` if
+  ///         [binary format][StructuredBinaryFormat].
   default boolean isText() {
 
     return !isBinary();
   }
 
-  /**
-   * @return {@code true} if this format uses IDs instead of names to identify properties (like {@link #ID_PROTOBUF
-   *         gRPC/ProtoBuf}), {@code false} otherwise.
-   * @see io.github.mmm.marshall.id.StructuredIdMapping
-   * @see io.github.mmm.marshall.id.StructuredIdMappingProvider
-   */
+  /// @return `true` if this format uses IDs instead of names to identify properties (like [gRPC/ProtoBuf][#ID_PROTOBUF]), `false` otherwise.
+  /// @see io.github.mmm.marshall.id.StructuredIdMapping
+  /// @see io.github.mmm.marshall.id.StructuredIdMappingProvider
   default boolean isIdBased() {
 
     return false;
   }
 
-  /**
-   * @return {@code true} if this format supports comments, {@code false} otherwise.
-   * @see StructuredWriter#writeComment(String)
-   * @see StructuredReader#readComment()
-   */
+  /// @return `true` if this format supports comments, `false` otherwise.
+  /// @see StructuredWriter#writeComment(String)
+  /// @see StructuredReader#readComment()
   default boolean isSupportingComments() {
 
     return false;

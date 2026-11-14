@@ -5,30 +5,26 @@ package io.github.mmm.marshall;
 import io.github.mmm.base.text.CaseHelper;
 import io.github.mmm.base.text.CaseSyntax;
 
-/**
- * {@link Enum} with the available formats how to serialize an {@link Enum}.
- */
+/// [Enum] with the available formats how to serialize an [Enum].
 public enum EnumFormat {
 
-  /** Write {@link Enum} as {@link Enum#ordinal() ordinal}. */
+  /// Write [Enum] as [ordinal][Enum#ordinal()].
   ORDINAL,
 
-  /** Write {@link Enum} as {@link Enum#name() name}. */
+  /// Write [Enum] as [name][Enum#name()].
   NAME,
 
-  /** Write {@link Enum} as {@link Enum#toString() toString representation}. */
+  /// Write [Enum] as [toString representation][Enum#toString()].
   TO_STRING,
 
-  /** Like {@link #TO_STRING} but in {@link CaseHelper#toLowerCase(String) lowercase}. */
+  /// Like [#TO_STRING] but in [lowercase][CaseHelper#toLowerCase(String)].
   TO_STRING_LOWER_CASE,
 
-  /** Like {@link #TO_STRING} but in {@link CaseSyntax#TRAIN_CASE train-case}. */
+  /// Like [#TO_STRING] but in [train-case][CaseSyntax#TRAIN_CASE].
   TO_STRING_TRAIN_CASE;
 
-  /**
-   * @param e the {@link Enum} value.
-   * @return the corresponding {@link String} representation according to this format.
-   */
+  /// @param e the [Enum] value.
+  /// @return the corresponding [String] representation according to this format.
   public String toString(Enum<?> e) {
 
     if (e == null) {

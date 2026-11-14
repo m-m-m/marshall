@@ -2,16 +2,12 @@
  * http://www.apache.org/licenses/LICENSE-2.0 */
 package io.github.mmm.marshall.id;
 
-/**
- * Interface for a provider of {@link StructuredIdMapping}s.
- */
+/// Interface for a provider of [StructuredIdMapping]s.
 public interface StructuredIdMappingProvider {
 
-  /**
-   * @param object the {@link StructuredIdMappingObject} (e.g. bean or record) to get the {@link StructuredIdMapping}
-   *        for.
-   * @return the {@link StructuredIdMapping} for the given {@link Object}.
-   */
+  /// @param object the [StructuredIdMappingObject] (e.g. bean or record) to get the [StructuredIdMapping]
+  ///        for.
+  /// @return the [StructuredIdMapping] for the given [Object].
   StructuredIdMapping getMapping(StructuredIdMappingObject object);
 
 }

@@ -4,15 +4,13 @@ package io.github.mmm.marshall.snakeyaml.impl;
 
 import io.github.mmm.marshall.StructuredState;
 
-/**
- *
- */
+///
 public enum SnakeYamlNodeType {
 
-  /** JSON Object: {} */
+  /// JSON Object: {}
   OBJECT('{', '}', StructuredState.START_OBJECT, StructuredState.END_OBJECT),
 
-  /** JSON Array: [] */
+  /// JSON Array: []
   ARRAY('[', ']', StructuredState.START_ARRAY, StructuredState.END_ARRAY);
 
   private final char open;
@@ -31,33 +29,25 @@ public enum SnakeYamlNodeType {
     this.end = end;
   }
 
-  /**
-   * @return open
-   */
+  /// @return open
   public char getOpen() {
 
     return this.open;
   }
 
-  /**
-   * @return close
-   */
+  /// @return close
   public char getClose() {
 
     return this.close;
   }
 
-  /**
-   * @return start
-   */
+  /// @return start
   public StructuredState getStart() {
 
     return this.start;
   }
 
-  /**
-   * @return end
-   */
+  /// @return end
   public StructuredState getEnd() {
 
     return this.end;

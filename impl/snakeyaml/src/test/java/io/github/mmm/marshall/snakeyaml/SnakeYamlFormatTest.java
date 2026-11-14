@@ -9,9 +9,7 @@ import org.assertj.core.data.Offset;
 import io.github.mmm.marshall.StructuredTextFormatProvider;
 import io.github.mmm.marshall.test.AbstractYamlFormatTest;
 
-/**
- * Test of {@link io.github.mmm.marshall.snakeyaml.impl.SnakeYamlFormat} via {@link SnakeYamlFormatProvider}.
- */
+/// Test of [io.github.mmm.marshall.snakeyaml.impl.SnakeYamlFormat] via [SnakeYamlFormatProvider].
 class SnakeYamlFormatTest extends AbstractYamlFormatTest {
 
   private static final Offset<BigDecimal> EPSILON = Offset.offset(new BigDecimal("0.00000000000000001"));

@@ -5,28 +5,22 @@ package io.github.mmm.marshall.spi;
 import io.github.mmm.base.number.NumberType;
 import io.github.mmm.marshall.StructuredFormat;
 
-/**
- * {@link AbstractStructuredReader} that {@link #readValue() reads values} from a textual representation.
- *
- * @param <S> type of the {@link StructuredNode}.
- * @since 1.0.0
- */
+/// [AbstractStructuredReader] that [reads values][#readValue()] from a textual representation.
+///
+/// @param <S> type of the [StructuredNode].
+/// @since 1.0.0
 public abstract class AbstractStructuredStringReader<S extends StructuredNode<S>> extends AbstractStructuredReader<S> {
 
-  /**
-   * The constructor.
-   *
-   * @param format the {@link #getFormat() format}.
-   */
+  /// The constructor.
+  ///
+  /// @param format the [format][#getFormat()].
   public AbstractStructuredStringReader(StructuredFormat format) {
 
     super(format);
   }
 
-  /**
-   * @see #readValueAsString()
-   * @return the value as {@link String} but assuring it as number.
-   */
+  /// @see #readValueAsString()
+  /// @return the value as [String] but assuring it as number.
   protected String readValueAsNumberString() {
 
     return readValueAsString();

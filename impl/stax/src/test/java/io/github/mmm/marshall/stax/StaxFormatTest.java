@@ -5,9 +5,7 @@ package io.github.mmm.marshall.stax;
 import io.github.mmm.marshall.StructuredTextFormatProvider;
 import io.github.mmm.marshall.test.AbstractXmlFormatTest;
 
-/**
- * Test of {@link StaxFormatProvider}.
- */
+/// Test of [StaxFormatProvider].
 class StaxFormatTest extends AbstractXmlFormatTest {
 
   @Override

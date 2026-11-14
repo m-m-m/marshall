@@ -16,25 +16,21 @@ import io.github.mmm.marshall.spi.AbstractStructuredReader;
 import io.github.mmm.marshall.spi.StructuredNodeDefault;
 import io.github.mmm.marshall.spi.StructuredNodeType;
 
-/**
- * Implementation of {@link StructuredReader} for JSON using {@link JsonParser}.
- *
- * @see JsonpFormat
- *
- * @since 1.0.0
- */
+/// Implementation of [StructuredReader] for JSON using [JsonParser].
+///
+/// @see JsonpFormat
+///
+/// @since 1.0.0
 public class JsonpReader extends AbstractStructuredReader<StructuredNodeDefault> {
 
   private JsonParser json;
 
   private Event event;
 
-  /**
-   * The constructor.
-   *
-   * @param json the {@link JsonpReader}.
-   * @param format the {@link #getFormat() format}.
-   */
+  /// The constructor.
+  ///
+  /// @param json the [JsonpReader].
+  /// @param format the [format][#getFormat()].
   public JsonpReader(JsonParser json, StructuredFormat format) {
 
     super(format);

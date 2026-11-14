@@ -6,9 +6,7 @@ import io.github.mmm.marshall.id.AbstractStructuredIdMapping;
 import io.github.mmm.marshall.id.StructuredIdMapping;
 import io.github.mmm.marshall.id.StructuredIdMappingMap;
 
-/**
- * Default implementation of {@link StructuredIdMapping}.
- */
+/// Default implementation of [StructuredIdMapping].
 public class StructuredIdMappingDefault extends AbstractStructuredIdMapping implements StructuredIdMappingMap {
 
   private final Entry[] name2idMap;
@@ -17,11 +15,9 @@ public class StructuredIdMappingDefault extends AbstractStructuredIdMapping impl
 
   private int seq;
 
-  /**
-   * The constructor.
-   *
-   * @param capacity the fixed capacity of the map. Should be initialized with the number of properties.
-   */
+  /// The constructor.
+  ///
+  /// @param capacity the fixed capacity of the map. Should be initialized with the number of properties.
   public StructuredIdMappingDefault(int capacity) {
 
     super();
@@ -87,10 +83,8 @@ public class StructuredIdMappingDefault extends AbstractStructuredIdMapping impl
     return name.hashCode() & (this.name2idMap.length - 1);
   }
 
-  /**
-   * @param id the {@link #id(String) ID}.
-   * @param name the {@link #name(int) name}.
-   */
+  /// @param id the [ID][#id(String)].
+  /// @param name the [name][#name(int)].
   @Override
   public void put(int id, String name) {
 

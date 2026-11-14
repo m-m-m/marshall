@@ -12,21 +12,17 @@ import io.github.mmm.marshall.spi.AbstractStructuredTextFormat;
 import io.github.mmm.scanner.CharReaderScanner;
 import io.github.mmm.scanner.CharSequenceScanner;
 
-/**
- * Implementation of {@link StructuredFormat} for JSON (JavaScript Object Notation).
- *
- * @since 1.0.0
- */
+/// Implementation of [StructuredFormat] for JSON (JavaScript Object Notation).
+///
+/// @since 1.0.0
 public class JsonFormat extends AbstractStructuredTextFormat {
 
   private static final JsonFormat DEFAULT = of(MarshallingConfig.DEFAULTS);
 
-  /**
-   * The constructor.
-   *
-   * @param config the {@link MarshallingConfig}.
-   * @see io.github.mmm.marshall.StructuredFormatFactory#create(String, MarshallingConfig)
-   */
+  /// The constructor.
+  ///
+  /// @param config the [MarshallingConfig].
+  /// @see io.github.mmm.marshall.StructuredFormatFactory#create(String, MarshallingConfig)
   public JsonFormat(MarshallingConfig config) {
 
     super(config);
@@ -56,18 +52,14 @@ public class JsonFormat extends AbstractStructuredTextFormat {
     return new JsonWriter(writer, this);
   }
 
-  /**
-   * @return the default instance of {@link JsonFormat}.
-   */
+  /// @return the default instance of [JsonFormat].
   public static JsonFormat of() {
 
     return DEFAULT;
   }
 
-  /**
-   * @param config the {@link MarshallingConfig} for the JSON vendor implementation.
-   * @return the new instance of {@link JsonFormat} with the given {@code config}.
-   */
+  /// @param config the [MarshallingConfig] for the JSON vendor implementation.
+  /// @return the new instance of [JsonFormat] with the given `config`.
   public static JsonFormat of(MarshallingConfig config) {
 
     if (config == null) {

@@ -13,25 +13,21 @@ import io.github.mmm.marshall.StructuredWriter;
 import io.github.mmm.marshall.id.StructuredIdMappingObject;
 import io.github.mmm.marshall.spi.StructuredNodeType;
 
-/**
- * Implementation of {@link StructuredWriter} for JSON from scratch.
- *
- * @see YamlFormat
- *
- * @since 1.0.0
- */
+/// Implementation of [StructuredWriter] for JSON from scratch.
+///
+/// @see YamlFormat
+///
+/// @since 1.0.0
 public class YamlWriter extends AbstractStructuredStringWriter<YamlNode> {
 
   private static final long JS_NUMBER_MAX = (2L << 52) - 1;
 
   private static final long JS_NUMBER_MIN = -JS_NUMBER_MAX;
 
-  /**
-   * The constructor.
-   *
-   * @param out the {@link Appendable} to write the data to.
-   * @param format the {@link #getFormat() format}.
-   */
+  /// The constructor.
+  ///
+  /// @param out the [Appendable] to write the data to.
+  /// @param format the [format][#getFormat()].
   public YamlWriter(Appendable out, StructuredFormat format) {
 
     super(out, format);
@@ -48,9 +44,9 @@ public class YamlWriter extends AbstractStructuredStringWriter<YamlNode> {
         // as the indentCount is auto-incremented by parent class we decrement it here to neutralize
         this.indentCount--;
       }
-    }
-    if (json) {
-      write(type.getOpen());
+      if (json) {
+        write(type.getOpen());
+      }
     }
     return new YamlNode(this.node, type, json);
   }

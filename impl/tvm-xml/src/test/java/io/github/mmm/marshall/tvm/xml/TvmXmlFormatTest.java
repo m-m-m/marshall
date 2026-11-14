@@ -8,9 +8,7 @@ import io.github.mmm.marshall.StructuredTextFormatProvider;
 import io.github.mmm.marshall.test.AbstractXmlFormatTest;
 import io.github.mmm.marshall.tvm.xml.impl.TvmXmlFormat;
 
-/**
- * Test of {@link TvmXmlFormat}.
- */
+/// Test of [TvmXmlFormat].
 @RunWith(TeaVMTestRunner.class)
 class TvmXmlFormatTest extends AbstractXmlFormatTest {
 

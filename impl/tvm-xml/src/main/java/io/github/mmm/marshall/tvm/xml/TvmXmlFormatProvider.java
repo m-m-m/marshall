@@ -10,11 +10,9 @@ import io.github.mmm.marshall.StructuredTextFormat;
 import io.github.mmm.marshall.StructuredTextFormatProvider;
 import io.github.mmm.marshall.tvm.xml.impl.TvmXmlFormat;
 
-/**
- * Implementation of {@link StructuredFormatProvider} for XML using TeaVM.
- *
- * @since 1.0.0
- */
+/// Implementation of [StructuredFormatProvider] for XML using TeaVM.
+///
+/// @since 1.0.0
 public class TvmXmlFormatProvider extends AbstractStructuredFormatProvider implements StructuredTextFormatProvider {
 
   @Override
